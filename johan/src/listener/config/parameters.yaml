@@ -2,3 +2,4 @@ $(env node_ns):
   $(env node_name):
     ros__parameters:
       target_topic: "$(env target_topic)"
+      turtle_name: "$(env turtle_name)"
