@@ -13,10 +13,8 @@ Listener::Listener(const std::string &node_name, const std::string &node_namespa
 }
 
 void Listener::init_parameters() {
-    this->declare_parameter<std::string>("target_topic");
     this->get_parameter_or<std::string>("target_topic", this->target_topic, "/INTP_ROS/talker_node/info");
     RCLCPP_INFO(this->get_logger(), "Got target topic: \"%s\"", this->target_topic.c_str());
-    this->declare_parameter<std::string>("turtle_name");
     this->get_parameter_or<std::string>("turtle_name", this->turtle_name, "_turtlesim_node");
     RCLCPP_INFO(this->get_logger(), "Got turtlesim node name: \"%s\"", this->turtle_name.c_str());
 }
