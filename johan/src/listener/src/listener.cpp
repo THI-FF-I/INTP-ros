@@ -8,7 +8,7 @@ Listener::Listener(const std::string &node_name, const std::string &node_namespa
     this->init_parameters();
     this->subscriber = this->create_subscription<custom_msgs::msg::Pose2DStamped>(this->target_topic, 10,
                                                                         std::bind(&Listener::subscriber_cb, this, std::placeholders::_1));
-    this->client = this->create_client<turtlesim::srv::TeleportAbsolute>(this->get_effective_namespace() + "/" + this->turtle_name + "/teleport_absolute");
+    this->client = this->create_client<turtlesim::srv::TeleportAbsolute>(this->get_effective_namespace() + "/_private/" + this->turtle_name + "/teleport_absolute");
     RCLCPP_INFO(this->get_logger(), "Node %s init successfull",this->get_fully_qualified_name());
 }
 
@@ -39,9 +39,12 @@ double Listener::time_delta_ms(const builtin_interfaces::msg::Time &time_send) c
 }
 
 int main(int argc, char **argv) {
-    for(int i = 0; i < argc; ++i) printf("%s\n", argv[i]);
     rclcpp::init(argc, argv);
-    rclcpp::spin(std::make_shared<Listener>("talker_node", "INTP_ROS"));
+    rclcpp::NodeOptions options;
+    options.start_parameter_event_publisher(false);
+    options.enable_rosout(false);
+    options.start_parameter_services(false);
+    rclcpp::spin(std::make_shared<Listener>("talker_node", "INTP_ROS", options));
     rclcpp::shutdown();
     return EXIT_SUCCESS;
 }

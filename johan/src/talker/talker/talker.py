@@ -5,8 +5,8 @@ import custom_msgs.msg
 import random as rand
 
 class Talker(rclpy.node.Node):
-    def __init__(self, node_name, node_ns):
-        super().__init__(node_name, namespace=node_ns)
+    def __init__(self, node_name, node_ns, start_parameter_services = False, enable_rosout=False):
+        super().__init__(node_name, namespace=node_ns, start_parameter_services=start_parameter_services, enable_rosout=enable_rosout)
         self.declare_parameter('target_topic', rclpy.Parameter.Type.STRING)
         target_topic = self.get_parameter_or('target_topic', self.get_fully_qualified_name() + 'info').value
         self.get_logger().info(f'Got target topic: {target_topic}')
@@ -28,7 +28,7 @@ class Talker(rclpy.node.Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    talker_node = Talker('talker_node', '/INTP_ROS')
+    talker_node = Talker('talker_node', '/INTP_ROS', False, False)
     try:
         rclpy.spin(talker_node)
     finally:

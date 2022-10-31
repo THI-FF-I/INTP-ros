@@ -6,12 +6,12 @@ from ros2launch.api import get_share_file_path_from_package
 
 node_ns = "INTP_ROS"
 node_name = "listener_node"
-turle_name = "_turtlesim_node"
+turtle_name = "_turtlesim_node"
 
 os.environ["node_ns"] = node_ns
 os.environ["node_name"] = node_name
 os.environ["target_topic"] = "/"+ node_ns + "/talker_node/info"
-os.environ["turtle_name"] = turle_name
+os.environ["turtle_name"] = turtle_name
 
 def generate_launch_description():
     return LaunchDescription([
@@ -27,11 +27,15 @@ def generate_launch_description():
                 ]
             ),
         Node(package='turtlesim',
-             namespace=node_ns,
+             namespace=node_ns +'/_private',
              executable='turtlesim_node',
-             name=turle_name,
+             name=turtle_name,
+             ros_arguments=[
+                 '--log-level',
+                 'WARN'
+             ],
              remappings=[
-                ('/' + node_ns + '/turtle1/teleport_absolute', turle_name + '/teleport_absolute'),
+                 ('/' + node_ns + '/_private/turtle1/teleport_absolute', turtle_name + '/teleport_absolute'),
              ],
              ),
     ])
