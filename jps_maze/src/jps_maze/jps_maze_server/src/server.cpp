@@ -4,7 +4,7 @@
 
 #include "jps_maze_server/server.hpp"
 
-namespace jps_maze_sever {
+namespace jps_maze_server {
     Server::Server(rclcpp::NodeOptions node_options)
         : rclcpp::Node("server_node", node_options) {
 
