@@ -7,7 +7,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 
-namespace jps_maze_sever {
+namespace jps_maze_server {
 
     class Server : public rclcpp::Node {
         Server(rclcpp::NodeOptions node_options = rclcpp::NodeOptions());
