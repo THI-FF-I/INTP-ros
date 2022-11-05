@@ -15,6 +15,7 @@ bool Player::move(const direction_t dir, Board &board)
     switch (dir)
     {
     case PLAYER_DIR_UP:
+        if(new_x <= 0) return false;
         new_x -= 1;
         new_y = new_y;
         break;
@@ -25,6 +26,7 @@ bool Player::move(const direction_t dir, Board &board)
         break;
 
     case PLAYER_DIR_LEFT:
+        if(new_y <= 0) return false;
         new_x = new_x;
         new_y -= 1;
         break;
