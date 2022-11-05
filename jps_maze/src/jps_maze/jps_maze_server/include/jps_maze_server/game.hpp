@@ -9,7 +9,7 @@
 
 #include "jps_maze_msgs/msg/player.hpp"
 #include "jps_maze_msgs/msg/team.hpp"
-#include "jps_maze_msgs/msg/Status.hpp"
+#include "jps_maze_msgs/msg/status.hpp"
 
 #include "jps_maze_server/board.hpp"
 #include "jps_maze_server/player.hpp"
