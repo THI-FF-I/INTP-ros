@@ -32,6 +32,8 @@ namespace jps_maze_server {
 
         Board() {};
 
+        bool load_board_from_file(const std::string filename);
+
         game_block_t get_block_state(const coord_t coord_x, const coord_t coord_y) const;
 
         ~Board()
