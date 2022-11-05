@@ -1,7 +1,15 @@
 #ifndef INTP_ROS_SERVER_NODE_GAME_HPP
 #define INTP_ROS_SERVER_NODE_GAME_HPP
 
-#include <vector>
+#include <map>
+#include <random>
+
+#include "rclcpp/logger.hpp"
+#include "rclcpp/logging.hpp"
+
+#include "jps_maze_msgs/msg/player.hpp"
+#include "jps_maze_msgs/msg/team.hpp"
+#include "jps_maze_msgs/msg/Status.hpp"
 
 #include "jps_maze_server/board.hpp"
 #include "jps_maze_server/player.hpp"
@@ -12,16 +20,30 @@ namespace jps_maze_server
     {
     private:
         Board board;
-        std::vector<Player> players_team_a;
-        std::vector<Player> players_team_b;
+        std::map<jps_maze_msgs::msg::Player::_id_type, Player> players;
+        rclcpp::Logger logger;
+        std::mt19937_64 id_gen;
+        uint16_t round_cnt;
 
     public:
-        Game(uint8_t dim_x, uint8_t dim_y) : board(dim_x, dim_y)
-        {
-        }
+        Game(const coord_t width, const coord_t height, const rclcpp::Logger logger);
 
-        ~Game()
-        {
+        Game(const rclcpp::Logger logger) : logger(logger) {};
+
+        ~Game() = default;
+
+        Player& add_player(const std::string &name, const jps_maze_msgs::msg::Team::_team_type team);
+
+        bool move_player(const player_id_t player_id, const direction_t direction);
+
+        bool next_round_ready() const; // Return if all players have moved
+
+        void next_round();
+
+        void get_status(const team_t team, jps_maze_msgs::msg::Status &status) const;
+
+        constexpr uint16_t get_round_cnt() const {
+            return this->round_cnt;
         }
     };
 }

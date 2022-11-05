@@ -7,10 +7,33 @@
 
 #include "rclcpp/rclcpp.hpp"
 
+#include "jps_maze_msgs/msg/status.hpp"
+#include "jps_maze_msgs/srv/create_player.hpp"
+#include "jps_maze_msgs/srv/move_player.hpp"
+
+#include "jps_maze_server/game.hpp"
+
 namespace jps_maze_server {
 
     class Server : public rclcpp::Node {
-        Server(rclcpp::NodeOptions node_options = rclcpp::NodeOptions());
+    public:
+        Server(const rclcpp::NodeOptions &node_options = rclcpp::NodeOptions());
+
+    private:
+        // Publisher
+        std::shared_ptr<rclcpp::Publisher<jps_maze_msgs::msg::Status>> team_a_status_pub;
+        std::shared_ptr<rclcpp::Publisher<jps_maze_msgs::msg::Status>> team_b_status_pub;
+
+        // Services
+        std::shared_ptr<rclcpp::Service<jps_maze_msgs::srv::CreatePlayer>> create_player_srv;
+        std::shared_ptr<rclcpp::Service<jps_maze_msgs::srv::MovePlayer>> move_player_srv;
+
+        // Callbacks
+        void create_player_cb(const std::shared_ptr<jps_maze_msgs::srv::CreatePlayer::Request> req, std::shared_ptr<jps_maze_msgs::srv::CreatePlayer::Response> res);
+        void move_player_cb(const std::shared_ptr<jps_maze_msgs::srv::MovePlayer::Request> req, std::shared_ptr<jps_maze_msgs::srv::MovePlayer::Response> res);
+
+        // Attributes
+        Game game;
     };
 }
 

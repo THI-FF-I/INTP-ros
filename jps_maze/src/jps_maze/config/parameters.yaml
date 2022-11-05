@@ -4,5 +4,7 @@ $(env node_ns):
       height: $(env height)
       width: $(env width)
       create_player_topic: "$(env create_player_topic)"
-      get_status_topic: "$(env get_status_topic)"
+      status_topic: "$(env status_topic)"
+      move_player_topic: "$(env move_player_topic)"
       team: $(env team_A)
+      player_name: "$(env player_name)"

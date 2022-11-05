@@ -2,17 +2,15 @@
 
 using namespace jps_maze_server;
 
-Player::Player(uint64_t playerID_p, team_t team_p, uint32_t color_p)
-{
-    playerID = playerID_p;
-    team = team_p;
-    color = color_p;
+Player::Player(const player_id_t player_id, const team_t team, const std::string& player_name) :
+    player_id(player_id), team(team), player_name(player_name) {
+
 }
 
-bool Player::move(direction_t dir, Board &board)
+bool Player::move(const direction_t dir, Board &board)
 {
-    int16_t new_x = location[COORD_X];
-    int16_t new_y = location[COORD_Y];
+    coord_t new_x = this->x;
+    coord_t new_y = this->y;
 
     switch (dir)
     {
@@ -49,8 +47,8 @@ bool Player::move(direction_t dir, Board &board)
         return false;
 
     case GAME_BLOCK_EMPTY:
-        location[COORD_X] = new_x;
-        location[COORD_Y] = new_y;
+        this->x = new_x;
+        this->y = new_y;
         return true;
 
     case GAME_BLOCK_WALL:
@@ -61,27 +59,27 @@ bool Player::move(direction_t dir, Board &board)
         return true;
 
     case GAME_BLOCK_FLAG_A:
-        location[COORD_X] = new_x;
-        location[COORD_Y] = new_y;
+        this->y = new_x;
+        this->x = new_y;
         if (team == PLAYER_TEAM_A)
             has_flag = true;
         return true;
 
     case GAME_BLOCK_FLAG_B:
-        location[COORD_X] = new_x;
-        location[COORD_Y] = new_y;
+        this->y = new_x;
+        this->x = new_y;
         if (team == PLAYER_TEAM_B)
             has_flag = true;
         return true;
 
     case GAME_BLOCK_BASE_A:
-        location[COORD_X] = new_x;
-        location[COORD_Y] = new_y;
+        this->x = new_x;
+        this->y = new_y;
         return true;
 
     case GAME_BLOCK_BASE_B:
-        location[COORD_X] = new_x;
-        location[COORD_Y] = new_y;
+        this->x = new_x;
+        this->y = new_y;
         return true;
 
     default:

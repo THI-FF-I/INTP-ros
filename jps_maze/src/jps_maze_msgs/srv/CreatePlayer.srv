@@ -1,0 +1,6 @@
+std_msgs/Header header
+string name
+jps_maze_msgs/Team team
+---
+std_msgs/Header header
+jps_maze_msgs/Player player

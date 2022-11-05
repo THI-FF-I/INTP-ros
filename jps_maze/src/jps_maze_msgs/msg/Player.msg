@@ -1,6 +1,6 @@
 uint64 id
 string name
 uint32 color
-uint8 x
-uint8 y
+jps_maze_msgs/Position pos
 bool has_flag
+jps_maze_msgs/Team team
