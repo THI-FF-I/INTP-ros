@@ -4,14 +4,15 @@ from launch_ros.actions import Node
 import launch_ros.parameter_descriptions
 from ros2launch.api import get_share_file_path_from_package
 def parse_arguments():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-r', '--resolution', type=str, dest='res', metavar='<width>x<height>', required=True, help='Resolution of the maze (<width>x<height>)')
+    parser = argparse.ArgumentParser(prog='jps_maze')
     run_mode_group = parser.add_mutually_exclusive_group(required=True)
     run_mode_group.add_argument('-s', '--server', dest='start_server', action='store_true', help='Start the server node')
     run_mode_group.add_argument('-c', '--client', dest='start_server', action='store_false', help='Start the client node')
     parser.add_argument('-t', '--team', type=str, choices=['A', 'a', 'B', 'b'], dest='team', required=False, help='If client mode is chosen, select the team to play on')
-    parser.add_argument('-n', '--name', type=str, dest='name', required=False, help='I client mode is chosen, select the player name')
+    parser.add_argument('-n', '--name', type=str, dest='name', required=False, help='If client mode is chosen, select the player name')
     parser.add_argument('--ns', '--node_ns', type=str, dest='node_ns', required=False, default='jps_maze', help='Set the namespace to use')
+    parser.add_argument('-r', '--resolution', type=str, dest='res', metavar='<width>x<height>', required=False, default='200x150', help='Resolution of the maze')
+    parser.add_argument('-b', '--board_no', type=int, choices=range(0,1), dest='board_no', required=False, default=0, help='Select the index for the board to use')
     parser.print_usage()
     args = parser.parse_args(input('Enter options:\n').split())
     matches = re.search('^([0-9]+)x([0-9]+)$', args.res)
@@ -21,25 +22,25 @@ def parse_arguments():
         if not args.start_server:
             if args.team:
                 if args.name:
-                    return args.node_ns, width, height, args.start_server, True if args.team.upper() == 'A' else  False, args.name
+                    return args.node_ns, width, height, args.start_server, True if args.team.upper() == 'A' else  False, args.name, args.board_no
                 else:
                     parser.error('Missing player name')
             else:
                 parser.error('Missing team selection')
         else:
-            return args.node_ns, width, height, args.start_server, True, 'server'
+            return args.node_ns, width, height, args.start_server, True, 'server', args.board_no
     else:
         parser.error('Invalid formatting of resolution')
 
 def generate_launch_description():
-    node_ns, width, height, start_server, team_A, player_name = parse_arguments()
+    node_ns, width, height, start_server, team_A, player_name, board_no = parse_arguments()
     package = 'jps_maze'
     if start_server:
-        node_name = 'server_node'
+        node_name = 'server'
         executable = 'jps_maze_server'
         os.environ['status_topic'] = '/status'
     else:
-        node_name = 'client_node' + str(random.randrange(10000))
+        node_name = 'client' + str(random.randrange(10000))
         executable = 'jps_maze_client'
         if team_A:
             team = 'team_A'
@@ -54,6 +55,7 @@ def generate_launch_description():
     os.environ['move_player_topic'] = '/' + node_ns + '/move_player'
     os.environ['team_A'] = str(team_A)
     os.environ['player_name'] = player_name
+    os.environ['board_path'] = get_share_file_path_from_package(package_name=package, file_name='board' + str(board_no) + '.csv')
     sys.argv = sys.argv[:1]
     return LaunchDescription(
         [
@@ -64,7 +66,7 @@ def generate_launch_description():
                 name=node_name,
                 parameters=[
                     launch_ros.parameter_descriptions.ParameterFile(
-                        param_file=get_share_file_path_from_package(package_name= package, file_name='parameters.yaml'),
+                        param_file=get_share_file_path_from_package(package_name=package, file_name='parameters.yaml'),
                         allow_substs=True),
                 ]
             ),

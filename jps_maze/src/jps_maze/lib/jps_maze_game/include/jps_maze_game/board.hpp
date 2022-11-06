@@ -6,7 +6,7 @@
 
 #include "jps_maze_msgs/msg/position.hpp"
 
-namespace jps_maze_server {
+namespace jps_maze_game {
 
     using coord_t = jps_maze_msgs::msg::Position::_x_type;
     static_assert(sizeof(jps_maze_msgs::msg::Position::_x_type) == sizeof(jps_maze_msgs::msg::Position::_y_type), "Position types for x and y differ!");
@@ -25,19 +25,27 @@ namespace jps_maze_server {
     {
     private:
         std::vector<std::vector<game_block_t>> board;
-        uint8_t width, height;
+        coord_t width, height;
 
     public:
         Board(const coord_t width, const coord_t height);
 
         Board() {};
 
-        bool load_board_from_file(const std::string filename);
+        bool load_board_from_file(const std::string_view filename);
 
         game_block_t get_block_state(const coord_t coord_x, const coord_t coord_y) const;
 
         ~Board()
         {
+        }
+
+        constexpr coord_t get_width() const {
+            return this->width;
+        }
+
+        constexpr coord_t get_height() const {
+            return this->height;
         }
     };
 }

@@ -11,7 +11,7 @@
 #include "jps_maze_msgs/srv/create_player.hpp"
 #include "jps_maze_msgs/srv/move_player.hpp"
 
-#include "jps_maze_server/game.hpp"
+#include "jps_maze_game/game.hpp"
 
 namespace jps_maze_server {
 
@@ -33,7 +33,7 @@ namespace jps_maze_server {
         void move_player_cb(const std::shared_ptr<jps_maze_msgs::srv::MovePlayer::Request> req, std::shared_ptr<jps_maze_msgs::srv::MovePlayer::Response> res);
 
         // Attributes
-        Game game;
+        jps_maze_game::Game game;
     };
 }
 

@@ -11,10 +11,10 @@
 #include "jps_maze_msgs/msg/team.hpp"
 #include "jps_maze_msgs/msg/status.hpp"
 
-#include "jps_maze_server/board.hpp"
-#include "jps_maze_server/player.hpp"
+#include "jps_maze_game/board.hpp"
+#include "jps_maze_game/player.hpp"
 
-namespace jps_maze_server
+namespace jps_maze_game
 {
     class Game
     {
@@ -26,13 +26,13 @@ namespace jps_maze_server
         uint16_t round_cnt;
 
     public:
-        Game(const coord_t width, const coord_t height, const rclcpp::Logger logger);
+        Game(const coord_t width, const coord_t height, const std::string_view board_path, const rclcpp::Logger logger);
 
         Game(const rclcpp::Logger logger) : logger(logger) {};
 
         ~Game() = default;
 
-        Player& add_player(const std::string &name, const jps_maze_msgs::msg::Team::_team_type team);
+        Player& add_player(const std::string &name, const team_t team);
 
         bool move_player(const player_id_t player_id, const direction_t direction);
 
@@ -41,6 +41,14 @@ namespace jps_maze_server
         void next_round();
 
         void get_status(const team_t team, jps_maze_msgs::msg::Status &status) const;
+
+        constexpr coord_t get_width() const {
+            return this->board.get_width();
+        }
+
+        constexpr coord_t get_height() const {
+            return this->board.get_height();
+        }
 
         constexpr uint16_t get_round_cnt() const {
             return this->round_cnt;

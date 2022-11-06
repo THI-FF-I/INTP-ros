@@ -8,3 +8,4 @@ $(env node_ns):
       move_player_topic: "$(env move_player_topic)"
       team: $(env team_A)
       player_name: "$(env player_name)"
+      board_path: "$(env board_path)"

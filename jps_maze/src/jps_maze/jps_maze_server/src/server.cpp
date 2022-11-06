@@ -8,7 +8,7 @@ using namespace std::placeholders;
 
 namespace jps_maze_server {
     Server::Server(const rclcpp::NodeOptions &node_options)
-        : rclcpp::Node("server_node", node_options) , game(0, 0, this->get_logger()){
+        : rclcpp::Node("server_node", node_options) , game(this->get_logger()){
 
         // Declare Parameters
         this->declare_parameter<int64_t>("height");
@@ -16,6 +16,7 @@ namespace jps_maze_server {
         this->declare_parameter<std::string>("create_player_topic");
         this->declare_parameter<std::string>("status_topic");
         this->declare_parameter<std::string>("move_player_topic");
+        this->declare_parameter<std::string>("board_path");
 
         // Get Parameters
         const uint8_t height = this->get_parameter("height").as_int();
@@ -23,6 +24,7 @@ namespace jps_maze_server {
         const std::string create_player_topic = this->get_parameter("create_player_topic").as_string();
         const std::string status_topic = this->get_parameter("status_topic").as_string();
         const std::string move_player_topic = this->get_parameter("move_player_topic").as_string();
+        const std::string board_path = this->get_parameter("board_path").as_string();
 
         RCLCPP_INFO(this->get_logger(), "Got all required parameters");
 
@@ -39,7 +41,7 @@ namespace jps_maze_server {
         RCLCPP_INFO(this->get_logger(), "Registered services");
 
         // Init Game
-        this->game = Game(width, height, this->get_logger());
+        this->game = jps_maze_game::Game(width, height, board_path, this->get_logger());
 
         RCLCPP_INFO(this->get_logger(), "Init of game object done");
 
@@ -50,6 +52,11 @@ namespace jps_maze_server {
                                   std::shared_ptr<jps_maze_msgs::srv::CreatePlayer::Response> res) {
         RCLCPP_INFO(this->get_logger(), "Got new player spawn request with name: \"%s\" and team: %c", req->name.c_str(), req->team.team == req->team.TEAM_A ? 'A': 'B');
 
+        this->game.add_player(req->name, static_cast<jps_maze_game::team_t>(req->team.team));
+
+        res->width = this->game.get_width();
+        res->height = this->game.get_height();
+
         RCLCPP_INFO(this->get_logger(), "Returning player object with id: %ld at pos x: %d, y: %d", res->player.id, res->player.pos.x, res->player.pos.y);
         res->header.stamp = this->now();
     }
@@ -57,14 +64,14 @@ namespace jps_maze_server {
     void Server::move_player_cb(const std::shared_ptr<jps_maze_msgs::srv::MovePlayer::Request> req,
                                 std::shared_ptr<jps_maze_msgs::srv::MovePlayer::Response> res) {
         RCLCPP_INFO(this->get_logger(), "Got new move player request for player_id: %ld dir: %s", req->player_id, req->dir == req->UP ? "UP" : (req->dir == req->DOWN ? "DOWN" : (req->dir == req->LEFT ? "LEFT" : "RIGHT")));
-        res->success = this->game.move_player(req->player_id, static_cast<direction_t>(req->dir));
+        res->success = this->game.move_player(req->player_id, static_cast<jps_maze_game::direction_t>(req->dir));
         if(this->game.next_round_ready()) {
             RCLCPP_INFO(this->get_logger(), "Round %d finished sending status and moving on", this->game.get_round_cnt());
             jps_maze_msgs::msg::Status status;
-            this->game.get_status(PLAYER_TEAM_A, status);
+            this->game.get_status(jps_maze_game::PLAYER_TEAM_A, status);
             status.header.stamp = this->now();
             this->team_a_status_pub->publish(status);
-            this->game.get_status(PLAYER_TEAM_B, status);
+            this->game.get_status(jps_maze_game::PLAYER_TEAM_B, status);
             status.header.stamp = this->now();
             this->team_b_status_pub->publish(status);
             this->game.next_round();

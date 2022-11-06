@@ -56,3 +56,5 @@ CATKIN_IGNORE
 .idea/
 install/
 log/
+
+!/jps_maze/src/jps_maze/lib

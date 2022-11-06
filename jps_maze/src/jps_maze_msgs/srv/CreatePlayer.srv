@@ -4,3 +4,5 @@ jps_maze_msgs/Team team
 ---
 std_msgs/Header header
 jps_maze_msgs/Player player
+uint8 width
+uint8 height

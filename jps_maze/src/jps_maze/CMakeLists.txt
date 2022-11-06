@@ -26,6 +26,7 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
+add_subdirectory(lib)
 add_subdirectory(jps_maze_client)
 add_subdirectory(jps_maze_server)
 
@@ -37,6 +38,7 @@ install(TARGETS
 install(DIRECTORY
         launch
         config
+        res
         DESTINATION share/${PROJECT_NAME})
 
 ament_package()

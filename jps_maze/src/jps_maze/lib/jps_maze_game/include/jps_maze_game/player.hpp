@@ -9,9 +9,9 @@
 #include "jps_maze_msgs/msg/player.hpp"
 #include "jps_maze_msgs/srv/move_player.hpp"
 
-#include "jps_maze_server/board.hpp"
+#include "jps_maze_game/board.hpp"
 
-namespace jps_maze_server
+namespace jps_maze_game
 {
     using player_id_t = jps_maze_msgs::msg::Player::_id_type;
     using color_t = jps_maze_msgs::msg::Player::_color_type;
