@@ -9,27 +9,10 @@
 #include "jps_maze_msgs/msg/player.hpp"
 #include "jps_maze_msgs/srv/move_player.hpp"
 
-#include "jps_maze_game/board.hpp"
+#include "jps_maze_game/types.hpp"
 
 namespace jps_maze_game
 {
-    using player_id_t = jps_maze_msgs::msg::Player::_id_type;
-    using color_t = jps_maze_msgs::msg::Player::_color_type;
-
-    typedef enum team : jps_maze_msgs::msg::Team::_team_type
-    {
-        PLAYER_TEAM_A = jps_maze_msgs::msg::Team::TEAM_A,
-        PLAYER_TEAM_B = jps_maze_msgs::msg::Team::TEAM_B,
-    } team_t;
-
-    typedef enum direction : jps_maze_msgs::srv::MovePlayer::Request::_dir_type
-    {
-        PLAYER_DIR_UP = jps_maze_msgs::srv::MovePlayer::Request::UP,
-        PLAYER_DIR_DOWN = jps_maze_msgs::srv::MovePlayer::Request::DOWN,
-        PLAYER_DIR_LEFT = jps_maze_msgs::srv::MovePlayer::Request::LEFT,
-        PLAYER_DIR_RIGHT = jps_maze_msgs::srv::MovePlayer::Request::RIGHT,
-    } direction_t;
-
     class Player
     {
     private:
@@ -43,7 +26,31 @@ namespace jps_maze_game
     public:
         Player(const player_id_t player_id, const team_t team_id, const std::string &player_name);
 
-        bool move(const direction_t dir, Board &board);
+        void set_x(const coord_t new_x)
+        {
+            x = new_x;
+        }
+        void set_y(const coord_t new_y)
+        {
+            y = new_y;
+        }
+        void set_has_flag(bool new_flag)
+        {
+            has_flag = new_flag;
+        }
+
+        coord_t get_x() const
+        {
+            return x;
+        }
+        coord_t get_y() const
+        {
+            return y;
+        }
+        team_t get_team() const
+        {
+            return team;
+        }
 
         ~Player() = default;
         Player(const Player &other) = default;
