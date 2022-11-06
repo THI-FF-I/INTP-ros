@@ -5,10 +5,13 @@
 #ifndef INTP_ROS_TYPES_HPP
 #define INTP_ROS_TYPES_HPP
 
-namespace jps_maze_game {
+#include <inttypes.h>
 
-    using player_id_t = jps_maze_msgs::msg::Player::_id_type;
-    using color_t = jps_maze_msgs::msg::Player::_color_type;
+#include "jps_maze_msgs/msg/position.hpp"
+
+namespace jps_maze_game
+{
+    // BOARD
     using coord_t = jps_maze_msgs::msg::Position::_x_type;
     static_assert(sizeof(jps_maze_msgs::msg::Position::_x_type) == sizeof(jps_maze_msgs::msg::Position::_y_type), "Position types for x and y differ!");
 
@@ -34,6 +37,11 @@ namespace jps_maze_game {
         {
         }
     } game_block_t;
+
+
+    // PLAYER
+    using player_id_t = jps_maze_msgs::msg::Player::_id_type;
+    using color_t = jps_maze_msgs::msg::Player::_color_type;
 
     typedef enum team : jps_maze_msgs::msg::Team::_team_type
     {

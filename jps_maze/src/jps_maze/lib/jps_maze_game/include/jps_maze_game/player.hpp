@@ -9,10 +9,6 @@
 #include "jps_maze_msgs/msg/player.hpp"
 #include "jps_maze_msgs/srv/move_player.hpp"
 
-namespace {
-    class Player;
-}
-#include "jps_maze_game/board.hpp"
 #include "jps_maze_game/types.hpp"
 
 namespace jps_maze_game
@@ -30,7 +26,31 @@ namespace jps_maze_game
     public:
         Player(const player_id_t player_id, const team_t team_id, const std::string &player_name);
 
-        bool move(const direction_t dir, Board &board);
+        void set_x(const coord_t new_x)
+        {
+            x = new_x;
+        }
+        void set_y(const coord_t new_y)
+        {
+            y = new_y;
+        }
+        void set_has_flag(bool new_flag)
+        {
+            has_flag = new_flag;
+        }
+
+        coord_t get_x() const
+        {
+            return x;
+        }
+        coord_t get_y() const
+        {
+            return y;
+        }
+        team_t get_team() const
+        {
+            return team;
+        }
 
         ~Player() = default;
         Player(const Player &other) = default;
