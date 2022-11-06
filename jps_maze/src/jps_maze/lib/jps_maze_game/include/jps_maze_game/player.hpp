@@ -41,12 +41,12 @@ namespace jps_maze_game
         std::string player_name;
 
     public:
-        Player(const player_id_t player_id, const team_t team_id, const std::string& player_name);
+        Player(const player_id_t player_id, const team_t team_id, const std::string &player_name);
 
         bool move(const direction_t dir, Board &board);
 
         ~Player() = default;
-        Player(const Player& other) = default;
+        Player(const Player &other) = default;
     };
 }
 
