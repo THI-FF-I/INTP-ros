@@ -13,6 +13,7 @@
 
 #include "jps_maze_game/board.hpp"
 #include "jps_maze_game/player.hpp"
+#include "jps_maze_game/types.hpp"
 
 namespace jps_maze_game
 {

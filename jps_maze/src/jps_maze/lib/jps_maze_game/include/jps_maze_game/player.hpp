@@ -9,27 +9,14 @@
 #include "jps_maze_msgs/msg/player.hpp"
 #include "jps_maze_msgs/srv/move_player.hpp"
 
+namespace {
+    class Player;
+}
 #include "jps_maze_game/board.hpp"
+#include "jps_maze_game/types.hpp"
 
 namespace jps_maze_game
 {
-    using player_id_t = jps_maze_msgs::msg::Player::_id_type;
-    using color_t = jps_maze_msgs::msg::Player::_color_type;
-
-    typedef enum team : jps_maze_msgs::msg::Team::_team_type
-    {
-        PLAYER_TEAM_A = jps_maze_msgs::msg::Team::TEAM_A,
-        PLAYER_TEAM_B = jps_maze_msgs::msg::Team::TEAM_B,
-    } team_t;
-
-    typedef enum direction : jps_maze_msgs::srv::MovePlayer::Request::_dir_type
-    {
-        PLAYER_DIR_UP = jps_maze_msgs::srv::MovePlayer::Request::UP,
-        PLAYER_DIR_DOWN = jps_maze_msgs::srv::MovePlayer::Request::DOWN,
-        PLAYER_DIR_LEFT = jps_maze_msgs::srv::MovePlayer::Request::LEFT,
-        PLAYER_DIR_RIGHT = jps_maze_msgs::srv::MovePlayer::Request::RIGHT,
-    } direction_t;
-
     class Player
     {
     private:

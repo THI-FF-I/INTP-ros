@@ -6,37 +6,15 @@
 
 #include "jps_maze_msgs/msg/position.hpp"
 
+namespace jps_maze_game {
+    class Board;
+}
+
 #include "jps_maze_game/player.hpp"
+#include "jps_maze_game/types.hpp"
 
 namespace jps_maze_game
 {
-
-    using coord_t = jps_maze_msgs::msg::Position::_x_type;
-    static_assert(sizeof(jps_maze_msgs::msg::Position::_x_type) == sizeof(jps_maze_msgs::msg::Position::_y_type), "Position types for x and y differ!");
-
-    typedef enum game_block_type : int8_t
-    {
-        GAME_BLOCK_OUT_OF_BOARD = -1,
-        GAME_BLOCK_EMPTY = 0,
-        GAME_BLOCK_WALL,
-        GAME_BLOCK_PORTAL, // Player gets teleported to another random portal
-        GAME_BLOCK_FLAG_A,
-        GAME_BLOCK_FLAG_B,
-        GAME_BLOCK_BASE_A,
-        GAME_BLOCK_BASE_B,
-    } game_block_type_t;
-
-    typedef struct game_block
-    {
-        game_block_type_t game_block_type = GAME_BLOCK_EMPTY;
-        bool mapped_team_a = false; // true means the block was mapped / seen by a team A member
-        bool mapped_team_b = false; // true means the block was mapped / seen by a team B member
-
-        game_block(game_block_type_t pGame_block_type) : game_block_type(pGame_block_type)
-        {
-        }
-    } game_block_t;
-
     class Board
     {
     private:

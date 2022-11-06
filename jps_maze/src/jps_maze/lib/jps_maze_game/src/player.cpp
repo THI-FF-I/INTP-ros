@@ -42,7 +42,7 @@ namespace jps_maze_game
             throw "[Player::move] Unknown direction given";
         }
 
-        board.map_area(new_x, new_y);
+        board.map_area(new_x, new_y, this->team);
         game_block_type_t new_block = board.get_block_state(new_x, new_y);
 
         switch (new_block)
