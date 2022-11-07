@@ -25,15 +25,16 @@ namespace jps_maze_game
         rclcpp::Logger logger;
         std::mt19937_64 id_gen;
         uint16_t round_cnt;
+        uint16_t update_cycle;
 
     public:
-        Game(const coord_t width, const coord_t height, const std::string_view board_path, const rclcpp::Logger logger);
+        Game(const coord_t width, const coord_t height, const std::string_view board_path, const uint16_t Pupdate_cycle_ms, const rclcpp::Logger logger);
 
-        Game(const rclcpp::Logger logger) : logger(logger) {};
+        Game(const rclcpp::Logger logger) : logger(logger){};
 
         ~Game() = default;
 
-        Player& add_player(const std::string &name, const team_t team);
+        Player &add_player(const std::string &name, const team_t team);
 
         bool move_player(const player_id_t player_id, const direction_t direction);
 
@@ -43,18 +44,21 @@ namespace jps_maze_game
 
         void get_status(const team_t team, jps_maze_msgs::msg::Status &status) const;
 
-        constexpr coord_t get_width() const {
+        constexpr coord_t get_width() const
+        {
             return this->board.get_width();
         }
 
-        constexpr coord_t get_height() const {
+        constexpr coord_t get_height() const
+        {
             return this->board.get_height();
         }
 
-        constexpr uint16_t get_round_cnt() const {
+        constexpr uint16_t get_round_cnt() const
+        {
             return this->round_cnt;
         }
     };
 }
 
-#endif //INTP_ROS_SERVER_NODE_GAME_HPP
+#endif // INTP_ROS_SERVER_NODE_GAME_HPP
