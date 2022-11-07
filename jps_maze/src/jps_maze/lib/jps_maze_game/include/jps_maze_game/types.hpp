@@ -11,6 +11,13 @@
 
 namespace jps_maze_game
 {
+    // GAME
+    typedef enum game_flag_state : uint8_t
+    {
+        GAME_FLAG_STATE_IN_BASE,
+        GAME_FLAG_STATE_BY_PLAYER,
+    } game_flag_state_t;
+
     // BOARD
     using coord_t = jps_maze_msgs::msg::Position::_x_type;
     static_assert(sizeof(jps_maze_msgs::msg::Position::_x_type) == sizeof(jps_maze_msgs::msg::Position::_y_type), "Position types for x and y differ!");

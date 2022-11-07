@@ -22,11 +22,13 @@ namespace jps_maze_game
     private:
         std::vector<std::vector<game_block_t>> board;
         coord_t width, height;
+        game_flag_state_t flag_a = GAME_FLAG_STATE_IN_BASE;
+        game_flag_state_t flag_b = GAME_FLAG_STATE_IN_BASE;
 
     public:
-        Board(const coord_t width, const coord_t height);
+        Board(const coord_t width, const coord_t height); // Creates empty board
 
-        Board(const std::string_view filename)
+        Board(const std::string_view filename) // Creates board from file
         {
             load_board_from_file(filename);
         }

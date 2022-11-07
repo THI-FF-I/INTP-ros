@@ -17,29 +17,43 @@ namespace jps_maze_game
         return this->players.at(player_id);
     }
 
-    bool Game::move_player(const player_id_t player_id, const direction_t direction) // TODO Work in Progress
-    {/*
-        if(board.player_move(direction, players[player_id]) == true)
+    bool Game::move_player(const player_id_t player_id, const direction_t direction)
+    {
+        if(board.player_move(direction, players.at(player_id)) == true)
         {
-            players[player_id].take_turn();
+            players.at(player_id).set_turn(false);
             return true;
         }
         else
         {
             return false;
-        }*/
+        }
     }
 
-    bool Game::next_round_ready() const
+    bool Game::next_round_ready() const // Returns true if next round is ready to start and false if we need to keep waiting
     {
-        return false;
+        for(const auto &m: players)
+        {
+            if(m.second.get_turn() == true) return false;
+        }
+
+        // TODO Check for win
+
+        return true;
     }
 
     void Game::next_round()
     {
+        for(auto &m: players) // Reset all turn flags
+        {
+            m.second.set_turn(false);
+        }
+
+        // TODO Probably more to do here
     }
 
     void Game::get_status(const team_t team, jps_maze_msgs::msg::Status &status) const
     {
+        // TODO What should be done here???
     }
 }

@@ -39,9 +39,9 @@ namespace jps_maze_game
         {
             has_flag = new_flag;
         }
-        constexpr void take_turn()
+        constexpr void set_turn(bool new_turn)
         {
-            turn = false;
+            turn = new_turn;
         }
 
         constexpr coord_t get_x() const
@@ -55,6 +55,10 @@ namespace jps_maze_game
         constexpr team_t get_team() const
         {
             return team;
+        }
+        constexpr bool get_turn() const
+        {
+            return turn;
         }
 
         ~Player() = default;

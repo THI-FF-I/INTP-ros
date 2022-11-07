@@ -2,7 +2,7 @@
 
 namespace jps_maze_game
 {
-    Board::Board(const coord_t width, const coord_t height) : width(width), height(height)
+    Board::Board(const coord_t width, const coord_t height) : width(width), height(height) // Creates empty board
     {
         board.clear();
         board.reserve(height);
@@ -22,10 +22,8 @@ namespace jps_maze_game
         }
     }
 
-    bool Board::load_board_from_file(const std::string_view filename)
+    bool Board::load_board_from_file(const std::string_view filename) // Creates board from file
     {
-        // TODO Load file and store contents and dimensions in board
-
         std::ifstream file(filename.data());
         std::string line = "";
 
@@ -79,7 +77,7 @@ namespace jps_maze_game
                     new_width.push_back(tmp);
                 }
 
-                if(w > 0 && w != w_tmp) throw "[Board::load_board_from_file] file syntax is incorrect";
+                if(w > 0 && w != w_tmp) throw "[Board::load_board_from_file] incorrect file syntax";
                 w = w_tmp;
 
                 new_board.push_back(new_width);
@@ -224,14 +222,20 @@ namespace jps_maze_game
             player.set_x(new_x);
             player.set_y(new_y);
             if (player.get_team() == PLAYER_TEAM_A)
+            {
+                flag_a = GAME_FLAG_STATE_BY_PLAYER;
                 player.set_has_flag(true);
+            }
             return true;
 
         case GAME_BLOCK_FLAG_B:
             player.set_x(new_x);
             player.set_y(new_y);
             if (player.get_team() == PLAYER_TEAM_B)
+            {
+                flag_b = GAME_FLAG_STATE_BY_PLAYER;
                 player.set_has_flag(true);
+            }
             return true;
 
         case GAME_BLOCK_BASE_A:
