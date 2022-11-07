@@ -1,0 +1,8 @@
+  Build:
+colcon build
+
+
+  Start:
+source install/setup.bash
+ros2 launch jps_maze jps_maze_launch.py
+  -> Enter on prompt: "-s -r 2x2"
