@@ -2,7 +2,7 @@
 
 namespace jps_maze_game
 {
-    Game::Game(const coord_t width, const coord_t height, const std::string_view board_path, const uint16_t Pupdate_cycle_ms, const rclcpp::Logger logger) : board(width, height), logger(logger), round_cnt(0), update_cycle(Pupdate_cycle_ms)
+    Game::Game(const coord_t width, const coord_t height, const std::string_view board_path, const rclcpp::Logger logger) : board(width, height), logger(logger), round_cnt(0)
     {
         this->board.load_board_from_file(board_path);
         std::random_device rd;
@@ -19,18 +19,41 @@ namespace jps_maze_game
 
     bool Game::move_player(const player_id_t player_id, const direction_t direction)
     {
+        if(board.player_move(direction, players.at(player_id)) == true)
+        {
+            players.at(player_id).set_turn(false);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
-    bool Game::next_round_ready() const
+    bool Game::next_round_ready() const // Returns true if next round is ready to start and false if we need to keep waiting
     {
-        return false;
+        for(const auto &m: players)
+        {
+            if(m.second.get_turn() == true) return false;
+        }
+
+        // TODO Check for win
+
+        return true;
     }
 
     void Game::next_round()
     {
+        for(auto &m: players) // Reset all turn flags
+        {
+            m.second.set_turn(false);
+        }
+
+        // TODO Probably more to do here
     }
 
     void Game::get_status(const team_t team, jps_maze_msgs::msg::Status &status) const
     {
+        // TODO What should be done here???
     }
 }

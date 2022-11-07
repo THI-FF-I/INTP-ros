@@ -22,6 +22,7 @@ namespace jps_maze_game
         bool has_flag = false;
         coord_t x, y;
         std::string player_name;
+        bool turn = true;
 
     public:
         Player(const player_id_t player_id, const team_t team_id, const std::string &player_name);
@@ -38,6 +39,10 @@ namespace jps_maze_game
         {
             has_flag = new_flag;
         }
+        constexpr void set_turn(bool new_turn)
+        {
+            turn = new_turn;
+        }
 
         constexpr coord_t get_x() const
         {
@@ -50,6 +55,10 @@ namespace jps_maze_game
         constexpr team_t get_team() const
         {
             return team;
+        }
+        constexpr bool get_turn() const
+        {
+            return turn;
         }
 
         ~Player() = default;
