@@ -6,6 +6,7 @@ $(env node_ns):
       create_player_topic: "$(env create_player_topic)"
       status_topic: "$(env status_topic)"
       move_player_topic: "$(env move_player_topic)"
+      next_round_topic: "$(env next_round_topic)"
       team: $(env team_A)
       player_name: "$(env player_name)"
       board_path: "$(env board_path)"

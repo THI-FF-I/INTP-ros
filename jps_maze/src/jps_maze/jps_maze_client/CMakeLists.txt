@@ -1,4 +1,6 @@
 add_executable(jps_maze_client src/client.cpp)
 target_include_directories(jps_maze_client PRIVATE
         include)
-ament_target_dependencies(jps_maze_client rclcpp jps_maze_msgs)
+target_link_libraries(jps_maze_client
+        jps_maze_game)
+ament_target_dependencies(jps_maze_client rclcpp std_msgs jps_maze_msgs)

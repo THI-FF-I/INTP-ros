@@ -5,6 +5,7 @@
 #include "jps_maze_server/server.hpp"
 
 using namespace std::placeholders;
+using namespace std::literals::chrono_literals;
 
 namespace jps_maze_server {
     Server::Server(const rclcpp::NodeOptions &node_options)
@@ -16,6 +17,7 @@ namespace jps_maze_server {
         this->declare_parameter<std::string>("create_player_topic");
         this->declare_parameter<std::string>("status_topic");
         this->declare_parameter<std::string>("move_player_topic");
+        this->declare_parameter<std::string>("next_round_topic");
         this->declare_parameter<std::string>("board_path");
 
         // Get Parameters
@@ -24,13 +26,19 @@ namespace jps_maze_server {
         const std::string create_player_topic = this->get_parameter("create_player_topic").as_string();
         const std::string status_topic = this->get_parameter("status_topic").as_string();
         const std::string move_player_topic = this->get_parameter("move_player_topic").as_string();
+        const std::string next_round_topic = this->get_parameter("next_round_topic").as_string();
         const std::string board_path = this->get_parameter("board_path").as_string();
 
         RCLCPP_INFO(this->get_logger(), "Got all required parameters");
 
+        this->timer_cb_group = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
+        this->timer = this->create_wall_timer(1s, std::bind(&Server::timer_cb, this), this->timer_cb_group);
+        this->timer->cancel();
+
         // Register Publisher
         this->team_a_status_pub = this->create_publisher<jps_maze_msgs::msg::Status>(this->get_effective_namespace() + "/team_A" + status_topic, 10);
         this->team_b_status_pub = this->create_publisher<jps_maze_msgs::msg::Status>(this->get_effective_namespace() + "/team_B" + status_topic, 10);
+        this->next_round_pub = this->create_publisher<std_msgs::msg::Empty>(next_round_topic, 10);
 
         RCLCPP_INFO(this->get_logger(), "Registered publishers");
 
@@ -41,7 +49,7 @@ namespace jps_maze_server {
         RCLCPP_INFO(this->get_logger(), "Registered services");
 
         // Init Game
-        this->game = jps_maze_game::Game(width, height, board_path, this->get_logger());
+        this->game = jps_maze_game::Game(width, height, board_path, 0,this->get_logger());
 
         RCLCPP_INFO(this->get_logger(), "Init of game object done");
 
@@ -51,7 +59,6 @@ namespace jps_maze_server {
     void Server::create_player_cb(const std::shared_ptr<jps_maze_msgs::srv::CreatePlayer::Request> req,
                                   std::shared_ptr<jps_maze_msgs::srv::CreatePlayer::Response> res) {
         RCLCPP_INFO(this->get_logger(), "Got new player spawn request with name: \"%s\" and team: %c", req->name.c_str(), req->team.team == req->team.TEAM_A ? 'A': 'B');
-
         this->game.add_player(req->name, static_cast<jps_maze_game::team_t>(req->team.team));
 
         res->width = this->game.get_width();
@@ -74,9 +81,16 @@ namespace jps_maze_server {
             this->game.get_status(jps_maze_game::PLAYER_TEAM_B, status);
             status.header.stamp = this->now();
             this->team_b_status_pub->publish(status);
-            this->game.next_round();
+            this->timer->reset();
         }
         res->header.stamp = this->now();
+    }
+
+    void Server::timer_cb() {
+        this->timer->cancel();
+        this->game.next_round();
+        this->next_round_pub->publish(std_msgs::msg::Empty());
+        RCLCPP_INFO(this->get_logger(), "Timer expired started next round");
     }
 }
 
@@ -85,5 +99,8 @@ int main(int argc, char **argv) {
     node_options.start_parameter_event_publisher(false);
     node_options.start_parameter_services(false);
     rclcpp::init(argc, argv);
-    rclcpp::spin(std::make_shared<jps_maze_server::Server>(node_options));
+    rclcpp::executors::MultiThreadedExecutor executor;
+    auto server_node = std::make_shared<jps_maze_server::Server>(node_options);
+    executor.add_node(server_node);
+    executor.spin();
 }
