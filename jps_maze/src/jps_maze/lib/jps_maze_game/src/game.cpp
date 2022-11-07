@@ -2,7 +2,7 @@
 
 namespace jps_maze_game
 {
-    Game::Game(const coord_t width, const coord_t height, const std::string_view board_path, const uint16_t Pupdate_cycle_ms, const rclcpp::Logger logger) : board(width, height), logger(logger), round_cnt(0), update_cycle(Pupdate_cycle_ms)
+    Game::Game(const coord_t width, const coord_t height, const std::string_view board_path, const rclcpp::Logger logger) : board(width, height), logger(logger), round_cnt(0)
     {
         this->board.load_board_from_file(board_path);
         std::random_device rd;
@@ -17,8 +17,17 @@ namespace jps_maze_game
         return this->players.at(player_id);
     }
 
-    bool Game::move_player(const player_id_t player_id, const direction_t direction)
-    {
+    bool Game::move_player(const player_id_t player_id, const direction_t direction) // TODO Work in Progress
+    {/*
+        if(board.player_move(direction, players[player_id]) == true)
+        {
+            players[player_id].take_turn();
+            return true;
+        }
+        else
+        {
+            return false;
+        }*/
     }
 
     bool Game::next_round_ready() const

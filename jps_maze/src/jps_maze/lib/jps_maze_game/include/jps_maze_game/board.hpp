@@ -3,6 +3,8 @@
 
 #include <vector>
 #include <inttypes.h>
+#include <iostream>
+#include <fstream>
 
 #include "jps_maze_msgs/msg/position.hpp"
 
@@ -24,9 +26,15 @@ namespace jps_maze_game
     public:
         Board(const coord_t width, const coord_t height);
 
-        Board(){};
+        Board(const std::string_view filename)
+        {
+            load_board_from_file(filename);
+        }
+
+        Board() {};
 
         bool load_board_from_file(const std::string_view filename);
+        void print_board() const;
 
         game_block_type_t get_block_state(const coord_t coord_x, const coord_t coord_y) const;
         void map_area(const coord_t coord_x, const coord_t coord_y, team_t team);

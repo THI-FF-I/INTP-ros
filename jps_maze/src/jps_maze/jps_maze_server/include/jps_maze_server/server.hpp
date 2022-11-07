@@ -12,6 +12,7 @@
 #include "jps_maze_msgs/srv/move_player.hpp"
 
 #include "jps_maze_game/game.hpp"
+#include "jps_maze_game/board.hpp"
 
 namespace jps_maze_server {
 

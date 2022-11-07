@@ -24,10 +24,119 @@ namespace jps_maze_game
 
     bool Board::load_board_from_file(const std::string_view filename)
     {
-        // Load file and store contents and dimensions in board
+        // TODO Load file and store contents and dimensions in board
 
-        // Remove compiler warnings ;)
-        return !filename.empty();
+        std::ifstream file(filename.data());
+        std::string line = "";
+
+        if (file.is_open())
+        {
+            std::string line = "";
+            coord_t h = 0, w = 0;
+            std::vector<std::vector<game_block_t>> new_board;
+
+            while (std::getline(file, line))
+            {
+                h++;
+                coord_t w_tmp = 0;
+                std::vector<game_block_t> new_width;
+
+                for(size_t i = 0; i < line.length(); i += 2)
+                {
+                    game_block_t tmp(GAME_BLOCK_EMPTY);
+                    tmp.mapped_team_a = false;
+                    tmp.mapped_team_b = false;
+                    w_tmp++;
+
+                    switch (line[i])
+                    {
+                        case '0':
+                            tmp.game_block_type = GAME_BLOCK_EMPTY;
+                            break;
+                        case '1':
+                            tmp.game_block_type = GAME_BLOCK_WALL;
+                            break;
+                        case '2':
+                            tmp.game_block_type = GAME_BLOCK_PORTAL;
+                            break;
+                        case '3':
+                            tmp.game_block_type = GAME_BLOCK_FLAG_A;
+                            break;
+                        case '4':
+                            tmp.game_block_type = GAME_BLOCK_FLAG_B;
+                            break;
+                        case '5':
+                            tmp.game_block_type = GAME_BLOCK_BASE_A;
+                            break;
+                        case '6':
+                            tmp.game_block_type = GAME_BLOCK_BASE_B;
+                            break;
+                        default:
+                            tmp.game_block_type = GAME_BLOCK_EMPTY;
+                            break;
+                    }
+
+                    new_width.push_back(tmp);
+                }
+
+                if(w > 0 && w != w_tmp) throw "[Board::load_board_from_file] file syntax is incorrect";
+                w = w_tmp;
+
+                new_board.push_back(new_width);
+            }
+
+            file.close();
+
+            board = new_board;
+            width = w;
+            height = h;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    void Board::print_board() const
+    {
+        std::ofstream file("board.output");
+
+        int width2 = width;
+        int height2 = height;
+        file << "Board: " << width2 << "x" << height2 << "\n";
+
+        for (int i = 0; i < height; i++)
+        {
+            for (int n = 0; n < width; n++)
+            {
+                std::string res = "";
+
+                switch (board.at(i).at(n).game_block_type)
+                {
+                case GAME_BLOCK_EMPTY:
+                    if (board.at(i).at(n).mapped_team_a == true)
+                        res = "-";
+                    else
+                        res = " ";
+                    break;
+                case GAME_BLOCK_WALL:
+                    if (board.at(i).at(n).mapped_team_a == true)
+                        res = "X";
+                    else
+                        res = "*";
+                    break;
+                default:
+                    res = "o";
+                }
+
+                file << res;
+            }
+
+            file << "\n";
+        }
+
+        file.close();
     }
 
     game_block_type_t Board::get_block_state(const coord_t coord_x, const coord_t coord_y) const
