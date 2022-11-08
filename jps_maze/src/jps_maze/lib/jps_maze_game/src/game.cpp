@@ -2,7 +2,7 @@
 
 namespace jps_maze_game
 {
-    Game::Game(const std::string_view board_path, uint8_t Pplayer_count_per_team, rclcpp::Logger logger) : board(board_path, logger.get_child("board")), logger(logger), round_cnt(0), player_count_per_team(Pplayer_count_per_team)
+    Game::Game(const std::string_view board_path, uint8_t Pplayer_count_per_team, rclcpp::Logger logger) : board(board_path, logger.get_child("board")), player_count_per_team(Pplayer_count_per_team), logger(logger), round_cnt(0)
     {
         std::random_device rd;
         this->id_gen = std::mt19937_64(rd());
@@ -19,7 +19,27 @@ namespace jps_maze_game
 
     bool Game::ready() const
     {
-        return false;
+        if(player_count_per_team <= 0) return false;
+
+        uint8_t player_count_team_a = 0, player_count_team_b = 0;
+
+        for(const auto &m: players)
+        {
+            if(m.second.get_team() == PLAYER_TEAM_A)
+            {
+                player_count_team_a++;
+            }
+            else if(m.second.get_team() == PLAYER_TEAM_B)
+            {
+                player_count_team_b++;
+            }
+        }
+
+        if(player_count_team_a == player_count_team_b && player_count_team_a == player_count_per_team && player_count_team_b == player_count_per_team)
+        {
+            return true;
+        }
+        else return false;
     }
 
     bool Game::move_player(const player_id_t player_id, const direction_t direction)
