@@ -2,7 +2,7 @@
 
 namespace jps_maze_game
 {
-    Game::Game(const std::string_view board_path, rclcpp::Logger logger) : board(board_path, logger.get_child("board")), logger(logger), round_cnt(0)
+    Game::Game(const std::string_view board_path, uint8_t Pplayer_count_per_team, rclcpp::Logger logger) : board(board_path, logger.get_child("board")), logger(logger), round_cnt(0), player_count_per_team(Pplayer_count_per_team)
     {
         std::random_device rd;
         this->id_gen = std::mt19937_64(rd());
@@ -17,13 +17,14 @@ namespace jps_maze_game
         return this->players.at(player_id);
     }
 
-    bool Game::ready() const {
+    bool Game::ready() const
+    {
         return false;
     }
 
     bool Game::move_player(const player_id_t player_id, const direction_t direction)
     {
-        if(board.player_move(direction, players.at(player_id)) == true)
+        if (board.player_move(direction, players.at(player_id)) == true)
         {
             players.at(player_id).set_turn(false);
             return true;
@@ -36,9 +37,10 @@ namespace jps_maze_game
 
     bool Game::next_round_ready() const // Returns true if next round is ready to start and false if we need to keep waiting
     {
-        for(const auto &m: players)
+        for (const auto &m : players)
         {
-            if(m.second.get_turn() == true) return false;
+            if (m.second.get_turn() == true)
+                return false;
         }
 
         // TODO Check for win
@@ -48,7 +50,7 @@ namespace jps_maze_game
 
     void Game::next_round()
     {
-        for(auto &m: players) // Reset all turn flags
+        for (auto &m : players) // Reset all turn flags
         {
             m.second.set_turn(false);
         }

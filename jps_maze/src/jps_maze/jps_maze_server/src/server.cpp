@@ -45,7 +45,7 @@ namespace jps_maze_server {
         RCLCPP_INFO(this->get_logger(), "Registered services");
 
         // Init Game
-        this->game = jps_maze_game::Game(board_path, this->get_logger().get_child("game"));
+        this->game = jps_maze_game::Game(board_path, 0, this->get_logger().get_child("game"));
 
         RCLCPP_INFO(this->get_logger(), "Init of game object done");
 

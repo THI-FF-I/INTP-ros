@@ -26,9 +26,10 @@ namespace jps_maze_game
         std::mt19937_64 id_gen;
         uint16_t round_cnt;
         uint16_t update_cycle;
+        uint8_t player_count_per_team;
 
     public:
-        Game(const std::string_view board_path, const rclcpp::Logger logger);
+        Game(const std::string_view board_path, uint8_t Pplayer_count_per_team, const rclcpp::Logger logger);
 
         Game(const rclcpp::Logger logger) : logger(logger), board(logger){};
 
