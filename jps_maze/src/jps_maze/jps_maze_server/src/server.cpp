@@ -10,7 +10,6 @@ using namespace std::literals::chrono_literals;
 namespace jps_maze_server {
     Server::Server(const rclcpp::NodeOptions &node_options)
         : rclcpp::Node("server_node", node_options) , game(this->get_logger()){
-        RCLCPP_FATAL(this->get_logger(), "Fatal");
         // Declare Parameters
         this->declare_parameter<std::string>("create_player_topic");
         this->declare_parameter<std::string>("status_topic");
