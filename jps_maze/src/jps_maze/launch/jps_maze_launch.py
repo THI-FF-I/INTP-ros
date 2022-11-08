@@ -13,21 +13,22 @@ def parse_arguments():
     parser.add_argument('--ns', '--node_ns', type=str, dest='node_ns', required=False, default='jps_maze', help='Set the namespace to use')
     parser.add_argument('-b', '--board_no', type=int, choices=range(0,1), dest='board_no', required=False, default=0, help='Select the index for the board to use')
     parser.add_argument('-d', '--debug', dest='debug', action='store_true', required=False, default=False, help='Set the log-level to debug for more verbose logging')
+    parser.add_argument('--ppt', '--player_per_team', type=int, dest='player_per_team', required=False, default=2, help='Specify the amount of players per team')
     parser.print_usage()
     args = parser.parse_args(input('Enter options:\n').split())
     if not args.start_server:
         if args.team:
             if args.name:
-                return args.node_ns, args.start_server, True if args.team.upper() == 'A' else  False, args.name, args.board_no, args.debug
+                return args.node_ns, args.start_server, True if args.team.upper() == 'A' else  False, args.name, args.board_no, args.debug, args.player_per_team
             else:
                 parser.error('Missing player name')
         else:
             parser.error('Missing team selection')
     else:
-        return args.node_ns, args.start_server, True, 'server', args.board_no, args.debug
+        return args.node_ns, args.start_server, True, 'server', args.board_no, args.debug, args.player_per_team
 
 def generate_launch_description():
-    node_ns, start_server, team_A, player_name, board_no, debug = parse_arguments()
+    node_ns, start_server, team_A, player_name, board_no, debug, player_per_team = parse_arguments()
     package = 'jps_maze'
     if start_server:
         node_name = 'server'
@@ -49,6 +50,7 @@ def generate_launch_description():
     os.environ['team_A'] = str(team_A)
     os.environ['player_name'] = player_name
     os.environ['board_path'] = get_share_file_path_from_package(package_name=package, file_name='board' + str(board_no) + '.csv')
+    os.environ['player_per_team'] = str(player_per_team)
     if debug:
         ros_arguments=['--log-level', 'DEBUG']
     else:
