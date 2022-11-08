@@ -153,6 +153,8 @@ namespace jps_maze_game
 
     bool Board::player_move(const direction_t dir, Player &player)
     {
+        if(player.get_turn() == false) return false;
+
         coord_t new_x = player.get_x();
         coord_t new_y = player.get_y();
 

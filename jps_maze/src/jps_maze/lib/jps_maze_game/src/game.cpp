@@ -85,6 +85,8 @@ namespace jps_maze_game
 
     bool Game::move_player(const player_id_t player_id, const direction_t direction)
     {
+        if(players.at(player_id).get_turn() == false) return false;
+        
         if (board.player_move(direction, players.at(player_id)) == true)
         {
             players.at(player_id).set_turn(false);
