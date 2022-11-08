@@ -57,4 +57,8 @@ CATKIN_IGNORE
 install/
 log/
 
+# Node
+node_modules/
+package-lock.json
+
 !/jps_maze/src/jps_maze/lib
