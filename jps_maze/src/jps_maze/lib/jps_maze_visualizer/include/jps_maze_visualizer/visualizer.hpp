@@ -13,7 +13,8 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
-#include <netinet/in.h>
+/*#include <netinet/in.h>*/
+#include <netdb.h>
 
 #include <string>
 
@@ -26,7 +27,8 @@ namespace jps_maze_visualizer {
 
     class Visualizer {
     public:
-        Visualizer(const std::string_view host_name, const uint16_t port, const uint8_t width, const uint8_t height, block_t ***frame_buffer, rclcpp::Logger logger);
+        Visualizer(const std::string_view host_name, const std::string_view port, const uint8_t width, const uint8_t height, block_t ***frame_buffer, rclcpp::Logger logger);
+        Visualizer(rclcpp::Logger logger) : logger(logger) {}
         ~Visualizer();
         void re_draw();
     private:
@@ -35,7 +37,7 @@ namespace jps_maze_visualizer {
         uint8_t **frame_buffer;
         rclcpp::Logger logger;
         int network_socket;
-        struct sockaddr_in server_address;
+        struct sockaddr server_address;
     };
 
 }

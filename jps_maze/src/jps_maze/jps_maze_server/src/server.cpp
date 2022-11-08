@@ -9,13 +9,15 @@ using namespace std::literals::chrono_literals;
 
 namespace jps_maze_server {
     Server::Server(const rclcpp::NodeOptions &node_options)
-        : rclcpp::Node("server_node", node_options) , game(this->get_logger()){
+        : rclcpp::Node("server_node", node_options) , game(this->get_logger()), visualizer(this->get_logger()) {
         // Declare Parameters
         this->declare_parameter<std::string>("create_player_topic");
         this->declare_parameter<std::string>("status_topic");
         this->declare_parameter<std::string>("move_player_topic");
         this->declare_parameter<std::string>("next_round_topic");
         this->declare_parameter<std::string>("board_path");
+        this->declare_parameter<std::string>("host_name");
+        this->declare_parameter<std::string>("target_port");
         this->declare_parameter<int64_t>("player_per_team");
 
         // Get Parameters
@@ -24,6 +26,8 @@ namespace jps_maze_server {
         const std::string move_player_topic = this->get_parameter("move_player_topic").as_string();
         const std::string next_round_topic = this->get_parameter("next_round_topic").as_string();
         const std::string board_path = this->get_parameter("board_path").as_string();
+        const std::string host_name = this->get_parameter("host_name").as_string();
+        const std::string target_port = this->get_parameter("target_port").as_string();
         const uint8_t player_per_team = this->get_parameter("player_per_team").as_int();
 
         RCLCPP_INFO(this->get_logger(), "Got all required parameters");
@@ -49,6 +53,11 @@ namespace jps_maze_server {
         this->game = jps_maze_game::Game(board_path, player_per_team, this->get_logger().get_child("game"));
 
         RCLCPP_INFO(this->get_logger(), "Init of game object done");
+
+        //Init visualizer
+        this->visualizer = jps_maze_visualizer::Visualizer(host_name, target_port, this->game.get_width(), this->game.get_height(), &this->frame_buffer, this->get_logger().get_child("visualizer"));
+
+        RCLCPP_INFO(this->get_logger(), "Init of visualizer done");
 
         RCLCPP_INFO(this->get_logger(), "Init of Node done");
     }

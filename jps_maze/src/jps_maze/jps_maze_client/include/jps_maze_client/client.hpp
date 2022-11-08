@@ -16,6 +16,8 @@
 
 #include "jps_maze_game/game.hpp"
 
+#include "jps_maze_visualizer/visualizer.hpp"
+
 namespace jps_maze_client {
 
     class Client : public rclcpp::Node {
@@ -36,6 +38,8 @@ namespace jps_maze_client {
 
         // Attributes
         std::string player_name;
+        jps_maze_visualizer::Visualizer visualizer;
+        jps_maze_visualizer::block_t **frame_buffer;
     };
 }
 

@@ -17,6 +17,8 @@
 
 #include "jps_maze_game/game.hpp"
 
+#include "jps_maze_visualizer/visualizer.hpp"
+
 namespace jps_maze_server {
 
     class Server : public rclcpp::Node {
@@ -49,6 +51,8 @@ namespace jps_maze_server {
 
         // Attributes
         jps_maze_game::Game game;
+        jps_maze_visualizer::Visualizer visualizer;
+        jps_maze_visualizer::block_t **frame_buffer;
     };
 }
 
