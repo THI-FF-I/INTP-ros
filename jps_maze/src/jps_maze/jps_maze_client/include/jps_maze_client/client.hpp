@@ -10,6 +10,7 @@
 #include "std_msgs/msg/empty.hpp"
 
 #include "jps_maze_msgs/msg/status.hpp"
+#include "jps_maze_msgs/msg/team.hpp"
 #include "jps_maze_msgs/srv/create_player.hpp"
 #include "jps_maze_msgs/srv/move_player.hpp"
 
@@ -27,7 +28,6 @@ namespace jps_maze_client {
         std::shared_ptr<rclcpp::Subscription<std_msgs::msg::Empty>> next_round_sub;
 
         // Clients
-        std::shared_ptr<rclcpp::Client<jps_maze_msgs::srv::CreatePlayer>> create_player_clt;
         std::shared_ptr<rclcpp::Client<jps_maze_msgs::srv::MovePlayer>> move_player_clt;
 
         // Callbacks

@@ -49,7 +49,7 @@ namespace jps_maze_server {
         RCLCPP_INFO(this->get_logger(), "Registered services");
 
         // Init Game
-        this->game = jps_maze_game::Game(width, height, board_path, 0,this->get_logger());
+        this->game = jps_maze_game::Game(width, height, board_path, this->get_logger());
 
         RCLCPP_INFO(this->get_logger(), "Init of game object done");
 
@@ -88,9 +88,9 @@ namespace jps_maze_server {
 
     void Server::timer_cb() {
         this->timer->cancel();
+        RCLCPP_INFO(this->get_logger(), "Timer expired starting next round");
         this->game.next_round();
         this->next_round_pub->publish(std_msgs::msg::Empty());
-        RCLCPP_INFO(this->get_logger(), "Timer expired started next round");
     }
 }
 

@@ -36,10 +36,23 @@ namespace jps_maze_client {
         RCLCPP_INFO(this->get_logger(), "Registered subscribers");
 
         // Register Clients
-        this->create_player_clt = this->create_client<jps_maze_msgs::srv::CreatePlayer>(create_player_topic);
+        std::shared_ptr<rclcpp::Client<jps_maze_msgs::srv::CreatePlayer>> create_player_clt = this->create_client<jps_maze_msgs::srv::CreatePlayer>(create_player_topic);
         this->move_player_clt = this->create_client<jps_maze_msgs::srv::MovePlayer>(move_player_topic);
 
         RCLCPP_INFO(this->get_logger(), "Registered clients");
+
+        {
+            RCLCPP_INFO(this->get_logger(), "Requesting player with name: \"%s\"", player_name.c_str());
+            auto req = std::make_shared<jps_maze_msgs::srv::CreatePlayer::Request>();
+            req->name = player_name;
+            req->team.team = team_A ? jps_maze_msgs::msg::Team::TEAM_A : jps_maze_msgs::msg::Team::TEAM_B;
+            auto fut = create_player_clt->async_send_request(req);
+            rclcpp::spin_until_future_complete(this->get_node_base_interface(), fut);
+            std::shared_ptr<jps_maze_msgs::srv::CreatePlayer::Response> res = fut.get();
+            RCLCPP_INFO(this->get_logger(), "Got back Player with id: %ld, at x: %d y: %d", res->player.id,
+                        res->player.pos.x, res->player.pos.y);
+            RCLCPP_INFO(this->get_logger(), "Game board width: %d, height: %d", res->width, res->height);
+        }
 
         RCLCPP_INFO(this->get_logger(), "Init of Node done");
     }
@@ -58,5 +71,6 @@ int main(int argc, char **argv) {
     node_options.start_parameter_event_publisher(false);
     node_options.start_parameter_services(false);
     rclcpp::init(argc, argv);
-    rclcpp::spin(std::make_shared<jps_maze_client::Client>(node_options));
+    auto client_node = std::make_shared<jps_maze_client::Client>(node_options);
+    rclcpp::spin(client_node);
 }
