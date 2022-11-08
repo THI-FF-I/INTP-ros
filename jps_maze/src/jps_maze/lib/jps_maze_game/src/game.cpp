@@ -2,11 +2,11 @@
 
 namespace jps_maze_game
 {
-    Game::Game(const coord_t width, const coord_t height, const std::string_view board_path, const rclcpp::Logger logger) : board(width, height), logger(logger), round_cnt(0)
+    Game::Game(const std::string_view board_path, rclcpp::Logger logger) : board(board_path, logger.get_child("board")), logger(logger), round_cnt(0)
     {
-        this->board.load_board_from_file(board_path);
         std::random_device rd;
         this->id_gen = std::mt19937_64(rd());
+        RCLCPP_INFO(this->logger, "Init of Game done");
     }
 
     Player &Game::add_player(const std::string &name, const team_t team)

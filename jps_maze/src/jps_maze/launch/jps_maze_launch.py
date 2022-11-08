@@ -11,30 +11,23 @@ def parse_arguments():
     parser.add_argument('-t', '--team', type=str, choices=['A', 'a', 'B', 'b'], dest='team', required=False, help='If client mode is chosen, select the team to play on')
     parser.add_argument('-n', '--name', type=str, dest='name', required=False, help='If client mode is chosen, select the player name')
     parser.add_argument('--ns', '--node_ns', type=str, dest='node_ns', required=False, default='jps_maze', help='Set the namespace to use')
-    parser.add_argument('-r', '--resolution', type=str, dest='res', metavar='<width>x<height>', required=False, default='200x150', help='Resolution of the maze')
     parser.add_argument('-b', '--board_no', type=int, choices=range(0,1), dest='board_no', required=False, default=0, help='Select the index for the board to use')
     parser.add_argument('-d', '--debug', dest='debug', action='store_true', required=False, default=False, help='Set the log-level to debug for more verbose logging')
     parser.print_usage()
     args = parser.parse_args(input('Enter options:\n').split())
-    matches = re.search('^([0-9]+)x([0-9]+)$', args.res)
-    if matches:
-        width = matches.group(1)
-        height = matches.group(2)
-        if not args.start_server:
-            if args.team:
-                if args.name:
-                    return args.node_ns, width, height, args.start_server, True if args.team.upper() == 'A' else  False, args.name, args.board_no, args.debug
-                else:
-                    parser.error('Missing player name')
+    if not args.start_server:
+        if args.team:
+            if args.name:
+                return args.node_ns, args.start_server, True if args.team.upper() == 'A' else  False, args.name, args.board_no, args.debug
             else:
-                parser.error('Missing team selection')
+                parser.error('Missing player name')
         else:
-            return args.node_ns, width, height, args.start_server, True, 'server', args.board_no, args.debug
+            parser.error('Missing team selection')
     else:
-        parser.error('Invalid formatting of resolution')
+        return args.node_ns, args.start_server, True, 'server', args.board_no, args.debug
 
 def generate_launch_description():
-    node_ns, width, height, start_server, team_A, player_name, board_no, debug = parse_arguments()
+    node_ns, start_server, team_A, player_name, board_no, debug = parse_arguments()
     package = 'jps_maze'
     if start_server:
         node_name = 'server'
@@ -48,8 +41,6 @@ def generate_launch_description():
         else:
             team = 'team_B'
         os.environ['status_topic'] = '/' + node_ns +'/' +  team + '/status'
-    os.environ['width'] = width
-    os.environ['height'] = height
     os.environ['node_ns'] = node_ns
     os.environ['node_name'] = node_name
     os.environ['create_player_topic'] = '/' + node_ns + '/create_player'
@@ -58,7 +49,6 @@ def generate_launch_description():
     os.environ['team_A'] = str(team_A)
     os.environ['player_name'] = player_name
     os.environ['board_path'] = get_share_file_path_from_package(package_name=package, file_name='board' + str(board_no) + '.csv')
-    sys.argv = sys.argv[:1]
     if debug:
         ros_arguments=['--log-level', 'DEBUG']
     else:

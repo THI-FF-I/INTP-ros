@@ -1,8 +1,6 @@
 $(env node_ns):
   $(env node_name):
     ros__parameters:
-      height: $(env height)
-      width: $(env width)
       create_player_topic: "$(env create_player_topic)"
       status_topic: "$(env status_topic)"
       move_player_topic: "$(env move_player_topic)"

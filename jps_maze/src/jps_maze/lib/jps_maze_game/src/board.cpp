@@ -2,27 +2,14 @@
 
 namespace jps_maze_game
 {
-    Board::Board(const coord_t width, const coord_t height) : width(width), height(height) // Creates empty board
+
+    Board::Board(const std::string_view filename, rclcpp::Logger logger) : logger(logger)// Creates board from file
     {
-        board.clear();
-        board.reserve(height);
-
-        for (int y = 0; y < height; y++)
-        {
-            std::vector<game_block_t> new_y;
-            new_y.reserve(width);
-
-            for (int x = 0; x < width; x++)
-            {
-                game_block_t tmp(GAME_BLOCK_EMPTY);
-                new_y.push_back(tmp);
-            }
-
-            board.push_back(new_y);
-        }
+        RCLCPP_INFO(this->logger, "Initiating board with file: \"%s\"", filename.data());
+        load_board_from_file(filename);
     }
-
-    bool Board::load_board_from_file(const std::string_view filename) // Creates board from file
+    //TODO throw on error
+    bool Board::load_board_from_file(const std::string_view filename)// Creates board from file
     {
         std::ifstream file(filename.data());
         std::string line = "";

@@ -11,8 +11,10 @@ find_package(rosidl_default_generators REQUIRED)
 find_package(std_msgs REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
+        "msg/Block.msg"
         "msg/Player.msg"
         "msg/Position.msg"
+        "msg/Row.msg"
         "msg/Status.msg"
         "msg/Team.msg"
 

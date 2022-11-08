@@ -28,9 +28,9 @@ namespace jps_maze_game
         uint16_t update_cycle;
 
     public:
-        Game(const coord_t width, const coord_t height, const std::string_view board_path, const rclcpp::Logger logger);
+        Game(const std::string_view board_path, const rclcpp::Logger logger);
 
-        Game(const rclcpp::Logger logger) : logger(logger){};
+        Game(const rclcpp::Logger logger) : logger(logger), board(logger){};
 
         ~Game() = default;
 

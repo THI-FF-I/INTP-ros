@@ -6,6 +6,9 @@
 #include <iostream>
 #include <fstream>
 
+#include "rclcpp/logger.hpp"
+#include "rclcpp/logging.hpp"
+
 #include "jps_maze_msgs/msg/position.hpp"
 
 namespace jps_maze_game {
@@ -24,16 +27,13 @@ namespace jps_maze_game
         coord_t width, height;
         game_flag_state_t flag_a = GAME_FLAG_STATE_IN_BASE;
         game_flag_state_t flag_b = GAME_FLAG_STATE_IN_BASE;
+        rclcpp::Logger logger;
 
     public:
-        Board(const coord_t width, const coord_t height); // Creates empty board
 
-        Board(const std::string_view filename) // Creates board from file
-        {
-            load_board_from_file(filename);
-        }
+        Board(const std::string_view filename, rclcpp::Logger logger);
 
-        Board() {};
+        Board(rclcpp::Logger logger) : logger(logger) {};
 
         bool load_board_from_file(const std::string_view filename);
         void print_board() const;

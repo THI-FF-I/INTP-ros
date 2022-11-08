@@ -12,8 +12,6 @@ namespace jps_maze_server {
         : rclcpp::Node("server_node", node_options) , game(this->get_logger()){
 
         // Declare Parameters
-        this->declare_parameter<int64_t>("height");
-        this->declare_parameter<int64_t>("width");
         this->declare_parameter<std::string>("create_player_topic");
         this->declare_parameter<std::string>("status_topic");
         this->declare_parameter<std::string>("move_player_topic");
@@ -21,8 +19,6 @@ namespace jps_maze_server {
         this->declare_parameter<std::string>("board_path");
 
         // Get Parameters
-        const uint8_t height = this->get_parameter("height").as_int();
-        const uint8_t width = this->get_parameter("width").as_int();
         const std::string create_player_topic = this->get_parameter("create_player_topic").as_string();
         const std::string status_topic = this->get_parameter("status_topic").as_string();
         const std::string move_player_topic = this->get_parameter("move_player_topic").as_string();
@@ -49,7 +45,7 @@ namespace jps_maze_server {
         RCLCPP_INFO(this->get_logger(), "Registered services");
 
         // Init Game
-        this->game = jps_maze_game::Game(width, height, board_path, this->get_logger());
+        this->game = jps_maze_game::Game(board_path, this->get_logger().get_child("game"));
 
         RCLCPP_INFO(this->get_logger(), "Init of game object done");
 
@@ -120,4 +116,5 @@ int main(int argc, char **argv) {
     auto server_node = std::make_shared<jps_maze_server::Server>(node_options);
     executor.add_node(server_node);
     executor.spin();
+    return EXIT_SUCCESS;
 }

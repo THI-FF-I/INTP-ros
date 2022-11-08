@@ -1,4 +1,4 @@
-add_executable(jps_maze_server src/server.cpp ../lib/jps_maze_game/src/board.cpp ../lib/jps_maze_game/src/player.cpp ../lib/jps_maze_game/src/game.cpp)
+add_executable(jps_maze_server src/server.cpp)
 target_include_directories(jps_maze_server PRIVATE
         include)
 target_link_libraries(jps_maze_server

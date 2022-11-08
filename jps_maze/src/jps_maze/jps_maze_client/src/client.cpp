@@ -74,4 +74,5 @@ int main(int argc, char **argv) {
     rclcpp::init(argc, argv);
     auto client_node = std::make_shared<jps_maze_client::Client>(node_options);
     rclcpp::spin(client_node);
+    return EXIT_SUCCESS;
 }
