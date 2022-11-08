@@ -23,6 +23,9 @@ namespace jps_maze_server {
         Server(const rclcpp::NodeOptions &node_options = rclcpp::NodeOptions());
 
     private:
+
+        void send_status();
+
         // Callbackgroups
         std::shared_ptr<rclcpp::CallbackGroup> timer_cb_group;
 

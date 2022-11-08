@@ -56,13 +56,37 @@ namespace jps_maze_server {
         RCLCPP_INFO(this->get_logger(), "Init of Node done");
     }
 
+    void Server::send_status() {
+        jps_maze_msgs::msg::Status status;
+        this->game.get_status(jps_maze_game::PLAYER_TEAM_A, status);
+        status.header.stamp = this->now();
+        this->team_a_status_pub->publish(status);
+        this->game.get_status(jps_maze_game::PLAYER_TEAM_B, status);
+        status.header.stamp = this->now();
+        this->team_b_status_pub->publish(status);
+        this->timer->reset();
+    }
+
     void Server::create_player_cb(const std::shared_ptr<jps_maze_msgs::srv::CreatePlayer::Request> req,
                                   std::shared_ptr<jps_maze_msgs::srv::CreatePlayer::Response> res) {
         RCLCPP_INFO(this->get_logger(), "Got new player spawn request with name: \"%s\" and team: %c", req->name.c_str(), req->team.team == req->team.TEAM_A ? 'A': 'B');
-        this->game.add_player(req->name, static_cast<jps_maze_game::team_t>(req->team.team));
 
+        jps_maze_game::Player player = this->game.add_player(req->name, static_cast<jps_maze_game::team_t>(req->team.team));
+        res->player.id = player.get_player_id();
+        res->player.team.team = static_cast<jps_maze_msgs::msg::Team::_team_type>(player.get_team());
+        res->player.color = player.get_color();
+        res->player.pos.x = player.get_x();
+        res->player.pos.y = player.get_y();
+        res->player.name = player.get_player_name();
+        res->player.has_flag = player.get_has_flag();
         res->width = this->game.get_width();
         res->height = this->game.get_height();
+
+        if(this->game.ready()) {
+            RCLCPP_INFO(this->get_logger(), "Game is ready unregister create_player service and sending first status");
+            this->create_player_srv.reset();
+            this->send_status();
+        }
 
         RCLCPP_INFO(this->get_logger(), "Returning player object with id: %ld at pos x: %d, y: %d", res->player.id, res->player.pos.x, res->player.pos.y);
         res->header.stamp = this->now();
@@ -74,14 +98,7 @@ namespace jps_maze_server {
         res->success = this->game.move_player(req->player_id, static_cast<jps_maze_game::direction_t>(req->dir));
         if(this->game.next_round_ready()) {
             RCLCPP_INFO(this->get_logger(), "Round %d finished sending status and moving on", this->game.get_round_cnt());
-            jps_maze_msgs::msg::Status status;
-            this->game.get_status(jps_maze_game::PLAYER_TEAM_A, status);
-            status.header.stamp = this->now();
-            this->team_a_status_pub->publish(status);
-            this->game.get_status(jps_maze_game::PLAYER_TEAM_B, status);
-            status.header.stamp = this->now();
-            this->team_b_status_pub->publish(status);
-            this->timer->reset();
+            this->send_status();
         }
         res->header.stamp = this->now();
     }

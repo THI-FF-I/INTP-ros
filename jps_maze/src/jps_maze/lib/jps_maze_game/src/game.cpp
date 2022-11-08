@@ -17,6 +17,10 @@ namespace jps_maze_game
         return this->players.at(player_id);
     }
 
+    bool Game::ready() const {
+        return false;
+    }
+
     bool Game::move_player(const player_id_t player_id, const direction_t direction)
     {
         if(board.player_move(direction, players.at(player_id)) == true)
