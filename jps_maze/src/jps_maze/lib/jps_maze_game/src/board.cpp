@@ -8,7 +8,7 @@ namespace jps_maze_game
         RCLCPP_INFO(this->logger, "Initiating board with file: \"%s\"", filename.data());
         load_board_from_file(filename);
     }
-    //TODO throw on error
+    
     bool Board::load_board_from_file(const std::string_view filename)// Creates board from file
     {
         std::ifstream file(filename.data());
@@ -79,6 +79,7 @@ namespace jps_maze_game
         }
         else
         {
+            throw "[Board::load_board_from_file] file could not be read";
             return false;
         }
     }
