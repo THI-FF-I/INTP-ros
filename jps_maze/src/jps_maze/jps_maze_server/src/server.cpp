@@ -25,7 +25,7 @@ namespace jps_maze_server {
         const std::string move_player_topic = this->get_parameter("move_player_topic").as_string();
         const std::string next_round_topic = this->get_parameter("next_round_topic").as_string();
         const std::string board_path = this->get_parameter("board_path").as_string();
-        const uint8_t player_per_team = this->get_parameter("board_path").as_int();
+        const uint8_t player_per_team = this->get_parameter("player_per_team").as_int();
 
         RCLCPP_INFO(this->get_logger(), "Got all required parameters");
 
