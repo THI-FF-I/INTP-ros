@@ -8,6 +8,7 @@
 #include <inttypes.h>
 
 #include "jps_maze_msgs/msg/position.hpp"
+#include "jps_maze_msgs/msg/block.hpp"
 
 namespace jps_maze_game
 {
@@ -24,14 +25,14 @@ namespace jps_maze_game
 
     typedef enum game_block_type : int8_t
     {
-        GAME_BLOCK_OUT_OF_BOARD = -1,
-        GAME_BLOCK_EMPTY = 0,
-        GAME_BLOCK_WALL,
-        GAME_BLOCK_PORTAL, // Player gets teleported to another random portal
-        GAME_BLOCK_FLAG_A,
-        GAME_BLOCK_FLAG_B,
-        GAME_BLOCK_BASE_A,
-        GAME_BLOCK_BASE_B,
+        GAME_BLOCK_OUT_OF_BOARD = jps_maze_msgs::msg::Block::OUT_OF_BOARD,
+        GAME_BLOCK_EMPTY = jps_maze_msgs::msg::Block::EMPTY,
+        GAME_BLOCK_WALL = jps_maze_msgs::msg::Block::WALL,
+        GAME_BLOCK_PORTAL = jps_maze_msgs::msg::Block::PORTAL, // Player gets teleported to another random portal
+        GAME_BLOCK_FLAG_A = jps_maze_msgs::msg::Block::FLAG_A,
+        GAME_BLOCK_FLAG_B = jps_maze_msgs::msg::Block::FLAG_B,
+        GAME_BLOCK_BASE_A = jps_maze_msgs::msg::Block::BASE_A,
+        GAME_BLOCK_BASE_B = jps_maze_msgs::msg::Block::BASE_B,
     } game_block_type_t;
 
     typedef struct game_block
