@@ -10,6 +10,7 @@
 
 #include "std_msgs/msg/empty.hpp"
 
+#include "jps_maze_msgs/msg/row.hpp"
 #include "jps_maze_msgs/msg/status.hpp"
 #include "jps_maze_msgs/srv/create_player.hpp"
 #include "jps_maze_msgs/srv/move_player.hpp"

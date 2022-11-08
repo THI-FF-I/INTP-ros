@@ -23,7 +23,7 @@ namespace jps_maze_game
     using coord_t = jps_maze_msgs::msg::Position::_x_type;
     static_assert(sizeof(jps_maze_msgs::msg::Position::_x_type) == sizeof(jps_maze_msgs::msg::Position::_y_type), "Position types for x and y differ!");
 
-    typedef enum game_block_type : int8_t
+    typedef enum game_block_type : jps_maze_msgs::msg::Block::_block_type_type
     {
         GAME_BLOCK_OUT_OF_BOARD = jps_maze_msgs::msg::Block::OUT_OF_BOARD,
         GAME_BLOCK_EMPTY = jps_maze_msgs::msg::Block::EMPTY,

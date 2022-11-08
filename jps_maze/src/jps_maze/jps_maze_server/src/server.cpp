@@ -10,7 +10,7 @@ using namespace std::literals::chrono_literals;
 namespace jps_maze_server {
     Server::Server(const rclcpp::NodeOptions &node_options)
         : rclcpp::Node("server_node", node_options) , game(this->get_logger()){
-
+        RCLCPP_FATAL(this->get_logger(), "Fatal");
         // Declare Parameters
         this->declare_parameter<std::string>("create_player_topic");
         this->declare_parameter<std::string>("status_topic");
@@ -56,10 +56,25 @@ namespace jps_maze_server {
 
     void Server::send_status() {
         jps_maze_msgs::msg::Status status;
-        this->game.get_status(jps_maze_game::PLAYER_TEAM_A, status);
+        status.rows.reserve(this->game.get_height());
+        auto board = this->game.get_status(jps_maze_game::PLAYER_TEAM_A);
+        for(const auto &row : board) {
+            jps_maze_msgs::msg::Row::_blocks_type cur_row;
+            cur_row.reserve(this->game.get_width());
+            for(const auto &block : row) {
+                cur_row.emplace_back(jps_maze_msgs::msg::Block().set__block_type(block));
+            }
+        }
         status.header.stamp = this->now();
         this->team_a_status_pub->publish(status);
-        this->game.get_status(jps_maze_game::PLAYER_TEAM_B, status);
+        board = this->game.get_status(jps_maze_game::PLAYER_TEAM_B);
+        for(const auto &row : board) {
+            jps_maze_msgs::msg::Row::_blocks_type cur_row;
+            cur_row.reserve(this->game.get_width());
+            for(const auto &block : row) {
+                cur_row.emplace_back(jps_maze_msgs::msg::Block().set__block_type(block));
+            }
+        }
         status.header.stamp = this->now();
         this->team_b_status_pub->publish(status);
         this->timer->reset();

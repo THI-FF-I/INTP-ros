@@ -46,6 +46,7 @@ namespace jps_maze_client {
             auto req = std::make_shared<jps_maze_msgs::srv::CreatePlayer::Request>();
             req->name = player_name;
             req->team.team = team_A ? jps_maze_msgs::msg::Team::TEAM_A : jps_maze_msgs::msg::Team::TEAM_B;
+            req->header.stamp = this->now();
             auto fut = create_player_clt->async_send_request(req);
             RCLCPP_DEBUG(this->get_logger(), "Send player request");
             rclcpp::spin_until_future_complete(this->get_node_base_interface(), fut);
@@ -59,11 +60,11 @@ namespace jps_maze_client {
     }
 
     void Client::status_cb(const std::shared_ptr<jps_maze_msgs::msg::Status> msg) {
-
+        RCLCPP_INFO(this->get_logger(), "Got new status message");
     }
 
     void Client::next_round_cb(const std::shared_ptr<std_msgs::msg::Empty> msg) {
-
+        RCLCPP_INFO(this->get_logger(), "Next round started");
     }
 }
 

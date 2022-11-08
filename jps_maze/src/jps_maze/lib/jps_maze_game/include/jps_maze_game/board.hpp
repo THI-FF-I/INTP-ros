@@ -41,7 +41,7 @@ namespace jps_maze_game
         game_block_type_t get_block_state(const coord_t coord_x, const coord_t coord_y) const;
         void map_area(const coord_t coord_x, const coord_t coord_y, team_t team);
         bool player_move(const direction_t dir, Player &player);
-        std::vector<std::vector<game_block_type_t>> get_team_board(team_t team);
+        std::vector<std::vector<game_block_type_t>> get_team_board(const team_t team) const;
 
         ~Board()
         {

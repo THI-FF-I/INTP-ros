@@ -25,13 +25,12 @@ namespace jps_maze_game
         rclcpp::Logger logger;
         std::mt19937_64 id_gen;
         uint16_t round_cnt;
-        uint16_t update_cycle;
         uint8_t player_count_per_team;
 
     public:
         Game(const std::string_view board_path, uint8_t Pplayer_count_per_team, const rclcpp::Logger logger);
 
-        Game(const rclcpp::Logger logger) : logger(logger), board(logger){};
+        Game(const rclcpp::Logger logger) : board(logger), logger(logger){};
 
         ~Game() = default;
 
@@ -45,7 +44,7 @@ namespace jps_maze_game
 
         void next_round();
 
-        void get_status(const team_t team, jps_maze_msgs::msg::Status &status) const;
+        std::vector<std::vector<game_block_type_t>> get_status(const team_t team) const;
 
         constexpr coord_t get_width() const
         {

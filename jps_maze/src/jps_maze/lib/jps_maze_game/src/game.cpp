@@ -2,7 +2,7 @@
 
 namespace jps_maze_game
 {
-    Game::Game(const std::string_view board_path, uint8_t Pplayer_count_per_team, rclcpp::Logger logger) : board(board_path, logger.get_child("board")), player_count_per_team(Pplayer_count_per_team), logger(logger), round_cnt(0)
+    Game::Game(const std::string_view board_path, uint8_t Pplayer_count_per_team, rclcpp::Logger logger) : board(board_path, logger.get_child("board")), logger(logger), round_cnt(0), player_count_per_team(Pplayer_count_per_team)
     {
         std::random_device rd;
         this->id_gen = std::mt19937_64(rd());
@@ -121,8 +121,7 @@ namespace jps_maze_game
         // TODO Probably more to do here
     }
 
-    void Game::get_status(const team_t team, jps_maze_msgs::msg::Status &status) const
-    {
-        // TODO What should be done here???
+    std::vector<std::vector<game_block_type_t>> Game::get_status(const team_t team) const  {
+        return this->board.get_team_board(team);
     }
 }
