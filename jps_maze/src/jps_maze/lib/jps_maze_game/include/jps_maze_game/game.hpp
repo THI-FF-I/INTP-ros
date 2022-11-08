@@ -35,7 +35,7 @@ namespace jps_maze_game
 
         ~Game() = default;
 
-        Player &add_player(const std::string &name, const team_t team);
+        Player &add_player(const std::string &name, team_t team);
 
         bool ready() const;
 

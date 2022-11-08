@@ -9,8 +9,47 @@ namespace jps_maze_game
         RCLCPP_INFO(this->logger, "Init of Game done");
     }
 
-    Player &Game::add_player(const std::string &name, const team_t team)
+    Player &Game::add_player(const std::string &name, team_t team)
     {
+        uint8_t player_count_team_a = 0, player_count_team_b = 0;
+
+        for (const auto &m : players)
+        {
+            if (m.second.get_team() == PLAYER_TEAM_A)
+            {
+                player_count_team_a++;
+            }
+            else if (m.second.get_team() == PLAYER_TEAM_B)
+            {
+                player_count_team_b++;
+            }
+        }
+
+        if (team == PLAYER_TEAM_A && player_count_team_a >= player_count_per_team)
+        {
+            if (player_count_team_b < player_count_per_team)
+            {
+                team = PLAYER_TEAM_B;
+                RCLCPP_WARN(this->logger, "Changed player: \"%s\" to team: %c", name.c_str(), team == PLAYER_TEAM_A ? 'A' : 'B');
+            }
+            else
+            {
+                throw "[Game::add_player] Both teams already full";
+            }
+        }
+        else if (team == PLAYER_TEAM_B && player_count_team_b >= player_count_per_team)
+        {
+            if (player_count_team_a < player_count_per_team)
+            {
+                team = PLAYER_TEAM_A;
+                RCLCPP_WARN(this->logger, "Changed player: \"%s\" to team: %c", name.c_str(), team == PLAYER_TEAM_A ? 'A' : 'B');
+            }
+            else
+            {
+                throw "[Game::add_player] Both teams already full";
+            }
+        }
+
         player_id_t player_id = this->id_gen();
         this->players.emplace(std::make_pair(player_id, Player{player_id, team, name}));
         RCLCPP_INFO(this->logger, "Created new player: \"%s\" with id: %ld", name.c_str(), player_id);
@@ -19,27 +58,29 @@ namespace jps_maze_game
 
     bool Game::ready() const
     {
-        if(player_count_per_team <= 0) return false;
+        if (player_count_per_team <= 0)
+            return false;
 
         uint8_t player_count_team_a = 0, player_count_team_b = 0;
 
-        for(const auto &m: players)
+        for (const auto &m : players)
         {
-            if(m.second.get_team() == PLAYER_TEAM_A)
+            if (m.second.get_team() == PLAYER_TEAM_A)
             {
                 player_count_team_a++;
             }
-            else if(m.second.get_team() == PLAYER_TEAM_B)
+            else if (m.second.get_team() == PLAYER_TEAM_B)
             {
                 player_count_team_b++;
             }
         }
 
-        if(player_count_team_a == player_count_team_b && player_count_team_a == player_count_per_team && player_count_team_b == player_count_per_team)
+        if (player_count_team_a == player_count_team_b && player_count_team_a == player_count_per_team && player_count_team_b == player_count_per_team)
         {
             return true;
         }
-        else return false;
+        else
+            return false;
     }
 
     bool Game::move_player(const player_id_t player_id, const direction_t direction)
