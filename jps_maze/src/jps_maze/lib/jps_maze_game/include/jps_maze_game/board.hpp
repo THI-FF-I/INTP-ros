@@ -6,6 +6,7 @@
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
+#include <random>
 
 #include "rclcpp/logger.hpp"
 #include "rclcpp/logging.hpp"
@@ -61,7 +62,11 @@ namespace jps_maze_game
     public:
         Board(const std::string_view filename, rclcpp::Logger logger);
 
-        Board(rclcpp::Logger logger) : logger(logger){};
+        Board(rclcpp::Logger logger) : logger(logger)
+        {
+            std::random_device rd;
+            srand(rd());
+        };
 
         bool load_board_from_file(const std::string_view filename);
         void print_board() const;

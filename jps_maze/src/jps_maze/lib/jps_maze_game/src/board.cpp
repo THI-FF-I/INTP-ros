@@ -5,6 +5,9 @@ namespace jps_maze_game
 
     Board::Board(const std::string_view filename, rclcpp::Logger logger) : logger(logger) // Creates board from file
     {
+        std::random_device rd;
+        srand(rd());
+
         RCLCPP_INFO(this->logger, "Initiating board with file: \"%s\"", filename.data());
         load_board_from_file(filename);
     }
