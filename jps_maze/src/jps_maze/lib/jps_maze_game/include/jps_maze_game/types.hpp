@@ -24,8 +24,9 @@ namespace jps_maze_game
         GAME_STATE_WAITING_FOR_PLAYER,
         GAME_STATE_RUNNING,
         GAME_STATE_WIN_TEAM_A,
-        GAME_STATE_WIN_TEAM_b,
+        GAME_STATE_WIN_TEAM_B,
     } game_state_t;
+
 
     // BOARD
     using coord_t = jps_maze_msgs::msg::Position::_x_type;

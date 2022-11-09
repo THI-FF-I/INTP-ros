@@ -99,7 +99,7 @@ namespace jps_maze_game
         }
     }
 
-    bool Game::next_round_ready() const // Returns true if next round is ready to start and false if we need to keep waiting
+    bool Game::next_round_ready() // Returns true if next round is ready to start and false if we need to keep waiting
     {
         for (const auto &m : players)
         {
@@ -107,7 +107,21 @@ namespace jps_maze_game
                 return false;
         }
 
-        // TODO Check for win
+        // Check if a team won
+        for (const auto &m : players)
+        {
+            if (m.second.get_has_flag() == true)
+            {
+                if (m.second.get_team() == PLAYER_TEAM_A && board.get_block_state(m.second.get_x(), m.second.get_y()) == GAME_BLOCK_BASE_A)
+                {
+                    game_state = GAME_STATE_WIN_TEAM_A;
+                }
+                else if (m.second.get_team() == PLAYER_TEAM_B && board.get_block_state(m.second.get_x(), m.second.get_y()) == GAME_BLOCK_BASE_B)
+                {
+                    game_state = GAME_STATE_WIN_TEAM_B;
+                }
+            }
+        }
 
         return true;
     }

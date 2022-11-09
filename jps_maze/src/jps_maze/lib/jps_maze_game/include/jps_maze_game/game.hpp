@@ -41,7 +41,7 @@ namespace jps_maze_game
 
         bool move_player(const player_id_t player_id, const direction_t direction);
 
-        bool next_round_ready() const; // Return if all players have moved
+        bool next_round_ready(); // Return if all players have moved
 
         void next_round();
 
