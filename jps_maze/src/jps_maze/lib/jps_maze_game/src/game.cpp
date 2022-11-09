@@ -85,8 +85,9 @@ namespace jps_maze_game
 
     bool Game::move_player(const player_id_t player_id, const direction_t direction)
     {
-        if(players.at(player_id).get_turn() == false) return false;
-        
+        if (players.at(player_id).get_turn() == false)
+            return false;
+
         if (board.player_move(direction, players.at(player_id)) == true)
         {
             players.at(player_id).set_turn(false);
@@ -121,7 +122,8 @@ namespace jps_maze_game
         // TODO Probably more to do here
     }
 
-    std::vector<std::vector<game_block_type_t>> Game::get_status(const team_t team) const  {
+    std::vector<std::vector<game_block_type_t>> Game::get_team_board(const team_t team) const
+    {
         return this->board.get_team_board(team);
     }
 }

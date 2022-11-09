@@ -26,6 +26,7 @@ namespace jps_maze_game
         std::mt19937_64 id_gen;
         uint16_t round_cnt;
         uint8_t player_count_per_team;
+        game_state_t game_state = GAME_STATE_WAITING_FOR_PLAYER;
 
     public:
         Game(const std::string_view board_path, uint8_t Pplayer_count_per_team, const rclcpp::Logger logger);
@@ -44,7 +45,12 @@ namespace jps_maze_game
 
         void next_round();
 
-        std::vector<std::vector<game_block_type_t>> get_status(const team_t team) const;
+        std::vector<std::vector<game_block_type_t>> get_team_board(const team_t team) const;
+
+        constexpr game_state_t get_game_state() const
+        {
+            return game_state;
+        }
 
         constexpr coord_t get_width() const
         {

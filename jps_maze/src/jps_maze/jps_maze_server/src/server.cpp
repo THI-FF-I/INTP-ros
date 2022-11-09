@@ -65,7 +65,7 @@ namespace jps_maze_server {
     void Server::send_status() {
         jps_maze_msgs::msg::Status status;
         status.rows.reserve(this->game.get_height());
-        auto board = this->game.get_status(jps_maze_game::PLAYER_TEAM_A);
+        auto board = this->game.get_team_board(jps_maze_game::PLAYER_TEAM_A);
         for(const auto &row : board) {
             jps_maze_msgs::msg::Row::_blocks_type cur_row;
             cur_row.reserve(this->game.get_width());
@@ -75,7 +75,7 @@ namespace jps_maze_server {
         }
         status.header.stamp = this->now();
         this->team_a_status_pub->publish(status);
-        board = this->game.get_status(jps_maze_game::PLAYER_TEAM_B);
+        board = this->game.get_team_board(jps_maze_game::PLAYER_TEAM_B);
         for(const auto &row : board) {
             jps_maze_msgs::msg::Row::_blocks_type cur_row;
             cur_row.reserve(this->game.get_width());
