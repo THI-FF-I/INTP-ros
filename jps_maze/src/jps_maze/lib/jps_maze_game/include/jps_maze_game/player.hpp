@@ -4,6 +4,7 @@
 #include <vector>
 #include <inttypes.h>
 #include <string>
+#include <stdexcept>
 
 #include "jps_maze_msgs/msg/team.hpp"
 #include "jps_maze_msgs/msg/player.hpp"

@@ -3,6 +3,7 @@
 
 #include <map>
 #include <random>
+#include <stdexcept>
 
 #include "rclcpp/logger.hpp"
 #include "rclcpp/logging.hpp"
@@ -14,6 +15,7 @@
 #include "jps_maze_game/board.hpp"
 #include "jps_maze_game/player.hpp"
 #include "jps_maze_game/types.hpp"
+
 
 namespace jps_maze_game
 {
@@ -40,6 +42,9 @@ namespace jps_maze_game
         bool ready();
 
         bool move_player(const player_id_t player_id, const direction_t direction);
+
+        // TODO return all players of a team
+        std::vector<Player> get_players_of_team(team_t team) const;
 
         bool next_round_ready(); // Return if all players have moved
 

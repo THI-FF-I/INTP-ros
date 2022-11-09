@@ -34,7 +34,7 @@ namespace jps_maze_game
             }
             else
             {
-                throw "[Game::add_player] Both teams already full";
+                throw std::runtime_error("[Game::add_player] Both teams already full");
             }
         }
         else if (team == PLAYER_TEAM_B && player_count_team_b >= player_count_per_team)
@@ -46,7 +46,7 @@ namespace jps_maze_game
             }
             else
             {
-                throw "[Game::add_player] Both teams already full";
+                throw std::runtime_error("[Game::add_player] Both teams already full");
             }
         }
 
@@ -101,6 +101,21 @@ namespace jps_maze_game
         {
             return false;
         }
+    }
+
+    std::vector<Player> Game::get_players_of_team(team_t team) const
+    {
+        std::vector<Player> res;
+
+        for(const auto &m: players)
+        {
+            if(m.second.get_team() == team)
+            {
+                res.push_back(m.second);
+            }
+        }
+
+        return res;
     }
 
     bool Game::next_round_ready() // Returns true if next round is ready to start and false if we need to keep waiting
