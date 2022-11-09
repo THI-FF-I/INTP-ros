@@ -161,4 +161,9 @@ namespace jps_maze_game
     {
         return this->board.get_team_board(team);
     }
+
+    std::vector<std::vector<game_block_type_t>> Game::get_board() const
+    {
+        return board.get_board();
+    }
 }

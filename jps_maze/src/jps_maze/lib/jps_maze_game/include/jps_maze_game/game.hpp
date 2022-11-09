@@ -54,6 +54,8 @@ namespace jps_maze_game
 
         std::vector<std::vector<game_block_type_t>> get_team_board(const team_t team) const;
 
+        std::vector<std::vector<game_block_type_t>> get_board() const;
+
         constexpr game_state_t get_game_state() const
         {
             return game_state;

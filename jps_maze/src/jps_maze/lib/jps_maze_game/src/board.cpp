@@ -294,4 +294,25 @@ namespace jps_maze_game
 
         return res;
     }
+
+    std::vector<std::vector<game_block_type_t>> Board::get_board() const
+    {
+        std::vector<std::vector<game_block_type_t>> res;
+        res.reserve(height);
+
+        for (coord_t h = 0; h < height; h++)
+        {
+            std::vector<game_block_type_t> tmp;
+            tmp.reserve(width);
+
+            for (coord_t w = 0; w < width; w++)
+            {
+                tmp.push_back(board.at(h).at(w).game_block_type);
+            }
+
+            res.push_back(tmp);
+        }
+
+        return res;
+    }
 }
