@@ -21,7 +21,7 @@ namespace jps_maze_game
 
     typedef enum game_state_enum : uint8_t
     {
-        GAME_STATE_WAITING_FOR_PLAYER,
+        GAME_STATE_WAITING_FOR_PLAYERS,
         GAME_STATE_RUNNING,
         GAME_STATE_WIN_TEAM_A,
         GAME_STATE_WIN_TEAM_B,

@@ -77,10 +77,14 @@ namespace jps_maze_game
 
         if (player_count_team_a == player_count_team_b && player_count_team_a == player_count_per_team && player_count_team_b == player_count_per_team)
         {
+            game_state = GAME_STATE_RUNNING;
             return true;
         }
         else
+        {
+            game_state = GAME_STATE_WAITING_FOR_PLAYERS;
             return false;
+        }
     }
 
     bool Game::move_player(const player_id_t player_id, const direction_t direction)
@@ -104,7 +108,9 @@ namespace jps_maze_game
         for (const auto &m : players)
         {
             if (m.second.get_turn() == true)
+            {
                 return false;
+            }
         }
 
         // Check if a team won
@@ -133,7 +139,7 @@ namespace jps_maze_game
             m.second.set_turn(false);
         }
 
-        // TODO Probably more to do here
+        game_state = GAME_STATE_RUNNING;
     }
 
     std::vector<std::vector<game_block_type_t>> Game::get_team_board(const team_t team) const

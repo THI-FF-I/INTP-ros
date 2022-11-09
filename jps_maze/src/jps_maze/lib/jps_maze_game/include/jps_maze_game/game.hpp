@@ -26,7 +26,7 @@ namespace jps_maze_game
         std::mt19937_64 id_gen;
         uint16_t round_cnt;
         uint8_t player_count_per_team;
-        game_state_t game_state = GAME_STATE_WAITING_FOR_PLAYER;
+        game_state_t game_state = GAME_STATE_WAITING_FOR_PLAYERS;
 
     public:
         Game(const std::string_view board_path, uint8_t Pplayer_count_per_team, const rclcpp::Logger logger);
