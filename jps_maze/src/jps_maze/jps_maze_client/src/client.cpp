@@ -82,7 +82,7 @@ namespace jps_maze_client
 
     void Client::calculate_next_move()
     {
-        jps_maze_game::coord_t cur_pos[2] = {this->x, this->y};
+        const jps_maze_game::coord_t cur_pos[2] = {this->x, this->y};
         jps_maze_game::coord_t next_pos[2] = {this->x, this->y};
         jps_maze_game::direction_t next_dir_res = cur_dir;
 
