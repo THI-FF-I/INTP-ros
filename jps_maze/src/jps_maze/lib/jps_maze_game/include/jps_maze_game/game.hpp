@@ -3,6 +3,7 @@
 
 #include <map>
 #include <random>
+#include <stdexcept>
 
 #include "rclcpp/logger.hpp"
 #include "rclcpp/logging.hpp"
@@ -15,7 +16,6 @@
 #include "jps_maze_game/player.hpp"
 #include "jps_maze_game/types.hpp"
 
-#include <stdexcept>
 
 namespace jps_maze_game
 {

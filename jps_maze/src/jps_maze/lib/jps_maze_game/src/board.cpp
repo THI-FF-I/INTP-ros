@@ -69,7 +69,7 @@ namespace jps_maze_game
                 }
 
                 if (w > 0 && w != w_tmp)
-                    throw "[Board::load_board_from_file] incorrect file syntax";
+                    throw std::runtime_error("[Board::load_board_from_file] incorrect file syntax");
                 w = w_tmp;
 
                 new_board.push_back(new_width);
@@ -84,7 +84,7 @@ namespace jps_maze_game
         }
         else
         {
-            throw "[Board::load_board_from_file] file could not be read";
+            throw std::runtime_error("[Board::load_board_from_file] file could not be read");
             return false;
         }
     }
@@ -192,7 +192,7 @@ namespace jps_maze_game
             break;
 
         default:
-            throw "[Board::player_move] Unknown direction given";
+            throw std::runtime_error("[Board::player_move] Unknown direction given");
         }
 
         game_block_type_t new_block = get_block_state(new_x, new_y);
@@ -249,7 +249,7 @@ namespace jps_maze_game
             return true;
 
         default:
-            throw "[Board::player_move] Unknown block type";
+            throw std::runtime_error("[Board::player_move] Unknown block type");
         }
     }
 

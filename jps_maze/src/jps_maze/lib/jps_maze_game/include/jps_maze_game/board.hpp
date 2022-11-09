@@ -5,6 +5,7 @@
 #include <inttypes.h>
 #include <iostream>
 #include <fstream>
+#include <stdexcept>
 
 #include "rclcpp/logger.hpp"
 #include "rclcpp/logging.hpp"

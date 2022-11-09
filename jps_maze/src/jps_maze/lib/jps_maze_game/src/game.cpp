@@ -34,7 +34,7 @@ namespace jps_maze_game
             }
             else
             {
-                throw "[Game::add_player] Both teams already full";
+                throw std::runtime_error("[Game::add_player] Both teams already full");
             }
         }
         else if (team == PLAYER_TEAM_B && player_count_team_b >= player_count_per_team)
@@ -46,7 +46,7 @@ namespace jps_maze_game
             }
             else
             {
-                throw "[Game::add_player] Both teams already full";
+                throw std::runtime_error("[Game::add_player] Both teams already full");
             }
         }
 
