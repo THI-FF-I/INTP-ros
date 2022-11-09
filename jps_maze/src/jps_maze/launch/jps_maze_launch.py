@@ -1,5 +1,7 @@
 import argparse, re, sys, os, random
 from launch import LaunchDescription
+from launch.actions import RegisterEventHandler, LogInfo
+from launch.event_handlers import OnProcessStart, OnShutdown
 from launch_ros.actions import Node
 import launch_ros.parameter_descriptions
 from ros2launch.api import get_share_file_path_from_package
@@ -75,5 +77,19 @@ def generate_launch_description():
                 ],
                 ros_arguments=ros_arguments,
             ),
+            RegisterEventHandler(
+                OnProcessStart(
+                    on_start=[LogInfo(
+                        msg=['Starting nodejs server: ']
+                    )]
+                )
+            ),
+            RegisterEventHandler(
+                OnShutdown(
+                    on_shutdown=[LogInfo(
+                        msg=['Stopping nodejs server: ']
+                    )]
+                )
+            )
         ]
     )

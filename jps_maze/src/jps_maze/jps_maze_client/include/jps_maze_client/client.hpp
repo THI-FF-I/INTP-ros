@@ -25,6 +25,9 @@ namespace jps_maze_client {
         Client(rclcpp::NodeOptions node_options = rclcpp::NodeOptions());
 
     private:
+
+        void request_player(const std::string &create_player_topic);
+        void calculate_next_move();
         // Subscriber
         std::shared_ptr<rclcpp::Subscription<jps_maze_msgs::msg::Status>> team_status_sub;
         std::shared_ptr<rclcpp::Subscription<std_msgs::msg::Empty>> next_round_sub;
@@ -38,6 +41,11 @@ namespace jps_maze_client {
 
         // Attributes
         std::string player_name;
+        jps_maze_game::coord_t width;
+        jps_maze_game::coord_t height;
+        jps_maze_game::player_id_t player_id;
+        jps_maze_game::direction_t next_dir;
+        jps_maze_game::team_t team;
         jps_maze_visualizer::Visualizer visualizer;
         jps_maze_visualizer::block_t **frame_buffer;
     };
