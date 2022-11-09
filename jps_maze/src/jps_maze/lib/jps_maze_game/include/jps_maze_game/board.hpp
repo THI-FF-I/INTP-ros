@@ -54,8 +54,8 @@ namespace jps_maze_game
         coord_t width, height;
         game_flag_state_t flag_a = GAME_FLAG_STATE_IN_BASE;
         game_flag_state_t flag_b = GAME_FLAG_STATE_IN_BASE;
-        rclcpp::Logger logger;
         std::vector<Portal> portals;
+        rclcpp::Logger logger;
 
     public:
         Board(const std::string_view filename, rclcpp::Logger logger);

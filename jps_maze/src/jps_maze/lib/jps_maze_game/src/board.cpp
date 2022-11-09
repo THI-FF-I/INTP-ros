@@ -3,13 +3,13 @@
 namespace jps_maze_game
 {
 
-    Board::Board(const std::string_view filename, rclcpp::Logger logger) : logger(logger)// Creates board from file
+    Board::Board(const std::string_view filename, rclcpp::Logger logger) : logger(logger) // Creates board from file
     {
         RCLCPP_INFO(this->logger, "Initiating board with file: \"%s\"", filename.data());
         load_board_from_file(filename);
     }
-    
-    bool Board::load_board_from_file(const std::string_view filename)// Creates board from file
+
+    bool Board::load_board_from_file(const std::string_view filename) // Creates board from file
     {
         std::ifstream file(filename.data());
         std::string line = "";
@@ -26,7 +26,7 @@ namespace jps_maze_game
                 coord_t w_tmp = 0;
                 std::vector<game_block_t> new_width;
 
-                for(size_t i = 0; i < line.length(); i += 2)
+                for (size_t i = 0; i < line.length(); i += 2)
                 {
                     game_block_t tmp(GAME_BLOCK_EMPTY);
                     tmp.mapped_team_a = false;
@@ -35,36 +35,41 @@ namespace jps_maze_game
 
                     switch (line[i])
                     {
-                        case '0':
-                            tmp.game_block_type = GAME_BLOCK_EMPTY;
-                            break;
-                        case '1':
-                            tmp.game_block_type = GAME_BLOCK_WALL;
-                            break;
-                        case '2':
-                            tmp.game_block_type = GAME_BLOCK_PORTAL;
-                            break;
-                        case '3':
-                            tmp.game_block_type = GAME_BLOCK_FLAG_A;
-                            break;
-                        case '4':
-                            tmp.game_block_type = GAME_BLOCK_FLAG_B;
-                            break;
-                        case '5':
-                            tmp.game_block_type = GAME_BLOCK_BASE_A;
-                            break;
-                        case '6':
-                            tmp.game_block_type = GAME_BLOCK_BASE_B;
-                            break;
-                        default:
-                            tmp.game_block_type = GAME_BLOCK_EMPTY;
-                            break;
+                    case '0':
+                        tmp.game_block_type = GAME_BLOCK_EMPTY;
+                        break;
+                    case '1':
+                        tmp.game_block_type = GAME_BLOCK_WALL;
+                        break;
+                    case '2':
+                        tmp.game_block_type = GAME_BLOCK_PORTAL;
+                        {
+                            Portal port_tmp(i, h);
+                            portals.push_back(port_tmp);
+                        }
+                        break;
+                    case '3':
+                        tmp.game_block_type = GAME_BLOCK_FLAG_A;
+                        break;
+                    case '4':
+                        tmp.game_block_type = GAME_BLOCK_FLAG_B;
+                        break;
+                    case '5':
+                        tmp.game_block_type = GAME_BLOCK_BASE_A;
+                        break;
+                    case '6':
+                        tmp.game_block_type = GAME_BLOCK_BASE_B;
+                        break;
+                    default:
+                        tmp.game_block_type = GAME_BLOCK_EMPTY;
+                        break;
                     }
 
                     new_width.push_back(tmp);
                 }
 
-                if(w > 0 && w != w_tmp) throw "[Board::load_board_from_file] incorrect file syntax";
+                if (w > 0 && w != w_tmp)
+                    throw "[Board::load_board_from_file] incorrect file syntax";
                 w = w_tmp;
 
                 new_board.push_back(new_width);
@@ -154,7 +159,8 @@ namespace jps_maze_game
 
     bool Board::player_move(const direction_t dir, Player &player)
     {
-        if(player.get_turn() == false) return false;
+        if (player.get_turn() == false)
+            return false;
 
         coord_t new_x = player.get_x();
         coord_t new_y = player.get_y();
@@ -205,7 +211,11 @@ namespace jps_maze_game
             return false;
 
         case GAME_BLOCK_PORTAL:
-            // Teleport player to random portal
+        {
+            uint16_t port_id = rand() % portals.size();
+            player.set_x(portals.at(port_id).get_x());
+            player.set_y(portals.at(port_id).get_y());
+        }
             return true;
 
         case GAME_BLOCK_FLAG_A:
