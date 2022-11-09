@@ -27,7 +27,7 @@ function setup() {
 
       for(var i = 0; i < arena.length; i++){
         arena_row = arena[i];
-        for(var j = 0; j < arena.length; j++){
+        for(var j = 0; j < arena_row.length; j++){
           
           switch(arena_row[j]) {
             case 0:

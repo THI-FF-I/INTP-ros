@@ -1,6 +1,10 @@
 //////////////////////////////////////////////////////
 // UDP - Stuff - (listen for udp packages using dgram)
 var arena = new Array();
+let arena_rows = 0;
+let arena_coloums = 0;
+let message_counter = 0;
+let rows_in_arena = 0; 
 
 var PORT = 42069;
 var HOST = '127.0.0.1';
@@ -39,7 +43,9 @@ function newConnection(socket){
         //console.log(remote.address + ':' + remote.port +' - ' + remote.size +' - ' + message.readInt32LE(8).toString());
         encode_arena(message, remote);
         //broadcast it to every connection
+        if(rows_in_arena == arena_rows){
         socket.broadcast.emit('arena_update', arena);
+        }
         console.log('Sended an arena');
     });
 }
@@ -48,17 +54,31 @@ function newConnection(socket){
 //encode the udp back to an two dimensional javascript array
 function encode_arena(message, remote){
 
-    var arena_dimension = Math.sqrt(remote.size/4); //because auf INT32
+    if(message_counter == 0){
+        arena_rows = message.readInt32LE(4);
+        arena_coloums = message.readInt32LE(0);
+        message_counter++;
+        return;
+    }
+
     var arena_row = new Array();
 
-    for(var i = 0; i < arena_dimension; i++){
+    for(var i = 0; i < arena_coloums; i++){
+        arena_row[i] = message.readInt32LE(i*4);
+    }
+
+    arena[(message_counter-1)] = arena_row;
+
+    /*for(var i = 0; i < arena_dimension; i++){
 
         for(var j = 0; j < arena_dimension; j++){
             arena_row[j] = message.readInt32LE((i*arena_dimension*4)+(j*4));
         }
         arena[i] = arena_row;
-    }
+    }*/
 
+        
+    return;
 
     //print arena to console
     /*
@@ -67,7 +87,7 @@ function encode_arena(message, remote){
         for(var j = 0; j < arena_dimension; j++){
             console.log(arena_row[j].toString());
             k++;
-        } 
+        } ,
     }
     */
 
