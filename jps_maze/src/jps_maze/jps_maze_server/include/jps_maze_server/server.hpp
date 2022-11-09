@@ -28,6 +28,7 @@ namespace jps_maze_server {
     private:
 
         void send_status();
+        void update_framebuffer();
 
         // Callbackgroups
         std::shared_ptr<rclcpp::CallbackGroup> timer_cb_group;

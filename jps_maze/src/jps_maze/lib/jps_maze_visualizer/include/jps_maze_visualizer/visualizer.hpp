@@ -17,6 +17,7 @@
 #include <netdb.h>
 
 #include <string>
+#include <stdexcept>
 
 #include "rclcpp/logger.hpp"
 #include "rclcpp/logging.hpp"
@@ -29,6 +30,7 @@ namespace jps_maze_visualizer {
     public:
         Visualizer(const std::string_view host_name, const std::string_view port, const block_t width, const block_t height, block_t ***frame_buffer, rclcpp::Logger logger);
         Visualizer(rclcpp::Logger logger) : logger(logger), valid(false) {}
+        Visualizer& operator=(Visualizer&& rhs);
         ~Visualizer();
         void re_draw();
     private:

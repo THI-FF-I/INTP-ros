@@ -67,6 +67,16 @@ namespace jps_maze_client {
 
     void Client::status_cb(const std::shared_ptr<jps_maze_msgs::msg::Status> msg) {
         RCLCPP_INFO(this->get_logger(), "Got new status message");
+        size_t i = 0;
+        RCLCPP_INFO(this->get_logger(), "Copying board into framebuffer");
+        for(const auto &row: msg->rows) {
+            size_t j = 0;
+            for(const auto &block: row.blocks) {
+                this->frame_buffer[i][j] = block.block_type;
+            }
+        }
+        RCLCPP_INFO(this->get_logger(), "Triggering re_draw");
+        this->visualizer.re_draw();
     }
 
     void Client::next_round_cb(const std::shared_ptr<std_msgs::msg::Empty> msg) {

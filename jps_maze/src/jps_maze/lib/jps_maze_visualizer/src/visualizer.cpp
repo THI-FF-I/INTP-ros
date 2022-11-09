@@ -17,20 +17,19 @@ namespace jps_maze_visualizer {
         hints.ai_protocol = 0;
         hints.ai_flags = 0;
         struct addrinfo *result, *rp;
-
+        RCLCPP_INFO(this->logger, "Trying to connect to %s:%s", host_name.data(), port.data());
         if(getaddrinfo(host_name.data(), port.data(), &hints, &result)!= 0) {
             RCLCPP_FATAL(this->logger, "Could resolve hostname");
-            throw "Could not resolve hostname error";
+            throw std::runtime_error("Could not resolve hostname error");
         }
 
         for (rp = result; rp != NULL; rp = rp->ai_next) {
+            RCLCPP_DEBUG(this->logger, "Trying: %s", rp->ai_addr->sa_data);
             if((this->network_socket = socket(rp->ai_family, rp->ai_socktype,
-                         rp->ai_protocol)) == 1)
-                continue;
-
-
-            if (bind(this->network_socket, rp->ai_addr, rp->ai_addrlen) != -1)
-                break;                  /* Success */
+                         rp->ai_protocol)) != -1) {
+                break;
+                RCLCPP_DEBUG(this->logger, "Could not create socket");
+            }
 
             close(this->network_socket);
         }
@@ -39,22 +38,9 @@ namespace jps_maze_visualizer {
 
         if (rp == NULL) {
             RCLCPP_FATAL(this->logger, "Could not connect to visualisation server");
-            throw "Could not connect to visualisation server";
+            throw std::runtime_error("Could not connect to visualisation server");
         }
         this->server_address = *(rp->ai_addr);
-        /*
-        // create a udp socket
-        this->network_socket = socket(AF_INET, SOCK_DGRAM, 0);
-
-        // address for socket
-        this->server_address.sin_family = AF_INET;
-        this->server_address.sin_port = htons(port);
-        //inet_aton(host_name.data(), &server_address.sin_addr);
-
-        // bind address to socket
-        //TODO: make some error handling, but screw that, I am a consultant
-        bind(network_socket, (struct sockaddr *) &server_address, sizeof(server_address));
-        */
 
         RCLCPP_INFO(this->logger, "Sending dimensions");
         block_t dim[2] = {this->width, this->height};
@@ -62,6 +48,17 @@ namespace jps_maze_visualizer {
         sendto(this->network_socket, dim, sizeof(dim), 0, (const struct sockaddr *) &server_address,
                sizeof(server_address));
         RCLCPP_INFO(this->logger, "Init of visualizer done");
+    }
+
+    Visualizer &Visualizer::operator=(jps_maze_visualizer::Visualizer &&rhs) {
+        this->logger = rhs.logger;
+        this->frame_buffer = rhs.frame_buffer;
+        this->height = rhs.height;
+        this->width = rhs.width;
+        this->server_address = rhs.server_address;
+        this->network_socket = rhs.network_socket;
+        this->valid = rhs.valid;
+        rhs.valid = false;
     }
 
     Visualizer::~Visualizer() {
