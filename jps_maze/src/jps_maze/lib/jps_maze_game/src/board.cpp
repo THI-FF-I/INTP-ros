@@ -64,7 +64,7 @@ namespace jps_maze_game
                     new_width.push_back(tmp);
                 }
 
-                if(w > 0 && w != w_tmp) throw "[Board::load_board_from_file] incorrect file syntax";
+                if(w > 0 && w != w_tmp) throw std::runtime_error("[Board::load_board_from_file] incorrect file syntax");
                 w = w_tmp;
 
                 new_board.push_back(new_width);
