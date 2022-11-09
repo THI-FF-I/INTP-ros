@@ -37,7 +37,7 @@ namespace jps_maze_game
 
         Player &add_player(const std::string &name, team_t team);
 
-        bool ready() const;
+        bool ready();
 
         bool move_player(const player_id_t player_id, const direction_t direction);
 

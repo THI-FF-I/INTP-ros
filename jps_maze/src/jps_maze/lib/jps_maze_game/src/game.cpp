@@ -56,7 +56,7 @@ namespace jps_maze_game
         return this->players.at(player_id);
     }
 
-    bool Game::ready() const
+    bool Game::ready()
     {
         if (player_count_per_team <= 0)
             return false;
