@@ -3,7 +3,7 @@
 namespace jps_maze_visualizer {
 
     Visualizer::Visualizer(const std::string_view host_name, const std::string_view port, const block_t width,
-                           const block_t height, block_t ***frame_buffer, rclcpp::Logger logger) : width(width), height(height), logger(logger) {
+                           const block_t height, block_t ***frame_buffer, rclcpp::Logger logger) : width(width), height(height), logger(logger), valid(true) {
         this->frame_buffer = new block_t *[this->height];
         for(size_t i = 0; i < this->height; ++i) {
             this->frame_buffer[i] = new block_t[this->width];
@@ -65,12 +65,14 @@ namespace jps_maze_visualizer {
     }
 
     Visualizer::~Visualizer() {
-        RCLCPP_INFO(this->logger, "Closing network socket");
-        close(this->network_socket);
-        for(size_t i = 0; i < this->height; ++i) {
-            delete[] this->frame_buffer[i];
+        if(valid) {
+            RCLCPP_INFO(this->logger, "Closing network socket");
+            close(this->network_socket);
+            for (size_t i = 0; i < this->height; ++i) {
+                delete[] this->frame_buffer[i];
+            }
+            delete[] this->frame_buffer;
         }
-        delete[] this->frame_buffer;
     }
 
     void Visualizer::re_draw() {

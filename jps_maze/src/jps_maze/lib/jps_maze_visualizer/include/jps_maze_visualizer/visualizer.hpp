@@ -28,7 +28,7 @@ namespace jps_maze_visualizer {
     class Visualizer {
     public:
         Visualizer(const std::string_view host_name, const std::string_view port, const block_t width, const block_t height, block_t ***frame_buffer, rclcpp::Logger logger);
-        Visualizer(rclcpp::Logger logger) : logger(logger) {}
+        Visualizer(rclcpp::Logger logger) : logger(logger), valid(false) {}
         ~Visualizer();
         void re_draw();
     private:
@@ -36,6 +36,7 @@ namespace jps_maze_visualizer {
         uint8_t height;
         block_t **frame_buffer;
         rclcpp::Logger logger;
+        bool valid;
         int network_socket;
         struct sockaddr server_address;
     };
