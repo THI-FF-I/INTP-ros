@@ -1,1 +1,2 @@
 add_subdirectory(jps_maze_game)
+add_subdirectory(jps_maze_visualizer)

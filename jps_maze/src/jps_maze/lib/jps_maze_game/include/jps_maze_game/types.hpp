@@ -19,11 +19,20 @@ namespace jps_maze_game
         GAME_FLAG_STATE_BY_PLAYER,
     } game_flag_state_t;
 
+    typedef enum game_state_enum : uint8_t
+    {
+        GAME_STATE_WAITING_FOR_PLAYERS,
+        GAME_STATE_RUNNING,
+        GAME_STATE_WIN_TEAM_A,
+        GAME_STATE_WIN_TEAM_B,
+    } game_state_t;
+
+
     // BOARD
     using coord_t = jps_maze_msgs::msg::Position::_x_type;
     static_assert(sizeof(jps_maze_msgs::msg::Position::_x_type) == sizeof(jps_maze_msgs::msg::Position::_y_type), "Position types for x and y differ!");
 
-    typedef enum game_block_type : int8_t
+    typedef enum game_block_type : jps_maze_msgs::msg::Block::_block_type_type
     {
         GAME_BLOCK_OUT_OF_BOARD = jps_maze_msgs::msg::Block::OUT_OF_BOARD,
         GAME_BLOCK_EMPTY = jps_maze_msgs::msg::Block::EMPTY,

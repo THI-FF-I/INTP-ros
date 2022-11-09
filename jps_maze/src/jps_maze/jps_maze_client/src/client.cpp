@@ -8,23 +8,27 @@ using namespace std::placeholders;
 
 namespace jps_maze_client {
     Client::Client(rclcpp::NodeOptions node_options)
-            : rclcpp::Node("client_node", node_options) {
+            : rclcpp::Node("client_node", node_options) , visualizer(this->get_logger()){
 
         // Declare Parameters
         this->declare_parameter<std::string>("create_player_topic");
         this->declare_parameter<std::string>("status_topic");
         this->declare_parameter<std::string>("move_player_topic");
         this->declare_parameter<std::string>("next_round_topic");
-        this->declare_parameter<bool>("team");
         this->declare_parameter<std::string>("player_name");
+        this->declare_parameter<std::string>("host_name");
+        this->declare_parameter<std::string>("target_port");
+        this->declare_parameter<bool>("team");
 
         // Get Parameters
         const std::string create_player_topic = this->get_parameter("create_player_topic").as_string();
         const std::string status_topic = this->get_parameter("status_topic").as_string();
         const std::string move_player_topic = this->get_parameter("move_player_topic").as_string();
         const std::string next_round_topic = this->get_parameter("next_round_topic").as_string();
-        const bool team_A = this->get_parameter("team").as_bool();
         this->player_name = this->get_parameter("player_name").as_string();
+        const std::string host_name = this->get_parameter("host_name").as_string();
+        const std::string target_port = this->get_parameter("target_port").as_string();
+        const bool team_A = this->get_parameter("team").as_bool();
 
         RCLCPP_INFO(this->get_logger(), "Got all required parameters");
 
@@ -46,6 +50,7 @@ namespace jps_maze_client {
             auto req = std::make_shared<jps_maze_msgs::srv::CreatePlayer::Request>();
             req->name = player_name;
             req->team.team = team_A ? jps_maze_msgs::msg::Team::TEAM_A : jps_maze_msgs::msg::Team::TEAM_B;
+            req->header.stamp = this->now();
             auto fut = create_player_clt->async_send_request(req);
             RCLCPP_DEBUG(this->get_logger(), "Send player request");
             rclcpp::spin_until_future_complete(this->get_node_base_interface(), fut);
@@ -54,16 +59,18 @@ namespace jps_maze_client {
                         res->player.pos.x, res->player.pos.y);
             RCLCPP_INFO(this->get_logger(), "Game board width: %d, height: %d", res->width, res->height);
         }
+        // TODO get actual width and height
+        this->visualizer = jps_maze_visualizer::Visualizer(host_name, target_port, 20, 20, &this->frame_buffer, this->get_logger().get_child("visualizer"));
 
         RCLCPP_INFO(this->get_logger(), "Init of Node done");
     }
 
     void Client::status_cb(const std::shared_ptr<jps_maze_msgs::msg::Status> msg) {
-
+        RCLCPP_INFO(this->get_logger(), "Got new status message");
     }
 
     void Client::next_round_cb(const std::shared_ptr<std_msgs::msg::Empty> msg) {
-
+        RCLCPP_INFO(this->get_logger(), "Next round started");
     }
 }
 

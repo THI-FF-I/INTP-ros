@@ -2,7 +2,7 @@
 
 namespace jps_maze_game
 {
-    Game::Game(const std::string_view board_path, uint8_t Pplayer_count_per_team, rclcpp::Logger logger) : board(board_path, logger.get_child("board")), player_count_per_team(Pplayer_count_per_team), logger(logger), round_cnt(0)
+    Game::Game(const std::string_view board_path, uint8_t Pplayer_count_per_team, rclcpp::Logger logger) : board(board_path, logger.get_child("board")), logger(logger), round_cnt(0), player_count_per_team(Pplayer_count_per_team)
     {
         std::random_device rd;
         this->id_gen = std::mt19937_64(rd());
@@ -56,7 +56,7 @@ namespace jps_maze_game
         return this->players.at(player_id);
     }
 
-    bool Game::ready() const
+    bool Game::ready()
     {
         if (player_count_per_team <= 0)
             return false;
@@ -77,16 +77,21 @@ namespace jps_maze_game
 
         if (player_count_team_a == player_count_team_b && player_count_team_a == player_count_per_team && player_count_team_b == player_count_per_team)
         {
+            game_state = GAME_STATE_RUNNING;
             return true;
         }
         else
+        {
+            game_state = GAME_STATE_WAITING_FOR_PLAYERS;
             return false;
+        }
     }
 
     bool Game::move_player(const player_id_t player_id, const direction_t direction)
     {
-        if(players.at(player_id).get_turn() == false) return false;
-        
+        if (players.at(player_id).get_turn() == false)
+            return false;
+
         if (board.player_move(direction, players.at(player_id)) == true)
         {
             players.at(player_id).set_turn(false);
@@ -98,15 +103,31 @@ namespace jps_maze_game
         }
     }
 
-    bool Game::next_round_ready() const // Returns true if next round is ready to start and false if we need to keep waiting
+    bool Game::next_round_ready() // Returns true if next round is ready to start and false if we need to keep waiting
     {
         for (const auto &m : players)
         {
             if (m.second.get_turn() == true)
+            {
                 return false;
+            }
         }
 
-        // TODO Check for win
+        // Check if a team won
+        for (const auto &m : players)
+        {
+            if (m.second.get_has_flag() == true)
+            {
+                if (m.second.get_team() == PLAYER_TEAM_A && board.get_block_state(m.second.get_x(), m.second.get_y()) == GAME_BLOCK_BASE_A)
+                {
+                    game_state = GAME_STATE_WIN_TEAM_A;
+                }
+                else if (m.second.get_team() == PLAYER_TEAM_B && board.get_block_state(m.second.get_x(), m.second.get_y()) == GAME_BLOCK_BASE_B)
+                {
+                    game_state = GAME_STATE_WIN_TEAM_B;
+                }
+            }
+        }
 
         return true;
     }
@@ -118,11 +139,11 @@ namespace jps_maze_game
             m.second.set_turn(false);
         }
 
-        // TODO Probably more to do here
+        game_state = GAME_STATE_RUNNING;
     }
 
-    void Game::get_status(const team_t team, jps_maze_msgs::msg::Status &status) const
+    std::vector<std::vector<game_block_type_t>> Game::get_team_board(const team_t team) const
     {
-        // TODO What should be done here???
+        return this->board.get_team_board(team);
     }
 }

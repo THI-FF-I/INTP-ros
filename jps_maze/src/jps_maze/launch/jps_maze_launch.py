@@ -14,28 +14,32 @@ def parse_arguments():
     parser.add_argument('-b', '--board_no', type=int, choices=range(0,1), dest='board_no', required=False, default=0, help='Select the index for the board to use')
     parser.add_argument('-d', '--debug', dest='debug', action='store_true', required=False, default=False, help='Set the log-level to debug for more verbose logging')
     parser.add_argument('--ppt', '--player_per_team', type=int, dest='player_per_team', required=False, default=2, help='Specify the amount of players per team')
+    parser.add_argument('--host_name', type=str, dest='host_name', required=False, default='localhost', help='Specify the hostname to connect to for visualisation')
+    parser.add_argument('-p', '--port', type=int, dest='target_port', required=False, default=42069, help='Specify the port to connect to')
     parser.print_usage()
     args = parser.parse_args(input('Enter options:\n').split())
+    if not 0 < args.target_port < 65535:
+        parser.error('Invalid port')
     if not args.start_server:
         if args.team:
             if args.name:
-                return args.node_ns, args.start_server, True if args.team.upper() == 'A' else  False, args.name, args.board_no, args.debug, args.player_per_team
+                return args.node_ns, args.start_server, True if args.team.upper() == 'A' else  False, args.name, args.board_no, args.debug, args.player_per_team, args.host_name, args.target_port
             else:
                 parser.error('Missing player name')
         else:
             parser.error('Missing team selection')
     else:
-        return args.node_ns, args.start_server, True, 'server', args.board_no, args.debug, args.player_per_team
+        return args.node_ns, args.start_server, True, 'server', args.board_no, args.debug, args.player_per_team, args.host_name, args.target_port
 
 def generate_launch_description():
-    node_ns, start_server, team_A, player_name, board_no, debug, player_per_team = parse_arguments()
+    node_ns, start_server, team_A, player_name, board_no, debug, player_per_team, host_name, target_port = parse_arguments()
     package = 'jps_maze'
     if start_server:
         node_name = 'server'
         executable = 'jps_maze_server'
         os.environ['status_topic'] = '/status'
     else:
-        node_name = 'client' + str(random.randrange(10000))
+        node_name = 'client_' + player_name + '_' + str(random.randrange(10000))
         executable = 'jps_maze_client'
         if team_A:
             team = 'team_A'
@@ -51,6 +55,8 @@ def generate_launch_description():
     os.environ['player_name'] = player_name
     os.environ['board_path'] = get_share_file_path_from_package(package_name=package, file_name='board' + str(board_no) + '.csv')
     os.environ['player_per_team'] = str(player_per_team)
+    os.environ['host_name'] = host_name
+    os.environ['target_port'] = str(target_port)
     if debug:
         ros_arguments=['--log-level', 'DEBUG']
     else:

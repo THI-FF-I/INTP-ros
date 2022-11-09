@@ -10,11 +10,14 @@
 
 #include "std_msgs/msg/empty.hpp"
 
+#include "jps_maze_msgs/msg/row.hpp"
 #include "jps_maze_msgs/msg/status.hpp"
 #include "jps_maze_msgs/srv/create_player.hpp"
 #include "jps_maze_msgs/srv/move_player.hpp"
 
 #include "jps_maze_game/game.hpp"
+
+#include "jps_maze_visualizer/visualizer.hpp"
 
 namespace jps_maze_server {
 
@@ -48,6 +51,8 @@ namespace jps_maze_server {
 
         // Attributes
         jps_maze_game::Game game;
+        jps_maze_visualizer::Visualizer visualizer;
+        jps_maze_visualizer::block_t **frame_buffer;
     };
 }
 

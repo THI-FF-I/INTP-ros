@@ -243,7 +243,7 @@ namespace jps_maze_game
         }
     }
 
-    std::vector<std::vector<game_block_type_t>> Board::get_team_board(team_t team)
+    std::vector<std::vector<game_block_type_t>> Board::get_team_board(const team_t team) const
     {
         std::vector<std::vector<game_block_type_t>> res;
         res.reserve(height);

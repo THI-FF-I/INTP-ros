@@ -11,7 +11,8 @@
 
 #include "jps_maze_msgs/msg/position.hpp"
 
-namespace jps_maze_game {
+namespace jps_maze_game
+{
     class Board;
 }
 
@@ -20,6 +21,32 @@ namespace jps_maze_game {
 
 namespace jps_maze_game
 {
+    class Portal
+    {
+    private:
+        coord_t x, y;
+
+    public:
+        Portal(const coord_t px, const coord_t py)
+        {
+            x = px;
+            y = py;
+        }
+
+        constexpr coord_t get_x() const
+        {
+            return x;
+        }
+        constexpr coord_t get_y() const
+        {
+            return y;
+        }
+        std::vector<coord_t> get_position() const
+        {
+            return {x, y};
+        }
+    };
+
     class Board
     {
     private:
@@ -28,12 +55,12 @@ namespace jps_maze_game
         game_flag_state_t flag_a = GAME_FLAG_STATE_IN_BASE;
         game_flag_state_t flag_b = GAME_FLAG_STATE_IN_BASE;
         rclcpp::Logger logger;
+        std::vector<Portal> portals;
 
     public:
-
         Board(const std::string_view filename, rclcpp::Logger logger);
 
-        Board(rclcpp::Logger logger) : logger(logger) {};
+        Board(rclcpp::Logger logger) : logger(logger){};
 
         bool load_board_from_file(const std::string_view filename);
         void print_board() const;
@@ -41,7 +68,7 @@ namespace jps_maze_game
         game_block_type_t get_block_state(const coord_t coord_x, const coord_t coord_y) const;
         void map_area(const coord_t coord_x, const coord_t coord_y, team_t team);
         bool player_move(const direction_t dir, Player &player);
-        std::vector<std::vector<game_block_type_t>> get_team_board(team_t team);
+        std::vector<std::vector<game_block_type_t>> get_team_board(const team_t team) const;
 
         ~Board()
         {

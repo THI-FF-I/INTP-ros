@@ -1,1 +1,1 @@
-jps_maze_msgs/Block[] block
+jps_maze_msgs/Block[] blocks
