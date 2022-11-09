@@ -43,6 +43,9 @@ namespace jps_maze_game
 
         bool move_player(const player_id_t player_id, const direction_t direction);
 
+        // TODO return all players of a team
+        std::vector<Player> get_players_of_team(team_t team) const;
+
         bool next_round_ready(); // Return if all players have moved
 
         void next_round();
