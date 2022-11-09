@@ -44,7 +44,8 @@ namespace jps_maze_game
             turn = new_turn;
         }
 
-        constexpr player_id_t get_player_id() const {
+        constexpr player_id_t get_player_id() const
+        {
             return this->player_id;
         }
 
@@ -60,13 +61,16 @@ namespace jps_maze_game
         {
             return team;
         }
-        constexpr color_t get_color() const {
+        constexpr color_t get_color() const
+        {
             return this->color;
         }
-        std::string get_player_name() const {
+        std::string get_player_name() const
+        {
             return this->player_name;
         }
-        constexpr bool get_has_flag() const {
+        constexpr bool get_has_flag() const
+        {
             return this->has_flag;
         }
         constexpr bool get_turn() const
