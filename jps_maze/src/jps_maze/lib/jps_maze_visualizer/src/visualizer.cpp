@@ -2,8 +2,8 @@
 
 namespace jps_maze_visualizer {
 
-    Visualizer::Visualizer(const std::string_view host_name, const std::string_view port, const uint8_t width,
-                           const uint8_t height, block_t ***frame_buffer, rclcpp::Logger logger) : width(width), height(height), logger(logger) {
+    Visualizer::Visualizer(const std::string_view host_name, const std::string_view port, const block_t width,
+                           const block_t height, block_t ***frame_buffer, rclcpp::Logger logger) : width(width), height(height), logger(logger) {
         this->frame_buffer = new block_t *[this->height];
         for(size_t i = 0; i < this->height; ++i) {
             this->frame_buffer[i] = new block_t[this->width];
@@ -55,6 +55,12 @@ namespace jps_maze_visualizer {
         //TODO: make some error handling, but screw that, I am a consultant
         bind(network_socket, (struct sockaddr *) &server_address, sizeof(server_address));
         */
+
+        RCLCPP_INFO(this->logger, "Sending dimensions");
+        block_t dim[2] = {this->width, this->height};
+
+        sendto(this->network_socket, dim, sizeof(dim), 0, (const struct sockaddr *) &server_address,
+               sizeof(server_address));
         RCLCPP_INFO(this->logger, "Init of visualizer done");
     }
 
