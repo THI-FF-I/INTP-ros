@@ -24,6 +24,7 @@ function setup() {
       var arena_row = new Array();
 
       console.log('Okay, lets go!');
+      console.log(arena);
 
       for(var i = 0; i < arena.length; i++){
         arena_row = arena[i];
