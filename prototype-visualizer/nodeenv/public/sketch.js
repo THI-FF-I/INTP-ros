@@ -40,7 +40,7 @@ function setup() {
             case 7:
               fill(1,1,117); //team-blue-player
               break;
-            case 8:
+            case 0:
               fill(143,3,8); //team-red-player
               break;
             case 2:
