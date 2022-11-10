@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////
 // UDP - Stuff - (listen for udp packages using dgram)
 var arena = new Array();
-let arena_rows = 0;
-let arena_coloums = 0;
+let arena_rows = 64;
+let arena_coloums = 64;
 let message_counter = 0;
 let rows_in_arena = 0; 
 
@@ -43,11 +43,11 @@ function newConnection(socket){
         //console.log(remote.address + ':' + remote.port +' - ' + remote.size +' - ' + message.readInt32LE(8).toString());
         encode_arena(message, remote);
         //broadcast it to every connection
-        if(rows_in_arena == arena_rows){
-        socket.broadcast.emit('arena_update', arena);
-        rows_in_arena = 0;
-        console.log(arena);
-        console.log('Sended an arena');
+        if(rows_in_arena == arena_rows){ 
+            socket.broadcast.emit('arena_update', arena);
+            rows_in_arena = 0;
+            message_counter = 1;
+            console.log('Sended an arena to browser!');
         }
     });
 }
@@ -56,13 +56,17 @@ function newConnection(socket){
 //encode the udp back to an two dimensional javascript array
 function encode_arena(message, remote){
 
+    console.log('Message counter: ' + message_counter);
+    console.log('Rows in Arena: ' + rows_in_arena);
+
     if(message_counter == 0){
         arena_rows = message.readInt32LE(4);
         arena_coloums = message.readInt32LE(0);
+        console.log('Received rows:' + arena_rows + ' and receives coloumns: ' + arena_coloums);
         message_counter++;
         return;
     }
-
+   
     var arena_row = new Array();
 
     for(var i = 0; i < arena_coloums; i++){
@@ -70,7 +74,8 @@ function encode_arena(message, remote){
     }
 
     arena[(message_counter-1)] = arena_row;
-
+    console.log('Current arena:' + arena);
+    message_counter++;
     rows_in_arena++;
 
     /*for(var i = 0; i < arena_dimension; i++){
