@@ -173,6 +173,7 @@ namespace jps_maze_game
             }
         }
 
+        RCLCPP_INFO(this->logger, "Ready for next round");
         return true;
     }
 
