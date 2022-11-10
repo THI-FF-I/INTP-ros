@@ -46,6 +46,7 @@ function newConnection(socket){
         if(rows_in_arena == arena_rows){
         socket.broadcast.emit('arena_update', arena);
         rows_in_arena = 0;
+        console.log(arena);
         console.log('Sended an arena');
         }
     });
