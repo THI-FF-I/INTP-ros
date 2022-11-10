@@ -43,9 +43,9 @@ function newConnection(socket){
         encode_arena(message, remote);
         //broadcast it to every connection
         if(message_counter == arena_rows){
-        socket.emit('arena_update', arena);
-        console.log('Sended an arena');
-        message_counter = 0;
+            socket.emit('arena_update', arena);
+            console.log('Sended an arena');
+            message_counter = 0;
         }
     });
 }
