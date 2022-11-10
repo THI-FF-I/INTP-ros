@@ -113,7 +113,7 @@ namespace jps_maze_client
                 break;
             }
 
-            if (next_pos[0] >= height - 1 || next_pos[1] >= width - 1)
+            if (next_pos[0] >= width || next_pos[1] >= height)
                 throw std::runtime_error("[Client::calculate_next_move] Position out of bound"); // This shouldn't happen
 
             if (frame_buffer[next_pos[1]][next_pos[0]] != jps_maze_msgs::msg::Block::WALL && cur_pos != next_pos)
