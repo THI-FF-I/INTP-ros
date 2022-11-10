@@ -106,7 +106,7 @@ namespace jps_maze_game
         if (player_count_team_a == player_count_team_b && player_count_team_a == player_count_per_team && player_count_team_b == player_count_per_team)
         {
             game_state = GAME_STATE_RUNNING;
-            RCLCPP_INFO(this->logger, "Okay, let's go!");
+            RCLCPP_INFO(this->logger, "Okay, let's go!\nGame is running...");
             return true;
         }
         else
