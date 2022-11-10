@@ -45,6 +45,7 @@ function newConnection(socket){
         //broadcast it to every connection
         if(rows_in_arena == arena_rows){
         socket.broadcast.emit('arena_update', arena);
+        rows_in_arena = 0;
         console.log('Sended an arena');
         }
     });
@@ -68,6 +69,8 @@ function encode_arena(message, remote){
     }
 
     arena[(message_counter-1)] = arena_row;
+
+    rows_in_arena++;
 
     /*for(var i = 0; i < arena_dimension; i++){
 
