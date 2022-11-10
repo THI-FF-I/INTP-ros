@@ -15,18 +15,22 @@ function setup() {
   stroke(stroke_color);
   strokeWeight(stroke_weight);
 
+  console.log('Waiting for data..');
+
   //on receiving new event, draw arena
   socket.on('arena_update',
     // When we receive data
     function(data) {
       
+      console.log('Okay, lets go!');
+
       var arena = data;
       var arena_row = new Array();
 
-      console.log('Okay, lets go!');
+      
       console.log(arena);
 
-      for(var i = 0; i < arena.length; i++){
+      /*for(var i = 0; i < arena.length; i++){
         arena_row = arena[i];
         for(var j = 0; j < arena_row.length; j++){
           
@@ -63,7 +67,7 @@ function setup() {
           }
           rect((i*10)*scale, (j*10)*scale, 10*scale, 10*scale);
         } 
-      }
+      }*/
 
     }
   );
