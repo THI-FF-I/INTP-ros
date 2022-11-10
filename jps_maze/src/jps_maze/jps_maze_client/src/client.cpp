@@ -68,7 +68,7 @@ namespace jps_maze_client
         req->header.stamp = this->now();
         auto fut = create_player_clt->async_send_request(req);
         RCLCPP_DEBUG(this->get_logger(), "Send player request");
-        fut.wait();
+        rclcpp::spin_until_future_complete(this->get_node_base_interface(), fut);
         std::shared_ptr<jps_maze_msgs::srv::CreatePlayer::Response> res = fut.get();
         RCLCPP_INFO(this->get_logger(), "Got back Player with id: %ld, at x: %d y: %d", res->player.id,
                     res->player.pos.x, res->player.pos.y);
