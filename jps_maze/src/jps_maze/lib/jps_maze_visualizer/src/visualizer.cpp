@@ -42,7 +42,7 @@ namespace jps_maze_visualizer {
         }
         this->server_address = *(rp->ai_addr);
 
-        RCLCPP_INFO(this->logger, "Sending dimensions");
+        RCLCPP_INFO(this->logger, "Sending dimensions width: %d, height: %d", this->width, this->height);
         block_t dim[2] = {this->width, this->height};
 
         sendto(this->network_socket, dim, sizeof(dim), 0, (const struct sockaddr *) &server_address,
