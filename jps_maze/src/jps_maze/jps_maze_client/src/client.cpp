@@ -152,7 +152,7 @@ namespace jps_maze_client
         }
         for (const auto &player : msg->players)
         {
-            frame_buffer[player.pos.y][player.pos.y] = player.color;
+            frame_buffer[player.pos.y][player.pos.y] = player.color & (static_cast<jps_maze_msgs::msg::Block::_block_type_type>(1) << (std::numeric_limits<jps_maze_msgs::msg::Block::_block_type_type>::digits - 1));
 
             if (player.id == player_id)
             {
