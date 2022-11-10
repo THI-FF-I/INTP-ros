@@ -37,17 +37,19 @@ io.sockets.on('connection', newConnection);
 
 function newConnection(socket){
     console.log("New client connection: " + socket.id);
-    
+    var error = socket.broadcast.emit('arena_update', 4);
+    console.log('Error: ' + error);
     //when receiving a new package via udp
     udp_recv_server.on('message', function(message, remote) {
-        //console.log(remote.address + ':' + remote.port +' - ' + remote.size +' - ' + message.readInt32LE(8).toString());
+        
         encode_arena(message, remote);
         //broadcast it to every connection
         if(rows_in_arena == arena_rows){ 
-            socket.broadcast.emit('arena_update', arena);
+            socket.broadcast.emit('arena_update', rows_in_arena);
             rows_in_arena = 0;
             message_counter = 1;
-            console.log('Sended an arena to browser!');
+            console.log('Sended an arena to browser!:');
+            console.log(arena);
         }
     });
 }
@@ -58,6 +60,8 @@ function encode_arena(message, remote){
 
     console.log('Message counter: ' + message_counter);
     console.log('Rows in Arena: ' + rows_in_arena);
+    console.log('Working with bytes: ' + remote.size);
+    console.log('Received A' + message.readInt32LE(0) + ' and receives B ' + message.readInt32LE(4));
 
     if(message_counter == 0){
         arena_rows = message.readInt32LE(4);
@@ -70,34 +74,19 @@ function encode_arena(message, remote){
     var arena_row = new Array();
 
     for(var i = 0; i < arena_coloums; i++){
-        arena_row[i] = message.readInt32LE(i*4);
+        try {
+            arena_row[i] = message.readInt32LE(i*4);
+          } catch (error) {
+            console.error(error);
+            return;
+          }
     }
 
     arena[(message_counter-1)] = arena_row;
     console.log('Current arena:' + arena);
     message_counter++;
     rows_in_arena++;
-
-    /*for(var i = 0; i < arena_dimension; i++){
-
-        for(var j = 0; j < arena_dimension; j++){
-            arena_row[j] = message.readInt32LE((i*arena_dimension*4)+(j*4));
-        }
-        arena[i] = arena_row;
-    }*/
-
-        
+     
     return;
-
-    //print arena to console
-    /*
-    for(var i = 0; i < arena_dimension; i++){
-        arena_row = arena[i];
-        for(var j = 0; j < arena_dimension; j++){
-            console.log(arena_row[j].toString());
-            k++;
-        } ,
-    }
-    */
 
 }
