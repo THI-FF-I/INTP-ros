@@ -6,6 +6,7 @@
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
+#include <random>
 
 #include "rclcpp/logger.hpp"
 #include "rclcpp/logging.hpp"
@@ -57,11 +58,17 @@ namespace jps_maze_game
         game_flag_state_t flag_b = GAME_FLAG_STATE_IN_BASE;
         std::vector<Portal> portals;
         rclcpp::Logger logger;
+        std::vector<std::pair<coord_t, coord_t>> base_a, base_b;
+        std::pair<coord_t, coord_t> pos_flag_a, pos_flag_b;
 
     public:
         Board(const std::string_view filename, rclcpp::Logger logger);
 
-        Board(rclcpp::Logger logger) : logger(logger){};
+        Board(rclcpp::Logger logger) : logger(logger)
+        {
+            std::random_device rd;
+            srand(rd());
+        };
 
         bool load_board_from_file(const std::string_view filename);
         void print_board() const;
@@ -70,6 +77,8 @@ namespace jps_maze_game
         void map_area(const coord_t coord_x, const coord_t coord_y, team_t team);
         bool player_move(const direction_t dir, Player &player);
         std::vector<std::vector<game_block_type_t>> get_team_board(const team_t team) const;
+        std::vector<std::vector<game_block_type_t>> get_board() const;
+        std::vector<std::pair<coord_t, coord_t>> get_base(team_t team) const;
 
         ~Board()
         {

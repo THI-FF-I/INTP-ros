@@ -5,6 +5,9 @@ namespace jps_maze_game
 
     Board::Board(const std::string_view filename, rclcpp::Logger logger) : logger(logger) // Creates board from file
     {
+        std::random_device rd;
+        srand(rd());
+
         RCLCPP_INFO(this->logger, "Initiating board with file: \"%s\"", filename.data());
         load_board_from_file(filename);
     }
@@ -50,15 +53,19 @@ namespace jps_maze_game
                         break;
                     case '3':
                         tmp.game_block_type = GAME_BLOCK_FLAG_A;
+                        pos_flag_a = {i, h};
                         break;
                     case '4':
                         tmp.game_block_type = GAME_BLOCK_FLAG_B;
+                        pos_flag_b = {i, h};
                         break;
                     case '5':
                         tmp.game_block_type = GAME_BLOCK_BASE_A;
+                        base_a.push_back({i, h});
                         break;
                     case '6':
                         tmp.game_block_type = GAME_BLOCK_BASE_B;
+                        base_b.push_back({i, h});
                         break;
                     default:
                         tmp.game_block_type = GAME_BLOCK_EMPTY;
@@ -225,6 +232,7 @@ namespace jps_maze_game
             {
                 flag_a = GAME_FLAG_STATE_BY_PLAYER;
                 player.set_has_flag(true);
+                board.at(new_y).at(new_x) = GAME_BLOCK_EMPTY;
             }
             return true;
 
@@ -235,6 +243,7 @@ namespace jps_maze_game
             {
                 flag_b = GAME_FLAG_STATE_BY_PLAYER;
                 player.set_has_flag(true);
+                board.at(new_y).at(new_x) = GAME_BLOCK_EMPTY;
             }
             return true;
 
@@ -293,5 +302,31 @@ namespace jps_maze_game
         }
 
         return res;
+    }
+
+    std::vector<std::vector<game_block_type_t>> Board::get_board() const
+    {
+        std::vector<std::vector<game_block_type_t>> res;
+        res.reserve(height);
+
+        for (coord_t h = 0; h < height; h++)
+        {
+            std::vector<game_block_type_t> tmp;
+            tmp.reserve(width);
+
+            for (coord_t w = 0; w < width; w++)
+            {
+                tmp.push_back(board.at(h).at(w).game_block_type);
+            }
+
+            res.push_back(tmp);
+        }
+
+        return res;
+    }
+
+    std::vector<std::pair<coord_t, coord_t>> Board::get_base(team_t team) const
+    {
+        return team == PLAYER_TEAM_A ? base_a : base_b;
     }
 }

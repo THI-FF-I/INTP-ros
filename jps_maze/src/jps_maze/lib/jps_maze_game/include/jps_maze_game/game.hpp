@@ -16,9 +16,10 @@
 #include "jps_maze_game/player.hpp"
 #include "jps_maze_game/types.hpp"
 
-
 namespace jps_maze_game
 {
+    // TODO Implement loss of flag
+
     class Game
     {
     private:
@@ -26,9 +27,11 @@ namespace jps_maze_game
         std::map<jps_maze_msgs::msg::Player::_id_type, Player> players;
         rclcpp::Logger logger;
         std::mt19937_64 id_gen;
+        std::mt19937 color_gen;
         uint16_t round_cnt;
         uint8_t player_count_per_team;
         game_state_t game_state = GAME_STATE_WAITING_FOR_PLAYERS;
+        std::random_device rd;
 
     public:
         Game(const std::string_view board_path, uint8_t Pplayer_count_per_team, const rclcpp::Logger logger);
@@ -37,13 +40,29 @@ namespace jps_maze_game
 
         ~Game() = default;
 
+        Game &operator=(const Game &other)
+        {
+            if (this != &other)
+            {
+                board = other.board;
+                players = other.players;
+                logger = other.logger;
+                id_gen = other.id_gen;
+                color_gen = other.color_gen;
+                round_cnt = other.round_cnt;
+                player_count_per_team = other.player_count_per_team;
+                game_state = other.game_state;
+            }
+
+            return *this;
+        }
+
         Player &add_player(const std::string &name, team_t team);
 
         bool ready();
 
         bool move_player(const player_id_t player_id, const direction_t direction);
 
-        // TODO return all players of a team
         std::vector<Player> get_players_of_team(team_t team) const;
 
         bool next_round_ready(); // Return if all players have moved
@@ -51,6 +70,8 @@ namespace jps_maze_game
         void next_round();
 
         std::vector<std::vector<game_block_type_t>> get_team_board(const team_t team) const;
+
+        std::vector<std::vector<game_block_type_t>> get_board() const;
 
         constexpr game_state_t get_game_state() const
         {

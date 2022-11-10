@@ -59,6 +59,12 @@ namespace jps_maze_server {
 
         RCLCPP_INFO(this->get_logger(), "Init of visualizer done");
 
+        RCLCPP_INFO(this->get_logger(), "Sending initial state of game");
+
+        update_framebuffer();
+
+        this->visualizer.re_draw();
+
         RCLCPP_INFO(this->get_logger(), "Init of Node done");
     }
 
@@ -86,6 +92,10 @@ namespace jps_maze_server {
         status.header.stamp = this->now();
         this->team_b_status_pub->publish(status);
         this->timer->reset();
+    }
+
+    void Server::update_framebuffer() {
+
     }
 
     void Server::create_player_cb(const std::shared_ptr<jps_maze_msgs::srv::CreatePlayer::Request> req,

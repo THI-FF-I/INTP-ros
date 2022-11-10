@@ -44,6 +44,10 @@ namespace jps_maze_game
         {
             turn = new_turn;
         }
+        constexpr void set_color(color_t new_color)
+        {
+            color = new_color;
+        }
 
         constexpr player_id_t get_player_id() const
         {
