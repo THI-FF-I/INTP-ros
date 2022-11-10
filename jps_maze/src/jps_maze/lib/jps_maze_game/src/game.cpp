@@ -181,7 +181,7 @@ namespace jps_maze_game
     {
         for (auto &m : players) // Reset all turn flags
         {
-            m.second.set_turn(false);
+            m.second.set_turn(true);
         }
 
         game_state = GAME_STATE_RUNNING;
