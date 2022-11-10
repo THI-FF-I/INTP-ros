@@ -4,7 +4,6 @@ var arena = new Array();
 let arena_rows = 0;
 let arena_coloums = 0;
 let message_counter = -1;
-let wrong_msg_cnt = 0;
 
 var PORT = 42069;
 var HOST = '127.0.0.1';
@@ -32,6 +31,8 @@ app.use(express.static('public'));
 //////////////////////////////////////////////////////
 // socket.io - Stuff (build socket.io socket on top of express)
 
+// BUG Not Working when multiple clients are connected (e.g. Browser refreshed)
+
 var socket = require('socket.io');
 var io = socket(express_server);
 io.sockets.on('connection', newConnection);
@@ -45,14 +46,9 @@ function newConnection(socket) {
         encode_arena(message, remote);
         //broadcast it to every connection
         if (message_counter == arena_rows) {
-            wrong_msg_cnt--;
-            console.log("Wrong msg count:", wrong_msg_cnt)
-            if (wrong_msg_cnt <= 0) {
-                socket.emit('arena_update', arena);
-                console.log('Sended an arena');
-                message_counter = 0;
-                wrong_msg_cnt = 0;
-            }
+            socket.emit('arena_update', arena);
+            console.log('Sended an arena');
+            message_counter = 0;
         }
     });
 }
@@ -71,7 +67,6 @@ function encode_arena(message, remote) {
     }
 
     if (message.length < arena_coloums * 4) {
-        wrong_msg_cnt++;
         console.log("Received too small message\nExiting function...\nMessage Counter:", message_counter);
         message_counter = 0;
         return;
