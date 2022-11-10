@@ -23,13 +23,13 @@ namespace jps_maze_client
         this->declare_parameter<bool>("team");
 
         // Get Parameters
-        const std::string create_player_topic = this->get_parameter("create_player_topic").as_string();
+        this->create_player_topic = this->get_parameter("create_player_topic").as_string();
         const std::string status_topic = this->get_parameter("status_topic").as_string();
         const std::string move_player_topic = this->get_parameter("move_player_topic").as_string();
         const std::string next_round_topic = this->get_parameter("next_round_topic").as_string();
         this->player_name = this->get_parameter("player_name").as_string();
-        const std::string host_name = this->get_parameter("host_name").as_string();
-        const std::string target_port = this->get_parameter("target_port").as_string();
+        this->host_name = this->get_parameter("host_name").as_string();
+        this->target_port = this->get_parameter("target_port").as_string();
         const bool team_A = this->get_parameter("team").as_bool();
 
         this->team = team_A ? jps_maze_game::PLAYER_TEAM_A : jps_maze_game::PLAYER_TEAM_B;
@@ -49,18 +49,12 @@ namespace jps_maze_client
 
         RCLCPP_INFO(this->get_logger(), "Registered clients");
 
-        this->request_player(create_player_topic);
-
-        RCLCPP_INFO(this->get_logger(), "Initialising visualizer");
-
-        this->visualizer = jps_maze_visualizer::Visualizer(host_name, target_port, this->width, this->height, &this->frame_buffer, this->get_logger().get_child("visualizer"));
-
         RCLCPP_INFO(this->get_logger(), "Init of Node done");
     }
 
-    void Client::request_player(const std::string &create_player_topic)
+    void Client::request_player()
     {
-        std::shared_ptr<rclcpp::Client<jps_maze_msgs::srv::CreatePlayer>> create_player_clt = this->create_client<jps_maze_msgs::srv::CreatePlayer>(create_player_topic);
+        this->create_player_clt = this->create_client<jps_maze_msgs::srv::CreatePlayer>(create_player_topic);
         RCLCPP_INFO(this->get_logger(), "Requesting player with name: \"%s\"", player_name.c_str());
         auto req = std::make_shared<jps_maze_msgs::srv::CreatePlayer::Request>();
         req->name = player_name;
@@ -68,7 +62,10 @@ namespace jps_maze_client
         req->header.stamp = this->now();
         auto fut = create_player_clt->async_send_request(req);
         RCLCPP_DEBUG(this->get_logger(), "Send player request");
-        rclcpp::spin_until_future_complete(this->get_node_base_interface(), fut);
+        rclcpp::executors::MultiThreadedExecutor executor;
+        executor.add_node(this->shared_from_this());
+        executor.spin_until_future_complete(fut);
+        //rclcpp::spin_until_future_complete(this->get_node_base_interface(), fut);
         std::shared_ptr<jps_maze_msgs::srv::CreatePlayer::Response> res = fut.get();
         RCLCPP_INFO(this->get_logger(), "Got back Player with id: %ld, at x: %d y: %d", res->player.id,
                     res->player.pos.x, res->player.pos.y);
@@ -78,6 +75,11 @@ namespace jps_maze_client
         this->width = res->width;
         this->height = res->height;
         RCLCPP_INFO(this->get_logger(), "Game board width: %d, height: %d", res->width, res->height);
+
+        RCLCPP_INFO(this->get_logger(), "Initialising visualizer");
+
+        this->visualizer = jps_maze_visualizer::Visualizer(host_name, target_port, this->width, this->height, &this->frame_buffer, this->get_logger().get_child("visualizer"));
+
     }
 
     void Client::calculate_next_move()
@@ -192,7 +194,10 @@ int main(int argc, char **argv)
     node_options.start_parameter_event_publisher(false);
     node_options.start_parameter_services(false);
     rclcpp::init(argc, argv);
+    rclcpp::executors::MultiThreadedExecutor executor;
     auto client_node = std::make_shared<jps_maze_client::Client>(node_options);
-    rclcpp::spin(client_node);
+    client_node->request_player();
+    executor.add_node(client_node);
+    executor.spin();
     return EXIT_SUCCESS;
 }

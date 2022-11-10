@@ -25,10 +25,10 @@ namespace jps_maze_client {
     class Client : public rclcpp::Node {
     public:
         Client(rclcpp::NodeOptions node_options = rclcpp::NodeOptions());
+        void request_player();
 
     private:
 
-        void request_player(const std::string &create_player_topic);
         void calculate_next_move();
 
         // Subscriber
@@ -36,6 +36,7 @@ namespace jps_maze_client {
         std::shared_ptr<rclcpp::Subscription<std_msgs::msg::Empty>> next_round_sub;
 
         // Clients
+        std::shared_ptr<rclcpp::Client<jps_maze_msgs::srv::CreatePlayer>> create_player_clt;
         std::shared_ptr<rclcpp::Client<jps_maze_msgs::srv::MovePlayer>> move_player_clt;
 
         // Callbacks
@@ -44,6 +45,8 @@ namespace jps_maze_client {
 
         // Attributes
         std::string player_name;
+        std::string host_name;
+        std::string target_port;
         jps_maze_game::coord_t width;
         jps_maze_game::coord_t height;
         jps_maze_game::player_id_t player_id;
@@ -52,6 +55,7 @@ namespace jps_maze_client {
         jps_maze_visualizer::Visualizer visualizer;
         jps_maze_visualizer::block_t **frame_buffer;
         jps_maze_game::coord_t x = 0, y = 0;
+        std::string create_player_topic;
     };
 }
 
