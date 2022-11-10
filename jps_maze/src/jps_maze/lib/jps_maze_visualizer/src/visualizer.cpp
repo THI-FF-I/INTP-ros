@@ -24,7 +24,6 @@ namespace jps_maze_visualizer {
         }
 
         for (rp = result; rp != NULL; rp = rp->ai_next) {
-            RCLCPP_DEBUG(this->logger, "Trying: %s", rp->ai_addr->sa_data);
             if((this->network_socket = socket(rp->ai_family, rp->ai_socktype,
                          rp->ai_protocol)) != -1) {
                 break;
