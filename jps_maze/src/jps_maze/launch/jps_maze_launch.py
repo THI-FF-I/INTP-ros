@@ -13,7 +13,7 @@ def parse_arguments():
     parser.add_argument('-t', '--team', type=str, choices=['A', 'a', 'B', 'b'], dest='team', required=False, help='If client mode is chosen, select the team to play on')
     parser.add_argument('-n', '--name', type=str, dest='name', required=False, help='If client mode is chosen, select the player name')
     parser.add_argument('--ns', '--node_ns', type=str, dest='node_ns', required=False, default='jps_maze', help='Set the namespace to use')
-    parser.add_argument('-b', '--board_no', type=int, choices=range(0,1), dest='board_no', required=False, default=0, help='Select the index for the board to use')
+    parser.add_argument('-b', '--board_no', type=int, choices=range(0,2), dest='board_no', required=False, default=0, help='Select the index for the board to use')
     parser.add_argument('-d', '--debug', dest='debug', action='store_true', required=False, default=False, help='Set the log-level to debug for more verbose logging')
     parser.add_argument('--ppt', '--player_per_team', type=int, dest='player_per_team', required=False, default=2, help='Specify the amount of players per team')
     parser.add_argument('--host_name', type=str, dest='host_name', required=False, default='localhost', help='Specify the hostname to connect to for visualisation')
