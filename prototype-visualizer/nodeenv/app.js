@@ -1,10 +1,9 @@
 //////////////////////////////////////////////////////
 // UDP - Stuff - (listen for udp packages using dgram)
 var arena = new Array();
-let arena_rows = 64;
-let arena_coloums = 64;
-let message_counter = 0;
-let rows_in_arena = 0; 
+let arena_rows = 0;
+let arena_coloums = 0;
+let message_counter = -1;
 
 var PORT = 42069;
 var HOST = '127.0.0.1';
@@ -37,19 +36,16 @@ io.sockets.on('connection', newConnection);
 
 function newConnection(socket){
     console.log("New client connection: " + socket.id);
-    var error = socket.broadcast.emit('arena_update', 4);
-    console.log('Error: ' + error);
+    
     //when receiving a new package via udp
     udp_recv_server.on('message', function(message, remote) {
-        
+        //console.log(remote.address + ':' + remote.port +' - ' + remote.size +' - ' + message.readInt32LE(8).toString());
         encode_arena(message, remote);
         //broadcast it to every connection
-        if(rows_in_arena == arena_rows){ 
-            socket.broadcast.emit('arena_update', rows_in_arena);
-            rows_in_arena = 0;
-            message_counter = 1;
-            console.log('Sended an arena to browser!:');
-            console.log(arena);
+        if(message_counter == arena_rows){
+        socket.emit('arena_update', arena);
+        console.log('Sended an arena');
+        message_counter = 0;
         }
     });
 }
@@ -58,35 +54,26 @@ function newConnection(socket){
 //encode the udp back to an two dimensional javascript array
 function encode_arena(message, remote){
 
-    console.log('Message counter: ' + message_counter);
-    console.log('Rows in Arena: ' + rows_in_arena);
-    console.log('Working with bytes: ' + remote.size);
-    console.log('Received A' + message.readInt32LE(0) + ' and receives B ' + message.readInt32LE(4));
-
-    if(message_counter == 0){
+    if(message_counter == -1){
+        console.log('Received packages with arena dimensions');
         arena_rows = message.readInt32LE(4);
         arena_coloums = message.readInt32LE(0);
         console.log('Received rows:' + arena_rows + ' and receives coloumns: ' + arena_coloums);
         message_counter++;
         return;
     }
-   
+
     var arena_row = new Array();
 
     for(var i = 0; i < arena_coloums; i++){
-        try {
-            arena_row[i] = message.readInt32LE(i*4);
-          } catch (error) {
-            console.error(error);
-            return;
-          }
+        arena_row[i] = message.readInt32LE(i*4);
     }
 
-    arena[(message_counter-1)] = arena_row;
-    console.log('Current arena:' + arena);
+    console.log('Adding new row at index ' + message_counter);
+    arena[message_counter] = arena_row;
+
     message_counter++;
-    rows_in_arena++;
-     
+
     return;
 
 }
