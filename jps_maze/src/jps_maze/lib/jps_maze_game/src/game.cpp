@@ -4,7 +4,6 @@ namespace jps_maze_game
 {
     Game::Game(const std::string_view board_path, uint8_t Pplayer_count_per_team, rclcpp::Logger logger) : board(board_path, logger.get_child("board")), logger(logger), round_cnt(0), player_count_per_team(Pplayer_count_per_team)
     {
-        std::random_device rd;
         this->id_gen = std::mt19937_64(rd());
         RCLCPP_INFO(this->logger, "Init of Game done");
     }
@@ -51,7 +50,36 @@ namespace jps_maze_game
         }
 
         player_id_t player_id = this->id_gen();
-        this->players.emplace(std::make_pair(player_id, Player{player_id, team, name}));
+
+        Player new_player(player_id, team, name);
+        this->color_gen = std::mt19937(rd());
+        new_player.set_color(color_gen());
+        new_player.set_x(0); // Default value
+        new_player.set_y(0); // Default value
+
+        auto base = board.get_base(team);
+
+        for(const auto& m: base)
+        {
+            bool success = true;
+
+            for(const auto& p: players)
+            {
+                if(p.second.get_x() == m.first && p.second.get_y() == m.second)
+                {
+                    success = false;
+                }
+            }
+
+            if(success == true)
+            {
+                new_player.set_x(m.first);
+                new_player.set_y(m.second);
+                break;
+            }
+        }
+
+        this->players.emplace(std::make_pair(player_id, new_player));
         RCLCPP_INFO(this->logger, "Created new player: \"%s\" with id: %ld", name.c_str(), player_id);
         return this->players.at(player_id);
     }

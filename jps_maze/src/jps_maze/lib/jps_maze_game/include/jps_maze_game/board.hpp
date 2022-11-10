@@ -58,6 +58,8 @@ namespace jps_maze_game
         game_flag_state_t flag_b = GAME_FLAG_STATE_IN_BASE;
         std::vector<Portal> portals;
         rclcpp::Logger logger;
+        std::vector<std::pair<coord_t, coord_t>> base_a;
+        std::vector<std::pair<coord_t, coord_t>> base_b;
 
     public:
         Board(const std::string_view filename, rclcpp::Logger logger);
@@ -76,6 +78,7 @@ namespace jps_maze_game
         bool player_move(const direction_t dir, Player &player);
         std::vector<std::vector<game_block_type_t>> get_team_board(const team_t team) const;
         std::vector<std::vector<game_block_type_t>> get_board() const;
+        std::vector<std::pair<coord_t, coord_t>> get_base(team_t team) const;
 
         ~Board()
         {

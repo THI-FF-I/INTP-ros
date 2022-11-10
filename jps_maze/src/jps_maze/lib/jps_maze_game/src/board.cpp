@@ -59,9 +59,11 @@ namespace jps_maze_game
                         break;
                     case '5':
                         tmp.game_block_type = GAME_BLOCK_BASE_A;
+                        base_a.push_back({i, h});
                         break;
                     case '6':
                         tmp.game_block_type = GAME_BLOCK_BASE_B;
+                        base_b.push_back({i, h});
                         break;
                     default:
                         tmp.game_block_type = GAME_BLOCK_EMPTY;
@@ -317,5 +319,10 @@ namespace jps_maze_game
         }
 
         return res;
+    }
+
+    std::vector<std::pair<coord_t, coord_t>> Board::get_base(team_t team) const
+    {
+        return team == PLAYER_TEAM_A ? base_a : base_b;
     }
 }

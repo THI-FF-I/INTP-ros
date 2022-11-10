@@ -16,10 +16,9 @@
 #include "jps_maze_game/player.hpp"
 #include "jps_maze_game/types.hpp"
 
-
 namespace jps_maze_game
 {
-    // TODO How are Players positioned?
+    // TODO Remove Flag Block when a player has the flag
 
     class Game
     {
@@ -28,9 +27,11 @@ namespace jps_maze_game
         std::map<jps_maze_msgs::msg::Player::_id_type, Player> players;
         rclcpp::Logger logger;
         std::mt19937_64 id_gen;
+        std::mt19937 color_gen;
         uint16_t round_cnt;
         uint8_t player_count_per_team;
         game_state_t game_state = GAME_STATE_WAITING_FOR_PLAYERS;
+        std::random_device rd;
 
     public:
         Game(const std::string_view board_path, uint8_t Pplayer_count_per_team, const rclcpp::Logger logger);
@@ -38,6 +39,23 @@ namespace jps_maze_game
         Game(const rclcpp::Logger logger) : board(logger), logger(logger){};
 
         ~Game() = default;
+
+        Game &operator=(const Game &other)
+        {
+            if (this != &other)
+            {
+                board = other.board;
+                players = other.players;
+                logger = other.logger;
+                id_gen = other.id_gen;
+                color_gen = other.color_gen;
+                round_cnt = other.round_cnt;
+                player_count_per_team = other.player_count_per_team;
+                game_state = other.game_state;
+            }
+
+            return *this;
+        }
 
         Player &add_player(const std::string &name, team_t team);
 
