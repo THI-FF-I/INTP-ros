@@ -19,6 +19,8 @@
 
 namespace jps_maze_game
 {
+    // TODO How are Players positioned?
+
     class Game
     {
     private:
