@@ -18,7 +18,7 @@
 
 namespace jps_maze_game
 {
-    // TODO Remove Flag Block when a player has the flag
+    // TODO Implement loss of flag
 
     class Game
     {

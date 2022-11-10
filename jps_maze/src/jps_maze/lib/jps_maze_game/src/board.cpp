@@ -53,9 +53,11 @@ namespace jps_maze_game
                         break;
                     case '3':
                         tmp.game_block_type = GAME_BLOCK_FLAG_A;
+                        pos_flag_a = {i, h};
                         break;
                     case '4':
                         tmp.game_block_type = GAME_BLOCK_FLAG_B;
+                        pos_flag_b = {i, h};
                         break;
                     case '5':
                         tmp.game_block_type = GAME_BLOCK_BASE_A;
@@ -230,6 +232,7 @@ namespace jps_maze_game
             {
                 flag_a = GAME_FLAG_STATE_BY_PLAYER;
                 player.set_has_flag(true);
+                board.at(new_y).at(new_x) = GAME_BLOCK_EMPTY;
             }
             return true;
 
@@ -240,6 +243,7 @@ namespace jps_maze_game
             {
                 flag_b = GAME_FLAG_STATE_BY_PLAYER;
                 player.set_has_flag(true);
+                board.at(new_y).at(new_x) = GAME_BLOCK_EMPTY;
             }
             return true;
 

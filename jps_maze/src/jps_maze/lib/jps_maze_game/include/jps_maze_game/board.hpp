@@ -58,8 +58,8 @@ namespace jps_maze_game
         game_flag_state_t flag_b = GAME_FLAG_STATE_IN_BASE;
         std::vector<Portal> portals;
         rclcpp::Logger logger;
-        std::vector<std::pair<coord_t, coord_t>> base_a;
-        std::vector<std::pair<coord_t, coord_t>> base_b;
+        std::vector<std::pair<coord_t, coord_t>> base_a, base_b;
+        std::pair<coord_t, coord_t> pos_flag_a, pos_flag_b;
 
     public:
         Board(const std::string_view filename, rclcpp::Logger logger);
