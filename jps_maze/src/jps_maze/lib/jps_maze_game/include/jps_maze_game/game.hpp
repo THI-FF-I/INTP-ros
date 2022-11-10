@@ -78,6 +78,11 @@ namespace jps_maze_game
             return game_state;
         }
 
+        std::map<jps_maze_msgs::msg::Player::_id_type, Player> get_players() const
+        {
+            return players;
+        }
+
         constexpr coord_t get_width() const
         {
             return this->board.get_width();

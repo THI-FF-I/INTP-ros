@@ -59,6 +59,7 @@ namespace jps_maze_visualizer {
         this->network_socket = rhs.network_socket;
         this->valid = rhs.valid;
         rhs.valid = false;
+        return *this;
     }
 
     Visualizer::~Visualizer() {
