@@ -48,7 +48,7 @@ function setup() {
             default:
               fill(245, 66, 230); //Error color
           }
-          rect((i*10)*scale, (j*10)*scale, 10*scale, 10*scale);
+          rect((j*10)*scale, (i*10)*scale, 10*scale, 10*scale);
         } 
       }
 
