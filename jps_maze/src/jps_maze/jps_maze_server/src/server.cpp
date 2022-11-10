@@ -95,7 +95,15 @@ namespace jps_maze_server {
     }
 
     void Server::update_framebuffer() {
-
+        size_t y = 0, x = 0;
+        for(const auto &row : this->game.get_board()) {
+            x = 0;
+            for(const auto &block : row) {
+                this->frame_buffer[y][x] = block;
+                x++;
+            }
+            y++;
+        }
     }
 
     void Server::create_player_cb(const std::shared_ptr<jps_maze_msgs::srv::CreatePlayer::Request> req,
