@@ -47,25 +47,25 @@ namespace jps_maze_game
                     case '2':
                         tmp.game_block_type = GAME_BLOCK_PORTAL;
                         {
-                            Portal port_tmp(i, h);
+                            Portal port_tmp(i / 2, h);
                             portals.push_back(port_tmp);
                         }
                         break;
                     case '3':
                         tmp.game_block_type = GAME_BLOCK_FLAG_A;
-                        pos_flag_a = {i, h};
+                        pos_flag_a = {i / 2, h};
                         break;
                     case '4':
                         tmp.game_block_type = GAME_BLOCK_FLAG_B;
-                        pos_flag_b = {i, h};
+                        pos_flag_b = {i / 2, h};
                         break;
                     case '5':
                         tmp.game_block_type = GAME_BLOCK_BASE_A;
-                        base_a.push_back({i, h});
+                        base_a.push_back({i / 2, h});
                         break;
                     case '6':
                         tmp.game_block_type = GAME_BLOCK_BASE_B;
-                        base_b.push_back({i, h});
+                        base_b.push_back({i / 2, h});
                         break;
                     default:
                         tmp.game_block_type = GAME_BLOCK_EMPTY;

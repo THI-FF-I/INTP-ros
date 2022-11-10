@@ -81,7 +81,6 @@ namespace jps_maze_game
 
         this->players.emplace(std::make_pair(player_id, new_player));
         RCLCPP_INFO(this->logger, "Created new player: \"%s\" with id: %ld in Team %c at x: %d y: %d", name.c_str(), player_id, (team == PLAYER_TEAM_A) ? 'A' : 'B', new_player.get_x(), new_player.get_y());
-        //RCLCPP_INFO(this->logger, "Created new player: \"%s\" with id: %ld", name.c_str(), player_id);
         return this->players.at(player_id);
     }
 
