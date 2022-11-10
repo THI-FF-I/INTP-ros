@@ -35,6 +35,7 @@ namespace jps_maze_server {
 
         // Timer
         std::shared_ptr<rclcpp::TimerBase> timer;
+        std::shared_ptr<rclcpp::TimerBase> simon_fix_das_mal_bitte;
 
         // Publisher
         std::shared_ptr<rclcpp::Publisher<jps_maze_msgs::msg::Status>> team_a_status_pub;
