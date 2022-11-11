@@ -200,7 +200,6 @@ int main(int argc, char **argv)
     rclcpp::init(argc, argv);
     rclcpp::executors::MultiThreadedExecutor executor;
     auto client_node = std::make_shared<jps_maze_client::Client>(node_options);
-    client_node->request_player();
     executor.add_node(client_node);
     executor.spin();
     return EXIT_SUCCESS;
