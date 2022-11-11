@@ -138,7 +138,7 @@ namespace jps_maze_server {
 
     void Server::move_player_cb(const std::shared_ptr<jps_maze_msgs::srv::MovePlayer::Request> req,
                                 std::shared_ptr<jps_maze_msgs::srv::MovePlayer::Response> res) {
-        RCLCPP_INFO(this->get_logger(), "Got new move player request for player_id: %ld dir: %s", req->player_id, req->dir == req->UP ? "UP" : (req->dir == req->DOWN ? "DOWN" : (req->dir == req->LEFT ? "LEFT" : "RIGHT")));
+        RCLCPP_INFO(this->get_logger(), "Got new move player request for player_id: %lu dir: %s", req->player_id, req->dir == req->UP ? "UP" : (req->dir == req->DOWN ? "DOWN" : (req->dir == req->LEFT ? "LEFT" : "RIGHT")));
         res->success = this->game.move_player(req->player_id, static_cast<jps_maze_game::direction_t>(req->dir));
         if(this->game.next_round_ready()) {
             RCLCPP_INFO(this->get_logger(), "Round %d finished sending status and moving on", this->game.get_round_cnt());
