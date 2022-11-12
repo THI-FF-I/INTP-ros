@@ -37,8 +37,9 @@ install(TARGETS
         DESTINATION lib/${PROJECT_NAME})
 
 install(DIRECTORY
-        launch
         config
+        launch
+        nodeenv
         res
         DESTINATION share/${PROJECT_NAME})
 

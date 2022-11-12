@@ -34,6 +34,7 @@ namespace jps_maze_visualizer {
         ~Visualizer();
         void re_draw();
     private:
+        void send_dim();
         uint8_t width;
         uint8_t height;
         block_t **frame_buffer;

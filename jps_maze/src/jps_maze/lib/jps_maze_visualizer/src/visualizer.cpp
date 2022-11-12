@@ -41,11 +41,6 @@ namespace jps_maze_visualizer {
         }
         this->server_address = *(rp->ai_addr);
 
-        RCLCPP_INFO(this->logger, "Sending dimensions width: %d, height: %d", this->width, this->height);
-        block_t dim[2] = {this->width, this->height};
-
-        sendto(this->network_socket, dim, sizeof(dim), 0, (const struct sockaddr *) &server_address,
-               sizeof(server_address));
         RCLCPP_INFO(this->logger, "Init of visualizer done");
     }
 
@@ -74,10 +69,19 @@ namespace jps_maze_visualizer {
 
     void Visualizer::re_draw() {
         RCLCPP_INFO(this->logger, "Redrawing");
+        this->send_dim();
         for(size_t i = 0; i < this->height; ++i) {
             sendto(this->network_socket, this->frame_buffer[i], sizeof(block_t) * this->width, 0, (const struct sockaddr *) &server_address,
                    sizeof(server_address));
-            RCLCPP_INFO(this->logger, "Send row: %zu", i);
+            RCLCPP_DEBUG(this->logger, "Send row: %zu", i);
         }
+    }
+
+    void Visualizer::send_dim() {
+        RCLCPP_INFO(this->logger, "Sending dimensions width: %d, height: %d", this->width, this->height);
+        block_t dim[2] = {this->width, this->height};
+
+        sendto(this->network_socket, dim, sizeof(dim), 0, (const struct sockaddr *) &server_address,
+               sizeof(server_address));
     }
 }
