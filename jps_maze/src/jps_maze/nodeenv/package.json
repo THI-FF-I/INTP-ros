@@ -1,14 +1,14 @@
 {
-    "name" : "jps-maze-visio",
-    "version" : "1.0.0",
-    "description" : "JPS - Maze - Visio-Server",
-    "author" : "Simon Demuth - sid1439@thi.de",
-    "main" : "app.js",
+    "name": "jps-maze-visio",
+    "version": "1.0.0",
+    "description": "JPS - Maze - Visio-Server",
+    "author": "Simon Demuth - sid1439@thi.de",
+    "main": "app.js",
     "scripts": {
-        "start" : "node app.js"
+        "start": "node app.js"
     },
     "dependencies": {
         "express": "^4.16.1",
-        "socket.io" : "^4.5.3"
+        "socket.io": "^4.5.3"
     }
 }
