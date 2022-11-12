@@ -44,9 +44,9 @@ function newConnection(socket) {
     udp_recv_server.on('message', function (message, remote) {
         //console.log(remote.address + ':' + remote.port +' - ' + remote.size +' - ' + message.readInt32LE(8).toString());
         encode_arena(message, remote);
-        //broadcast it to every connection
+        //(broadcast) it to every connection
         if (message_counter == arena_rows) {
-            socket.emit('arena_update', arena);
+            socket.broadcast.emit('arena_update', arena);
             console.log('Sended an arena');
             message_counter = 0;
         }
