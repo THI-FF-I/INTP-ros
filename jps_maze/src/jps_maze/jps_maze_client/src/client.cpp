@@ -144,6 +144,7 @@ namespace jps_maze_client
         if (success)
         {
             next_dir = next_dir_res;
+            RCLCPP_INFO(this->get_logger(), "Next direction: %d", next_dir);
         }
         else
         {

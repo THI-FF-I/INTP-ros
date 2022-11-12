@@ -119,15 +119,20 @@ namespace jps_maze_game
     bool Game::move_player(const player_id_t player_id, const direction_t direction)
     {
         if (players.at(player_id).get_turn() == false)
+        {
+            RCLCPP_INFO(logger, "move player cancelled: not your turn");
             return false;
+        }
 
         if (board.player_move(direction, players.at(player_id)) == true)
         {
             players.at(player_id).set_turn(false);
+            RCLCPP_INFO(logger, "move player successfull");
             return true;
         }
         else
         {
+            RCLCPP_INFO(logger, "move player cancelled: move not allowed");
             return false;
         }
     }
