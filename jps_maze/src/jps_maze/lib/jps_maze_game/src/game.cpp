@@ -59,19 +59,19 @@ namespace jps_maze_game
 
         auto base = board.get_base(team);
 
-        for(const auto& m: base)
+        for (const auto &m : base)
         {
             bool success = true;
 
-            for(const auto& p: players)
+            for (const auto &p : players)
             {
-                if(p.second.get_x() == m.first && p.second.get_y() == m.second)
+                if (p.second.get_x() == m.first && p.second.get_y() == m.second)
                 {
                     success = false;
                 }
             }
 
-            if(success == true)
+            if (success == true)
             {
                 new_player.set_x(m.first);
                 new_player.set_y(m.second);
@@ -118,21 +118,36 @@ namespace jps_maze_game
 
     bool Game::move_player(const player_id_t player_id, const direction_t direction)
     {
-        if (players.at(player_id).get_turn() == false)
+        RCLCPP_INFO(logger, "Game::move_player: player_id: %ld, dir: %d", player_id, direction);
+
+        try
         {
-            RCLCPP_INFO(logger, "move player cancelled: not your turn");
+            if (players.at(player_id).get_turn() == false)
+            {
+                RCLCPP_INFO(logger, "move player cancelled: not your turn");
+                return false;
+            }
+
+            if (board.player_move(direction, players.at(player_id)) == true)
+            {
+                players.at(player_id).set_turn(false);
+                RCLCPP_INFO(logger, "move player successfull");
+                return true;
+            }
+            else
+            {
+                RCLCPP_INFO(logger, "move player cancelled: move not allowed");
+                return false;
+            }
+        }
+        catch (std::out_of_range &m)
+        {
+            RCLCPP_INFO(logger, "exception thrown: %s", m.what());
             return false;
         }
-
-        if (board.player_move(direction, players.at(player_id)) == true)
+        catch (...)
         {
-            players.at(player_id).set_turn(false);
-            RCLCPP_INFO(logger, "move player successfull");
-            return true;
-        }
-        else
-        {
-            RCLCPP_INFO(logger, "move player cancelled: move not allowed");
+            RCLCPP_INFO(logger, "unknown exception");
             return false;
         }
     }
@@ -141,9 +156,9 @@ namespace jps_maze_game
     {
         std::vector<Player> res;
 
-        for(const auto &m: players)
+        for (const auto &m : players)
         {
-            if(m.second.get_team() == team)
+            if (m.second.get_team() == team)
             {
                 res.push_back(m.second);
             }
