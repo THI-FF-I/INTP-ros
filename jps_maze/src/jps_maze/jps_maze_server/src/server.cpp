@@ -35,7 +35,8 @@ namespace jps_maze_server {
         this->timer_cb_group = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
         this->timer = this->create_wall_timer(1s, std::bind(&Server::timer_cb, this), this->timer_cb_group);
         this->timer->cancel();
-        //this->simon_fix_das_mal_bitte = this->create_wall_timer(200ms, [this](){ this->visualizer.re_draw();});
+
+        RCLCPP_INFO(this->get_logger(), "Set up timer");
 
         // Register Publisher
         this->team_a_status_pub = this->create_publisher<jps_maze_msgs::msg::Status>(this->get_effective_namespace() + "/team_A" + status_topic, 10);

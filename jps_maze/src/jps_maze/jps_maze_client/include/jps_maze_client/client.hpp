@@ -32,8 +32,9 @@ namespace jps_maze_client {
         void calculate_next_move();
 
         //Callbackgroups
-
         std::shared_ptr<rclcpp::CallbackGroup> create_player_cb_group;
+        std::shared_ptr<rclcpp::CallbackGroup> status_cb_group;
+        std::shared_ptr<rclcpp::CallbackGroup> move_player_cb_group;
 
         // Subscriber
         std::shared_ptr<rclcpp::Subscription<jps_maze_msgs::msg::Status>> team_status_sub;
@@ -46,6 +47,10 @@ namespace jps_maze_client {
         // Guard Conditions
         std::shared_ptr<rclcpp::GuardCondition> got_player_guard;
         std::shared_ptr<rclcpp::WaitSet> got_player_wait_set;
+
+        std::shared_ptr<rclcpp::GuardCondition> next_move_ready_guard;
+        std::shared_ptr<rclcpp::WaitSet> next_move_ready_wait_set;
+
 
         // Callbacks
         void status_cb(const std::shared_ptr<jps_maze_msgs::msg::Status> msg);

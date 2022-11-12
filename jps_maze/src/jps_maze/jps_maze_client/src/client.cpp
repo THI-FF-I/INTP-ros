@@ -35,26 +35,37 @@ namespace jps_maze_client
         this->team = team_A ? jps_maze_game::PLAYER_TEAM_A : jps_maze_game::PLAYER_TEAM_B;
         this->cur_dir = team_A ? jps_maze_game::PLAYER_DIR_RIGHT : jps_maze_game::PLAYER_DIR_LEFT;
 
-        this->create_player_cb_group = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
-
         RCLCPP_INFO(this->get_logger(), "Got all required parameters");
+
+        this->create_player_cb_group = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
+        this->status_cb_group = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
+        this->move_player_cb_group = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
+
+        RCLCPP_INFO(this->get_logger(), "Created callback groups");
+
+        rclcpp::SubscriptionOptions sub_options;
+        sub_options.callback_group = this->status_cb_group;
 
         // Register Subscriber
         this->team_status_sub = this->create_subscription<jps_maze_msgs::msg::Status>(this->get_effective_namespace() + (team_A ? "/team_A" : "team_B") + status_topic, 10,
-                                                                                      std::bind(&Client::status_cb, this, _1));
+                                                                                      std::bind(&Client::status_cb, this, _1), sub_options);
         this->next_round_sub = this->create_subscription<std_msgs::msg::Empty>(next_round_topic, 10, std::bind(&Client::next_round_cb, this, _1));
 
         RCLCPP_INFO(this->get_logger(), "Registered subscribers");
 
         // Register Clients
         this->create_player_clt = this->create_client<jps_maze_msgs::srv::CreatePlayer>(create_player_topic, rmw_qos_profile_services_default, this->create_player_cb_group);
-        this->move_player_clt = this->create_client<jps_maze_msgs::srv::MovePlayer>(move_player_topic);
+        this->move_player_clt = this->create_client<jps_maze_msgs::srv::MovePlayer>(move_player_topic, rmw_qos_profile_default, this->move_player_cb_group);
 
         RCLCPP_INFO(this->get_logger(), "Registered clients");
 
         this->got_player_wait_set = std::make_shared<rclcpp::WaitSet>();
         this->got_player_guard = std::make_shared<rclcpp::GuardCondition>();
         this->got_player_wait_set->add_guard_condition(this->got_player_guard);
+
+        this->next_move_ready_wait_set = std::make_shared<rclcpp::WaitSet>();
+        this->next_move_ready_guard = std::make_shared<rclcpp::GuardCondition>();
+        this->next_move_ready_wait_set->add_guard_condition(this->next_move_ready_guard);
 
         RCLCPP_INFO(this->get_logger(), "Set up guard conditions");
 
@@ -189,25 +200,27 @@ namespace jps_maze_client
         this->visualizer.re_draw();
         RCLCPP_INFO(this->get_logger(), "Calculating next move");
         this->calculate_next_move();
+        this->next_move_ready_guard->trigger();
     }
 
     void Client::next_round_cb(const std::shared_ptr<std_msgs::msg::Empty> msg)
     {
         RCLCPP_INFO(this->get_logger(), "Next round started");
+        this->next_move_ready_wait_set->wait();
         auto req = std::make_shared<jps_maze_msgs::srv::MovePlayer::Request>();
         req->dir = this->next_dir;
         req->player_id = this->player_id;
         RCLCPP_INFO(this->get_logger(), "Sending player move request");
         req->header.stamp = this->now();
-        auto fut = this->move_player_clt->async_send_request(req);
-        fut.wait();
-        auto res = fut.get();
-        RCLCPP_INFO(this->get_logger(), "Got response for player move");
-        if (!res->success)
-        {
-            RCLCPP_FATAL(this->get_logger(), "Move was rejected");
-            throw std::runtime_error("Move was rejected");
-        }
+        this->move_player_clt->async_send_request(req, [this](std::shared_future<jps_maze_msgs::srv::MovePlayer::Response::SharedPtr> fut) {
+            auto res = fut.get();
+            RCLCPP_INFO(this->get_logger(), "Got response for player move");
+            if (!res->success)
+            {
+                RCLCPP_FATAL(this->get_logger(), "Move was rejected");
+                throw std::runtime_error("Move was rejected");
+            }
+        });
     }
 }
 
