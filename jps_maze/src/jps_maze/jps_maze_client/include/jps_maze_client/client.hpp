@@ -31,6 +31,10 @@ namespace jps_maze_client {
 
         void calculate_next_move();
 
+        //Callbackgroups
+
+        std::shared_ptr<rclcpp::CallbackGroup> create_player_cb_group;
+
         // Subscriber
         std::shared_ptr<rclcpp::Subscription<jps_maze_msgs::msg::Status>> team_status_sub;
         std::shared_ptr<rclcpp::Subscription<std_msgs::msg::Empty>> next_round_sub;

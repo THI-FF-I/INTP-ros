@@ -35,6 +35,8 @@ namespace jps_maze_client
         this->team = team_A ? jps_maze_game::PLAYER_TEAM_A : jps_maze_game::PLAYER_TEAM_B;
         this->cur_dir = team_A ? jps_maze_game::PLAYER_DIR_RIGHT : jps_maze_game::PLAYER_DIR_LEFT;
 
+        this->create_player_cb_group = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
+
         RCLCPP_INFO(this->get_logger(), "Got all required parameters");
 
         // Register Subscriber
@@ -45,7 +47,7 @@ namespace jps_maze_client
         RCLCPP_INFO(this->get_logger(), "Registered subscribers");
 
         // Register Clients
-        this->create_player_clt = this->create_client<jps_maze_msgs::srv::CreatePlayer>(create_player_topic);
+        this->create_player_clt = this->create_client<jps_maze_msgs::srv::CreatePlayer>(create_player_topic, rmw_qos_profile_services_default, this->create_player_cb_group);
         this->move_player_clt = this->create_client<jps_maze_msgs::srv::MovePlayer>(move_player_topic);
 
         this->got_player_wait_set = std::make_shared<rclcpp::WaitSet>();
@@ -79,6 +81,7 @@ namespace jps_maze_client
             RCLCPP_INFO(this->get_logger(), "Game board width: %d, height: %d", res->width, res->height);
 
             this->create_player_clt.reset();
+            this->create_player_cb_group.reset();
 
             RCLCPP_INFO(this->get_logger(), "Initialising visualizer");
 
