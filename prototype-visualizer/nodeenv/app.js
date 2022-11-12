@@ -5,8 +5,7 @@ let arena_rows = 0;
 let arena_coloums = 0;
 let message_counter = -1;
 
-var PORT = 42069;
-var HOST = '127.0.0.1';
+var PORT = process.argv[3];
 
 var dgram = require('dgram');
 var udp_recv_server = dgram.createSocket('udp4');
@@ -16,7 +15,7 @@ udp_recv_server.on('listening', function () {
     console.log('UDP Server listening on ' + address.address + ':' + address.port);
 });
 
-udp_recv_server.bind(PORT, HOST);
+udp_recv_server.bind(PORT);
 
 //////////////////////////////////////////////////////
 // Express - Stuff (expose express server in order to serve index.html)
