@@ -78,6 +78,8 @@ namespace jps_maze_client
             this->height = res->height;
             RCLCPP_INFO(this->get_logger(), "Game board width: %d, height: %d", res->width, res->height);
 
+            this->create_player_clt.reset();
+
             RCLCPP_INFO(this->get_logger(), "Initialising visualizer");
 
             this->visualizer = jps_maze_visualizer::Visualizer(host_name, target_port, this->width, this->height, &this->frame_buffer, this->get_logger().get_child("visualizer"));
@@ -207,10 +209,9 @@ int main(int argc, char **argv)
     node_options.start_parameter_event_publisher(false);
     node_options.start_parameter_services(false);
     rclcpp::init(argc, argv);
-    //rclcpp::executors::MultiThreadedExecutor executor;
+    rclcpp::executors::MultiThreadedExecutor executor;
     auto client_node = std::make_shared<jps_maze_client::Client>(node_options);
-    //executor.add_node(client_node);
-    //executor.spin();
-    rclcpp::spin(client_node);
+    executor.add_node(client_node);
+    executor.spin();
     return EXIT_SUCCESS;
 }
