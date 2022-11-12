@@ -118,36 +118,36 @@ namespace jps_maze_game
 
     bool Game::move_player(const player_id_t player_id, const direction_t direction)
     {
-        RCLCPP_INFO(logger, "Game::move_player: player_id: %ld, dir: %d", player_id, direction);
+        RCLCPP_DEBUG(logger, "Game::move_player: player_id: %ld, dir: %d", player_id, direction);
 
         try
         {
             if (players.at(player_id).get_turn() == false)
             {
-                RCLCPP_INFO(logger, "move player cancelled: not your turn");
+                RCLCPP_DEBUG(logger, "move player cancelled: not your turn");
                 return false;
             }
 
             if (board.player_move(direction, players.at(player_id)) == true)
             {
                 players.at(player_id).set_turn(false);
-                RCLCPP_INFO(logger, "move player successfull");
+                RCLCPP_DEBUG(logger, "move player successfull");
                 return true;
             }
             else
             {
-                RCLCPP_INFO(logger, "move player cancelled: move not allowed");
+                RCLCPP_DEBUG(logger, "move player cancelled: move not allowed");
                 return false;
             }
         }
         catch (std::out_of_range &m)
         {
-            RCLCPP_INFO(logger, "exception thrown: %s", m.what());
+            RCLCPP_DEBUG(logger, "exception thrown: %s", m.what());
             return false;
         }
         catch (...)
         {
-            RCLCPP_INFO(logger, "unknown exception");
+            RCLCPP_DEBUG(logger, "unknown exception");
             return false;
         }
     }
