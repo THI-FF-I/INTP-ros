@@ -5,7 +5,8 @@ let arena_rows = 0;
 let arena_coloums = 0;
 let message_counter = -1;
 
-var PORT = process.argv[2];
+var ROS_PORT = process.argv[2];
+var BROWSER_PORT = process.argv[3];
 
 var dgram = require('dgram');
 var udp_recv_server = dgram.createSocket('udp4');
@@ -15,7 +16,7 @@ udp_recv_server.on('listening', function () {
     console.log('UDP Server listening on ' + address.address + ':' + address.port);
 });
 
-udp_recv_server.bind(PORT);
+udp_recv_server.bind(ROS_PORT);
 
 //////////////////////////////////////////////////////
 // Express - Stuff (expose express server in order to serve index.html)
@@ -23,8 +24,8 @@ udp_recv_server.bind(PORT);
 var express = require('express');
 const { send } = require('express/lib/response');
 var app = express();
-var express_server = app.listen(3000);
-console.log('Express is listening on 3000...');
+var express_server = app.listen(BROWSER_PORT);
+console.log('Express is listening on '+BROWSER_PORT+ '...');
 app.use(express.static('public'));
 
 //////////////////////////////////////////////////////

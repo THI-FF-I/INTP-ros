@@ -11,8 +11,8 @@ from ros2launch.api import get_share_file_path_from_package
 
 logger = logging.getLogger(name='launch')
 
-def start_daemon(node_name, package, launch_context):
-    subprocess.run(args=['forever', 'start', '-a', '--uid', node_name, 'app.js'], cwd=os.path.join(get_package_share_directory(package_name=package), 'nodeenv'))
+def start_daemon(node_name, package, target_port, browser_port, launch_context):
+    subprocess.run(args=['forever', 'start', '-a', '--uid', node_name, 'app.js', str(target_port), str(browser_port)], cwd=os.path.join(get_package_share_directory(package_name=package), 'nodeenv'))
 def stop_daemon(node_name, package, launch_constext):
     subprocess.run(args=['forever', 'stop', node_name,], cwd=os.path.join(get_package_share_directory(package_name=package), 'nodeenv'))
 def parse_arguments():
@@ -98,7 +98,7 @@ def generate_launch_description():
                 LogInfo(
                     msg=['Starting nodejs server daemon']
                 ),
-                #OpaqueFunction(function=partial(start_daemon, node_name, package)),
+                OpaqueFunction(function=partial(start_daemon, node_name, package, target_port, browser_port)),
                 LogInfo(
                     msg=['Finished starting nodejs server daemon']
                 ),
@@ -113,7 +113,7 @@ def generate_launch_description():
                 LogInfo(
                  msg=['Stopping nodejs server daemon']
                 ),
-                #OpaqueFunction(function=partial(stop_daemon, node_name, package)),
+                OpaqueFunction(function=partial(stop_daemon, node_name, package)),
                 LogInfo(
                     msg=['Finished stooping nodejs daemon']
                 ),
