@@ -92,6 +92,8 @@ namespace jps_maze_client
 
     void Client::calculate_next_move()
     {
+        RCLCPP_DEBUG(this->get_logger(), "[Client::calculate_next_move] starting");
+
         const jps_maze_game::coord_t cur_pos[2] = {this->x, this->y};
         jps_maze_game::coord_t next_pos[2] = {this->x, this->y};
         jps_maze_game::direction_t next_dir_res = cur_dir;
@@ -128,6 +130,7 @@ namespace jps_maze_client
 
             if (frame_buffer[next_pos[1]][next_pos[0]] != jps_maze_msgs::msg::Block::WALL && cur_pos != next_pos)
             {
+                RCLCPP_DEBUG(this->get_logger(), "[Client::calculate_next_move] found a valid direction");
                 success = true;
                 break;
             }
