@@ -115,7 +115,7 @@ def generate_launch_description():
                 ),
                 OpaqueFunction(function=partial(stop_daemon, node_name, package)),
                 LogInfo(
-                    msg=['Finished stooping nodejs daemon']
+                    msg=['Finished stopping nodejs daemon']
                 ),
             ]
         )

@@ -50,13 +50,17 @@ namespace jps_maze_client
         this->create_player_clt = this->create_client<jps_maze_msgs::srv::CreatePlayer>(create_player_topic, rmw_qos_profile_services_default, this->create_player_cb_group);
         this->move_player_clt = this->create_client<jps_maze_msgs::srv::MovePlayer>(move_player_topic);
 
+        RCLCPP_INFO(this->get_logger(), "Registered clients");
+
         this->got_player_wait_set = std::make_shared<rclcpp::WaitSet>();
         this->got_player_guard = std::make_shared<rclcpp::GuardCondition>();
         this->got_player_wait_set->add_guard_condition(this->got_player_guard);
 
+        RCLCPP_INFO(this->get_logger(), "Set up guard conditions");
+
         this->request_player();
 
-        RCLCPP_INFO(this->get_logger(), "Registered clients");
+        RCLCPP_INFO(this->get_logger(), "Requested player");
 
         RCLCPP_INFO(this->get_logger(), "Init of Node done");
     }
