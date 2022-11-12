@@ -9,8 +9,8 @@
 
 #include <netinet/in.h>
 
-#define ARENA_HEIGHT 64
-#define ARENA_WIDTH 48
+#define ARENA_HEIGHT 123
+#define ARENA_WIDTH 142
 
 int arena_row[ARENA_WIDTH];
 
@@ -20,19 +20,23 @@ int network_socket;
 // address for socket
 struct sockaddr_in server_address;
 
+int widthheight[] = {ARENA_WIDTH, ARENA_HEIGHT};
+
 void sendRandomArena()
 {
+    
+    sendto(network_socket, widthheight, sizeof(widthheight), 0, (const struct sockaddr *) &server_address, sizeof(server_address));
 
     for(int i = 0; i < ARENA_HEIGHT; i++)
     {
 
         for(int n = 0; n < ARENA_WIDTH; n++)
         {
-
-            arena_row[n] = rand() % 10;
-            sendto(network_socket, arena_row, sizeof(arena_row), 0, (const struct sockaddr *) &server_address, sizeof(server_address));
+            arena_row[n] = rand() % 9;
 
         }
+
+        sendto(network_socket, arena_row, sizeof(arena_row), 0, (const struct sockaddr *) &server_address, sizeof(server_address));
 
     }
 
@@ -52,16 +56,12 @@ int main()
     //TODO: make some error handling, but screw that, I am a consultant 
     bind(network_socket, (struct sockaddr*) &server_address, sizeof(server_address));
 
-    int widthheight[] = {ARENA_WIDTH, ARENA_HEIGHT};
-
-    sendto(network_socket, widthheight, sizeof(widthheight), 0, (const struct sockaddr *) &server_address, sizeof(server_address));
-
     //smash it
     while(true)
     {
         sendRandomArena();
         printf("Sended!\n");
-        sleep(3);
+        sleep(1);
     }
 
     return 0;

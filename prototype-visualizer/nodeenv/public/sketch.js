@@ -27,7 +27,7 @@ function setup() {
 
       for(var i = 0; i < arena.length; i++){
         arena_row = arena[i];
-        for(var j = 0; j < arena.length; j++){
+        for(var j = 0; j < arena_row.length; j++){
           
           switch(arena_row[j]) {
             case 0:
@@ -36,14 +36,26 @@ function setup() {
             case 1:
               fill(80, 80, 80); //wall-grey
               break;
-            case 2:
+            case 7:
               fill(1,1,117); //team-blue-player
               break;
-            case 3:
+            case 8:
               fill(143,3,8); //team-red-player
               break;
+            case 2:
+              fill(5,250,25); //portal-green
+              break;
+            case 3:
+              fill(2,2,255); //Flag-A-blue
+              break;
             case 4:
-              fill(5,250,25); //unused-green
+              fill(255,2,2); //Flag-B-red
+              break;
+            case 5:
+              fill(37,150,90); //Base-A-blue
+              break;
+            case 6:
+              fill(206,14,110); //Base-B-red
               break;
             default:
               fill(245, 66, 230); //Error color

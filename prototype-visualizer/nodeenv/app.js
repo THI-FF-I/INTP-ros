@@ -5,7 +5,7 @@ let arena_rows = 0;
 let arena_coloums = 0;
 let message_counter = -1;
 
-var PORT = process.argv[3];
+var PORT = process.argv[2];
 
 var dgram = require('dgram');
 var udp_recv_server = dgram.createSocket('udp4');
@@ -47,7 +47,7 @@ function newConnection(socket) {
         if (message_counter == arena_rows) {
             socket.broadcast.emit('arena_update', arena);
             console.log('Sended an arena');
-            message_counter = 0;
+            message_counter = -1;
         }
     });
 }
@@ -56,30 +56,31 @@ function newConnection(socket) {
 //encode the udp back to an two dimensional javascript array
 function encode_arena(message, remote) {
 
-    if (message_counter == -1) {
+    if(message.length == 8 && message_counter == -1) {
+        //Begin of arena receive cycle, fetch dimensions
         console.log('Received packages with arena dimensions');
         arena_rows = message.readInt32LE(4);
         arena_coloums = message.readInt32LE(0);
         console.log('Received rows: ' + arena_rows + ' and received coloumns: ' + arena_coloums);
         message_counter++;
         return;
-    }
-
-    if (message.length < arena_coloums * 4) {
-        console.log("Received too small message\nExiting function...\nMessage Counter:", message_counter);
+    }else if (message.length == 8 && message_counter != -1){
+        //We are already in the arena receive cycle but received a udp package, which doesn't fit our expectations
+        console.log("Received unexpected arena dimensions, exiting function, message cnt:", message_counter);
         message_counter = 0;
         return;
+    }else{
+        //we received an arena row
+        var arena_row = new Array();
+
+        for (var i = 0; i < arena_coloums; i++) {
+            arena_row[i] = message.readInt32LE(i * 4);
+        }
+
+        //console.log('Adding new row at index ' + message_counter);
+        arena[message_counter] = arena_row;
+        message_counter++;
+
+        return;
     }
-
-    var arena_row = new Array();
-
-    for (var i = 0; i < arena_coloums; i++) {
-        arena_row[i] = message.readInt32LE(i * 4);
-    }
-
-    //console.log('Adding new row at index ' + message_counter);
-    arena[message_counter] = arena_row;
-    message_counter++;
-
-    return;
 }
