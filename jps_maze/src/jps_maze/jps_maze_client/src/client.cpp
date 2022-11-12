@@ -144,7 +144,16 @@ namespace jps_maze_client
 
     void Client::status_cb(const std::shared_ptr<jps_maze_msgs::msg::Status> msg)
     {
-this->got_player_wait_set->wait();
+        static bool first_status = true;
+        if(first_status) {
+            this->got_player_wait_set->wait();
+            this->status_cb(msg);
+            RCLCPP_INFO(this->get_logger(), "Removing guard_conditions");
+            this->got_player_wait_set->remove_guard_condition(this->got_player_guard);
+            this->got_player_wait_set.reset();
+            this->got_player_guard.reset();
+            first_status = false;
+        }
         RCLCPP_INFO(this->get_logger(), "Got new status message");
         size_t i = 0;
         RCLCPP_INFO(this->get_logger(), "Copying board into framebuffer");
@@ -198,9 +207,10 @@ int main(int argc, char **argv)
     node_options.start_parameter_event_publisher(false);
     node_options.start_parameter_services(false);
     rclcpp::init(argc, argv);
-    rclcpp::executors::MultiThreadedExecutor executor;
+    //rclcpp::executors::MultiThreadedExecutor executor;
     auto client_node = std::make_shared<jps_maze_client::Client>(node_options);
-    executor.add_node(client_node);
-    executor.spin();
+    //executor.add_node(client_node);
+    //executor.spin();
+    rclcpp::spin(client_node);
     return EXIT_SUCCESS;
 }

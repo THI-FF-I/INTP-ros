@@ -1,10 +1,20 @@
-import argparse, re, sys, os, random
+import argparse, re, os, subprocess, random
+from functools import partial
+import logging
+from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import RegisterEventHandler, LogInfo
-from launch.event_handlers import OnProcessStart, OnShutdown
+from launch.actions import RegisterEventHandler, LogInfo, OpaqueFunction
+from launch.event_handlers import OnProcessStart, OnProcessExit
 from launch_ros.actions import Node
 import launch_ros.parameter_descriptions
 from ros2launch.api import get_share_file_path_from_package
+
+logger = logging.getLogger(name='launch')
+
+def start_daemon(node_name, package, launch_context):
+    subprocess.run(args=['forever', 'start', '-a', '--uid', node_name, 'app.js'], cwd=os.path.join(get_package_share_directory(package_name=package), 'nodeenv'))
+def stop_daemon(node_name, package, launch_constext):
+    subprocess.run(args=['forever', 'stop', node_name,], cwd=os.path.join(get_package_share_directory(package_name=package), 'nodeenv'))
 def parse_arguments():
     parser = argparse.ArgumentParser(prog='jps_maze')
     run_mode_group = parser.add_mutually_exclusive_group(required=True)
@@ -35,6 +45,7 @@ def parse_arguments():
 
 def generate_launch_description():
     node_ns, start_server, team_A, player_name, board_no, debug, player_per_team, host_name, target_port = parse_arguments()
+    logger.info('Parsed arguments')
     package = 'jps_maze'
     if start_server:
         node_name = 'server'
@@ -63,33 +74,51 @@ def generate_launch_description():
         ros_arguments=['--log-level', 'DEBUG']
     else:
         ros_arguments=[]
+    logger.info('Creating Launch description')
+    node = Node(
+        package=package,
+        namespace=node_ns,
+        executable=executable,
+        name=node_name,
+        parameters=[
+            launch_ros.parameter_descriptions.ParameterFile(
+                param_file=get_share_file_path_from_package(package_name=package, file_name='parameters.yaml'),
+                allow_substs=True),
+        ],
+        ros_arguments=ros_arguments,
+    )
+    start_handler = RegisterEventHandler(
+        OnProcessStart(
+            target_action=node,
+            on_start=[
+                LogInfo(
+                    msg=['Starting nodejs server daemon']
+                ),
+                #OpaqueFunction(function=partial(start_daemon, node_name, package)),
+                LogInfo(
+                    msg=['Finished starting nodejs server daemon']
+                ),
+            ]
+        )
+    )
+    shutdown_handler = RegisterEventHandler(
+        OnProcessExit(
+            target_action=node,
+            on_exit=[
+                LogInfo(
+                 msg=['Stopping nodejs server daemon']
+                ),
+                #OpaqueFunction(function=partial(stop_daemon, node_name, package)),
+                LogInfo(
+                    msg=['Finished stooping nodejs daemon']
+                ),
+            ]
+        )
+    )
     return LaunchDescription(
         [
-            Node(
-                package=package,
-                namespace=node_ns,
-                executable=executable,
-                name=node_name,
-                parameters=[
-                    launch_ros.parameter_descriptions.ParameterFile(
-                        param_file=get_share_file_path_from_package(package_name=package, file_name='parameters.yaml'),
-                        allow_substs=True),
-                ],
-                ros_arguments=ros_arguments,
-            ),
-            RegisterEventHandler(
-                OnProcessStart(
-                    on_start=[LogInfo(
-                        msg=['Starting nodejs server: ']
-                    )]
-                )
-            ),
-            RegisterEventHandler(
-                OnShutdown(
-                    on_shutdown=[LogInfo(
-                        msg=['Stopping nodejs server: ']
-                    )]
-                )
-            )
+            node,
+            start_handler,
+            shutdown_handler,
         ]
     )
