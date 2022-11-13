@@ -216,7 +216,6 @@ namespace jps_maze_client
                 this->y = player.pos.y;
                 RCLCPP_DEBUG(this->get_logger(), "Got a new position from server: x: %d y: %d", this->x, this->y);
             }
-            else RCLCPP_DEBUG(this->get_logger(), "Player.id: %lu Player_id: %lu", player.id, player_id);
         }
         RCLCPP_INFO(this->get_logger(), "Triggering re_draw");
         this->visualizer.re_draw();
