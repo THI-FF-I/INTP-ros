@@ -118,7 +118,14 @@ namespace jps_maze_server {
                                   std::shared_ptr<jps_maze_msgs::srv::CreatePlayer::Response> res) {
         RCLCPP_INFO(this->get_logger(), "Got new player spawn request with name: \"%s\" and team: %c", req->name.c_str(), req->team.team == req->team.TEAM_A ? 'A': 'B');
 
-        jps_maze_game::Player player = this->game.add_player(req->name, static_cast<jps_maze_game::team_t>(req->team.team));
+        try
+        {
+            jps_maze_game::Player player = this->game.add_player(req->name, static_cast<jps_maze_game::team_t>(req->team.team));
+        }
+        catch(std::runtime_error &err)
+        {
+            // TODO Handle error
+        }
         res->player.id = player.get_player_id();
         res->player.team.team = static_cast<jps_maze_msgs::msg::Team::_team_type>(player.get_team());
         res->player.color = player.get_color();
