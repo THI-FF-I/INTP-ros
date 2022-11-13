@@ -28,6 +28,8 @@ namespace jps_maze_game
     public:
         Player(const player_id_t player_id, const team_t team_id, const std::string &player_name);
 
+        Player() {}
+
         constexpr void set_x(const coord_t new_x)
         {
             x = new_x;
