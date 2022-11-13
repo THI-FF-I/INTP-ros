@@ -81,9 +81,9 @@ namespace jps_maze_client
         auto req = std::make_shared<jps_maze_msgs::srv::CreatePlayer::Request>();
         req->name = player_name;
         req->team.team = this->team;
+        RCLCPP_DEBUG(this->get_logger(), "Sending player request");
         req->header.stamp = this->now();
         this->create_player_clt->async_send_request(req, [this](std::shared_future<jps_maze_msgs::srv::CreatePlayer::Response::SharedPtr> fut) {
-            RCLCPP_DEBUG(this->get_logger(), "Send player request");
             std::shared_ptr<jps_maze_msgs::srv::CreatePlayer::Response> res = fut.get();
             RCLCPP_INFO(this->get_logger(), "Got back Player with id: %ld, at x: %d y: %d", res->player.id,
                         res->player.pos.x, res->player.pos.y);
@@ -100,6 +100,7 @@ namespace jps_maze_client
             RCLCPP_INFO(this->get_logger(), "Initialising visualizer");
 
             this->visualizer = jps_maze_visualizer::Visualizer(host_name, target_port, this->width, this->height, &this->frame_buffer, this->get_logger().get_child("visualizer"));
+            RCLCPP_DEBUG(this->get_logger(), "Signaling that player was received");
             this->already_got_player = true;
             this->got_player_guard->trigger();
         });
@@ -186,7 +187,6 @@ namespace jps_maze_client
             this->got_player_wait_set.reset();
             this->got_player_guard.reset();
             first_status = false;
-            this->calculate_next_move();
         }
         RCLCPP_INFO(this->get_logger(), "Got new status message");
         size_t i = 0;
