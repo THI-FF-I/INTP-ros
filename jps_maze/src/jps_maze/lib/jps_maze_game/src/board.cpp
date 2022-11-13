@@ -176,26 +176,26 @@ namespace jps_maze_game
 
         switch (dir)
         {
-        case PLAYER_DIR_UP:
+        case PLAYER_DIR_LEFT:
             if (new_x <= 0)
                 return false;
             new_x -= 1;
             new_y = new_y;
             break;
 
-        case PLAYER_DIR_DOWN:
+        case PLAYER_DIR_RIGHT:
             new_x += 1;
             new_y = new_y;
             break;
 
-        case PLAYER_DIR_LEFT:
+        case PLAYER_DIR_UP:
             if (new_y <= 0)
                 return false;
             new_x = new_x;
             new_y -= 1;
             break;
 
-        case PLAYER_DIR_RIGHT:
+        case PLAYER_DIR_DOWN:
             new_x = new_x;
             new_y += 1;
             break;
