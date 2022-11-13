@@ -7,7 +7,7 @@ const scale = 1.5;
 
 function setup() {
   //connect to io socket
-  socket = io.connect('http://localhost:3000');
+  socket = io.connect();
 
   //prepare canvas
   createCanvas(1000, 1000);

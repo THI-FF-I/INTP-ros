@@ -22,10 +22,9 @@ udp_recv_server.bind(ROS_PORT);
 // Express - Stuff (expose express server in order to serve index.html)
 
 var express = require('express');
-const { send } = require('express/lib/response');
 var app = express();
 var express_server = app.listen(BROWSER_PORT);
-console.log('Express is listening on '+BROWSER_PORT+ '...');
+console.log('Express is listening on '+ BROWSER_PORT + '...');
 app.use(express.static('public'));
 
 //////////////////////////////////////////////////////
