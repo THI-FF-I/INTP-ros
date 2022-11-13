@@ -195,6 +195,7 @@ namespace jps_maze_client
             first_status = false;
         }
         RCLCPP_INFO(this->get_logger(), "Got new status message");
+        RCLCPP_DEBUG(this->get_logger(), "Received number of players: %d", msg->players.size());
         size_t i = 0;
         RCLCPP_INFO(this->get_logger(), "Copying board into framebuffer");
         for (const auto &row : msg->rows)
