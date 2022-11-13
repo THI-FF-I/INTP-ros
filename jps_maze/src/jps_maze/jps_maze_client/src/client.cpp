@@ -89,7 +89,7 @@ namespace jps_maze_client
                 RCLCPP_FATAL(this->get_logger(), "Player request failed");
                 throw std::runtime_error("Player request failed");
             }
-            RCLCPP_INFO(this->get_logger(), "Got back Player with id: %ld, at x: %d y: %d", res->player.id,
+            RCLCPP_INFO(this->get_logger(), "Got back Player with id: %lu, at x: %d y: %d", res->player.id,
                         res->player.pos.x, res->player.pos.y);
             this->x = res->player.pos.x;
             this->y = res->player.pos.y;
