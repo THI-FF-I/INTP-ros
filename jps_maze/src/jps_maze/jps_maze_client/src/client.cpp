@@ -184,6 +184,7 @@ namespace jps_maze_client
             this->got_player_wait_set.reset();
             this->got_player_guard.reset();
             first_status = false;
+            this->calculate_next_move();
         }
         RCLCPP_INFO(this->get_logger(), "Got new status message");
         size_t i = 0;
