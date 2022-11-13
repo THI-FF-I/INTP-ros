@@ -87,6 +87,8 @@ namespace jps_maze_client
             std::shared_ptr<jps_maze_msgs::srv::CreatePlayer::Response> res = fut.get();
             RCLCPP_INFO(this->get_logger(), "Got back Player with id: %ld, at x: %d y: %d", res->player.id,
                         res->player.pos.x, res->player.pos.y);
+            this->x = res->player.pos.x;
+            this->y = res->player.pos.y;
             this->player_name = res->player.name;
             this->player_id = res->player.id;
             this->team = static_cast<jps_maze_game::team_t>(res->player.team.team);
@@ -207,7 +209,9 @@ namespace jps_maze_client
             {
                 this->x = player.pos.x;
                 this->y = player.pos.y;
+                RCLCPP_DEBUG(this->get_logger(), "Got a new position from server: x: %d y: %d", this->x, this->y);
             }
+            else RCLCPP_DEBUG(this->get_logger(), "Player.id: %d  Player_id: %d", player.id, player_id);
         }
         RCLCPP_INFO(this->get_logger(), "Triggering re_draw");
         this->visualizer.re_draw();
