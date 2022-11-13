@@ -9,7 +9,7 @@ using namespace std::placeholders;
 namespace jps_maze_client
 {
     Client::Client(rclcpp::NodeOptions node_options)
-        : rclcpp::Node("client_node", node_options), visualizer(this->get_logger()), already_got_player(false), next_move_ready(false)
+        : rclcpp::Node("client_node", node_options), already_got_player(false),  next_move_ready(false), visualizer(this->get_logger())
     {
         // Declare Parameters
         this->declare_parameter<std::string>("create_player_topic");
@@ -211,7 +211,7 @@ namespace jps_maze_client
                 this->y = player.pos.y;
                 RCLCPP_DEBUG(this->get_logger(), "Got a new position from server: x: %d y: %d", this->x, this->y);
             }
-            else RCLCPP_DEBUG(this->get_logger(), "Player.id: %d  Player_id: %d", player.id, player_id);
+            else RCLCPP_DEBUG(this->get_logger(), "Player.id: %lu Player_id: %lu", player.id, player_id);
         }
         RCLCPP_INFO(this->get_logger(), "Triggering re_draw");
         this->visualizer.re_draw();
