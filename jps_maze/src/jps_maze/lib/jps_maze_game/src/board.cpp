@@ -172,6 +172,8 @@ namespace jps_maze_game
         coord_t new_x = player.get_x();
         coord_t new_y = player.get_y();
 
+        RCLCPP_DEBUG(logger, "[Board::player_move] move player at x: %d y: %d in direction: %d", new_x, new_y, dir);
+
         switch (dir)
         {
         case PLAYER_DIR_UP:
