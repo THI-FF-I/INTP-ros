@@ -84,6 +84,7 @@ namespace jps_maze_server {
             }
         }
         for(const auto &player : this->game.get_players_of_team(jps_maze_game::PLAYER_TEAM_A)) {
+            RCLCPP_DEBUG(this->get_logger(), "Adding Player \"%s\":%lu to Team A status", player.get_player_name().c_str(), player.get_player_id());
             jps_maze_msgs::msg::Player cur;
             cur.pos.x = player.get_x();
             cur.pos.y = player.get_y();
@@ -105,6 +106,7 @@ namespace jps_maze_server {
             }
         }
         for(const auto &player : this->game.get_players_of_team(jps_maze_game::PLAYER_TEAM_B)) {
+            RCLCPP_DEBUG(this->get_logger(), "Adding Player \"%s\":%lu to Team A status", player.get_player_name().c_str(), player.get_player_id());
             jps_maze_msgs::msg::Player cur;
             cur.pos.x = player.get_x();
             cur.pos.y = player.get_y();
@@ -153,6 +155,7 @@ namespace jps_maze_server {
             std::this_thread::sleep_for(1s);
             RCLCPP_INFO(this->get_logger(), "Returning player object with id: %lu at pos x: %d, y: %d", res->player.id, res->player.pos.x, res->player.pos.y);
             res->header.stamp = this->now();
+            return;
         }
         res->player.id = player.get_player_id();
         res->player.team.team = static_cast<jps_maze_msgs::msg::Team::_team_type>(player.get_team());
