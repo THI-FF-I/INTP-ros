@@ -9,7 +9,7 @@ using namespace std::placeholders;
 namespace jps_maze_client
 {
     Client::Client(rclcpp::NodeOptions node_options)
-        : rclcpp::Node("client_node", node_options), visualizer(this->get_logger()), already_got_player(false), next_move_ready(false)
+        : rclcpp::Node("client_node", node_options), already_got_player(false),  next_move_ready(false), visualizer(this->get_logger())
     {
         // Declare Parameters
         this->declare_parameter<std::string>("create_player_topic");
@@ -81,9 +81,9 @@ namespace jps_maze_client
         auto req = std::make_shared<jps_maze_msgs::srv::CreatePlayer::Request>();
         req->name = player_name;
         req->team.team = this->team;
+        RCLCPP_DEBUG(this->get_logger(), "Sending player request");
         req->header.stamp = this->now();
         this->create_player_clt->async_send_request(req, [this](std::shared_future<jps_maze_msgs::srv::CreatePlayer::Response::SharedPtr> fut) {
-            RCLCPP_DEBUG(this->get_logger(), "Send player request");
             std::shared_ptr<jps_maze_msgs::srv::CreatePlayer::Response> res = fut.get();
             RCLCPP_INFO(this->get_logger(), "Got back Player with id: %ld, at x: %d y: %d", res->player.id,
                         res->player.pos.x, res->player.pos.y);
@@ -102,6 +102,7 @@ namespace jps_maze_client
             RCLCPP_INFO(this->get_logger(), "Initialising visualizer");
 
             this->visualizer = jps_maze_visualizer::Visualizer(host_name, target_port, this->width, this->height, &this->frame_buffer, this->get_logger().get_child("visualizer"));
+            RCLCPP_DEBUG(this->get_logger(), "Signaling that player was received");
             this->already_got_player = true;
             this->got_player_guard->trigger();
         });
@@ -188,7 +189,6 @@ namespace jps_maze_client
             this->got_player_wait_set.reset();
             this->got_player_guard.reset();
             first_status = false;
-            this->calculate_next_move();
         }
         RCLCPP_INFO(this->get_logger(), "Got new status message");
         size_t i = 0;
@@ -211,7 +211,7 @@ namespace jps_maze_client
                 this->y = player.pos.y;
                 RCLCPP_DEBUG(this->get_logger(), "Got a new position from server: x: %d y: %d", this->x, this->y);
             }
-            else RCLCPP_DEBUG(this->get_logger(), "Player.id: %ld  Player_id: %ld", player.id, player_id);
+            else RCLCPP_DEBUG(this->get_logger(), "Player.id: %lu Player_id: %lu", player.id, player_id);
         }
         RCLCPP_INFO(this->get_logger(), "Triggering re_draw");
         this->visualizer.re_draw();
