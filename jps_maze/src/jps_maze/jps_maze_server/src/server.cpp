@@ -95,6 +95,7 @@ namespace jps_maze_server {
             cur.has_flag = player.get_has_flag();
             status.players.push_back(cur);
         }
+        RCLCPP_DEBUG(this->get_logger(), "Sending status for Team A");
         status.header.stamp = this->now();
         this->team_a_status_pub->publish(status);
         board = this->game.get_team_board(jps_maze_game::PLAYER_TEAM_B);
@@ -117,8 +118,10 @@ namespace jps_maze_server {
             cur.has_flag = player.get_has_flag();
             status.players.push_back(cur);
         }
+        RCLCPP_DEBUG(this->get_logger(), "Sending status for Team B");
         status.header.stamp = this->now();
         this->team_b_status_pub->publish(status);
+        RCLCPP_DEBUG(this->get_logger(), "Resetting timer");
         this->timer->reset();
     }
 

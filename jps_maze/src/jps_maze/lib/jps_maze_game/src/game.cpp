@@ -66,7 +66,7 @@ namespace jps_maze_game
         }
 
         this->players.emplace(std::make_pair(player_id, new_player));
-        RCLCPP_INFO(this->logger, "Created new player: \"%s\" with id: %ld in Team %c at x: %d y: %d", name.c_str(), player_id, (team == PLAYER_TEAM_A) ? 'A' : 'B', new_player.get_x(), new_player.get_y());
+        RCLCPP_INFO(this->logger, "Created new player: \"%s\" with id: %lu in Team %c at x: %d y: %d", name.c_str(), player_id, (team == PLAYER_TEAM_A) ? 'A' : 'B', new_player.get_x(), new_player.get_y());
         return this->players.at(player_id);
     }
 
@@ -104,7 +104,7 @@ namespace jps_maze_game
 
     bool Game::move_player(const player_id_t player_id, const direction_t direction)
     {
-        RCLCPP_DEBUG(logger, "Game::move_player: player_id: %ld, dir: %d", player_id, direction);
+        RCLCPP_DEBUG(logger, "Game::move_player: player_id: %lu, dir: %d", player_id, direction);
 
         try
         {
