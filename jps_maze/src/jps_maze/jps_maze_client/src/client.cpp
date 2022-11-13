@@ -118,7 +118,7 @@ namespace jps_maze_client
 
         RCLCPP_DEBUG(this->get_logger(), "[Client::calculate_next_move] x: %d y: %d  cur_dir: %d", x, y, cur_dir);
 
-        while (cur_pos == next_pos && cnt < 4)
+        while (cur_pos[0] == next_pos[0] && cur_pos[1] == next_pos[1] && cnt < 4)
         {
             cnt++;
 
@@ -156,6 +156,8 @@ namespace jps_maze_client
             else
             {
                 next_dir_res = (jps_maze_game::direction_t)((next_dir_res + 1) % 4);
+                next_pos[0] = this->x;
+                next_pos[1] = this->y;
             }
         }
 
