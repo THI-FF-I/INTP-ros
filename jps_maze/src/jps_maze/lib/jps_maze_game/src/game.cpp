@@ -26,27 +26,13 @@ namespace jps_maze_game
 
         if (team == PLAYER_TEAM_A && player_count_team_a >= player_count_per_team)
         {
-            if (player_count_team_b < player_count_per_team)
-            {
-                team = PLAYER_TEAM_B;
-                RCLCPP_WARN(this->logger, "Changed player: \"%s\" to team: %c", name.c_str(), team == PLAYER_TEAM_A ? 'A' : 'B');
-            }
-            else
-            {
-                throw std::runtime_error("[Game::add_player] Both teams already full");
-            }
+            RCLCPP_WARN(this->logger, "[Game::add_player] Player couldn't be created - Team A already full");
+            throw std::runtime_error("[Game::add_player] Player couldn't be created - Team A already full");
         }
         else if (team == PLAYER_TEAM_B && player_count_team_b >= player_count_per_team)
         {
-            if (player_count_team_a < player_count_per_team)
-            {
-                team = PLAYER_TEAM_A;
-                RCLCPP_WARN(this->logger, "Changed player: \"%s\" to team: %c", name.c_str(), team == PLAYER_TEAM_A ? 'A' : 'B');
-            }
-            else
-            {
-                throw std::runtime_error("[Game::add_player] Both teams already full");
-            }
+            RCLCPP_WARN(this->logger, "[Game::add_player] Player couldn't be created - Team B already full");
+            throw std::runtime_error("[Game::add_player] Player couldn't be created - Team B already full");
         }
 
         player_id_t player_id = this->id_gen();
