@@ -85,6 +85,10 @@ namespace jps_maze_client
         req->header.stamp = this->now();
         this->create_player_clt->async_send_request(req, [this](std::shared_future<jps_maze_msgs::srv::CreatePlayer::Response::SharedPtr> fut) {
             std::shared_ptr<jps_maze_msgs::srv::CreatePlayer::Response> res = fut.get();
+            if(!res->success) {
+                RCLCPP_FATAL(this->get_logger(), "Player request failed");
+                throw std::runtime_error("Player request failed");
+            }
             RCLCPP_INFO(this->get_logger(), "Got back Player with id: %ld, at x: %d y: %d", res->player.id,
                         res->player.pos.x, res->player.pos.y);
             this->x = res->player.pos.x;

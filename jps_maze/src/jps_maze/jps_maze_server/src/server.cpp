@@ -83,6 +83,17 @@ namespace jps_maze_server {
                 cur_row.emplace_back(jps_maze_msgs::msg::Block().set__block_type(block));
             }
         }
+        for(const auto &player : this->game.get_players_of_team(jps_maze_game::PLAYER_TEAM_A)) {
+            jps_maze_msgs::msg::Player cur;
+            cur.pos.x = player.get_x();
+            cur.pos.y = player.get_y();
+            cur.id = player.get_player_id();
+            cur.team.team = static_cast<jps_maze_msgs::msg::Team::_team_type>(player.get_team());
+            cur.color = player.get_color();
+            cur.name = player.get_player_name();
+            cur.has_flag = player.get_has_flag();
+            status.players.push_back(cur);
+        }
         status.header.stamp = this->now();
         this->team_a_status_pub->publish(status);
         board = this->game.get_team_board(jps_maze_game::PLAYER_TEAM_B);
@@ -92,6 +103,17 @@ namespace jps_maze_server {
             for(const auto &block : row) {
                 cur_row.emplace_back(jps_maze_msgs::msg::Block().set__block_type(block));
             }
+        }
+        for(const auto &player : this->game.get_players_of_team(jps_maze_game::PLAYER_TEAM_B)) {
+            jps_maze_msgs::msg::Player cur;
+            cur.pos.x = player.get_x();
+            cur.pos.y = player.get_y();
+            cur.id = player.get_player_id();
+            cur.team.team = static_cast<jps_maze_msgs::msg::Team::_team_type>(player.get_team());
+            cur.color = player.get_color();
+            cur.name = player.get_player_name();
+            cur.has_flag = player.get_has_flag();
+            status.players.push_back(cur);
         }
         status.header.stamp = this->now();
         this->team_b_status_pub->publish(status);
@@ -126,7 +148,11 @@ namespace jps_maze_server {
         }
         catch(std::runtime_error &err)
         {
-            // TODO Handle error
+            RCLCPP_INFO(this->get_logger(), "Could not create player: \"%s\"", err.what());
+            res->success = false;
+            std::this_thread::sleep_for(1s);
+            RCLCPP_INFO(this->get_logger(), "Returning player object with id: %lu at pos x: %d, y: %d", res->player.id, res->player.pos.x, res->player.pos.y);
+            res->header.stamp = this->now();
         }
         res->player.id = player.get_player_id();
         res->player.team.team = static_cast<jps_maze_msgs::msg::Team::_team_type>(player.get_team());
@@ -137,6 +163,7 @@ namespace jps_maze_server {
         res->player.has_flag = player.get_has_flag();
         res->width = this->game.get_width();
         res->height = this->game.get_height();
+        res->success = true;
 
         if(this->game.ready()) {
             RCLCPP_INFO(this->get_logger(), "Game is ready unregister create_player service and sending first status");
