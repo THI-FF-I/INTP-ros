@@ -64,7 +64,7 @@ def generate_launch_description():
     os.environ['node_name'] = node_name
     os.environ['create_player_topic'] = '/' + node_ns + '/create_player'
     os.environ['move_player_topic'] = '/' + node_ns + '/move_player'
-    os.environ['next_round_topic'] = '/' + node_ns + 'next_round'
+    os.environ['next_round_topic'] = '/' + node_ns + '/next_round'
     os.environ['team_A'] = str(team_A)
     os.environ['player_name'] = player_name
     os.environ['board_path'] = get_share_file_path_from_package(package_name=package, file_name='board' + str(board_no) + '.csv')
@@ -73,7 +73,7 @@ def generate_launch_description():
     os.environ['target_port'] = str(target_port)
     logger.info('Set up environment variables')
     if debug:
-        logger.info('Enableling debug output')
+        logger.info('Enabling debug output')
         ros_arguments=['--log-level', 'DEBUG']
     else:
         ros_arguments=[]

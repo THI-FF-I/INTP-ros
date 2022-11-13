@@ -9,9 +9,8 @@ using namespace std::placeholders;
 namespace jps_maze_client
 {
     Client::Client(rclcpp::NodeOptions node_options)
-        : rclcpp::Node("client_node", node_options), visualizer(this->get_logger())
+        : rclcpp::Node("client_node", node_options), visualizer(this->get_logger()), already_got_player(false), next_move_ready(false)
     {
-
         // Declare Parameters
         this->declare_parameter<std::string>("create_player_topic");
         this->declare_parameter<std::string>("status_topic");
@@ -47,7 +46,7 @@ namespace jps_maze_client
         sub_options.callback_group = this->status_cb_group;
 
         // Register Subscriber
-        this->team_status_sub = this->create_subscription<jps_maze_msgs::msg::Status>(this->get_effective_namespace() + (team_A ? "/team_A" : "team_B") + status_topic, 10,
+        this->team_status_sub = this->create_subscription<jps_maze_msgs::msg::Status>(status_topic, 10,
                                                                                       std::bind(&Client::status_cb, this, _1), sub_options);
         this->next_round_sub = this->create_subscription<std_msgs::msg::Empty>(next_round_topic, 10, std::bind(&Client::next_round_cb, this, _1));
 
@@ -101,6 +100,7 @@ namespace jps_maze_client
             RCLCPP_INFO(this->get_logger(), "Initialising visualizer");
 
             this->visualizer = jps_maze_visualizer::Visualizer(host_name, target_port, this->width, this->height, &this->frame_buffer, this->get_logger().get_child("visualizer"));
+            this->already_got_player = true;
             this->got_player_guard->trigger();
         });
     }
@@ -170,8 +170,11 @@ namespace jps_maze_client
     {
         static bool first_status = true;
         if(first_status) {
-            this->got_player_wait_set->wait();
-            this->status_cb(msg);
+            RCLCPP_DEBUG(this->get_logger(), "Received first status");
+            if(!already_got_player) {
+                RCLCPP_DEBUG(this->get_logger(), "Waiting for create_player response");
+                this->got_player_wait_set->wait();
+            }
             RCLCPP_INFO(this->get_logger(), "Removing guard_conditions");
             this->got_player_wait_set->remove_guard_condition(this->got_player_guard);
             this->got_player_wait_set.reset();
@@ -203,18 +206,24 @@ namespace jps_maze_client
         this->visualizer.re_draw();
         RCLCPP_INFO(this->get_logger(), "Calculating next move");
         this->calculate_next_move();
+        RCLCPP_DEBUG(this->get_logger(), "Signaling, that the next round is ready");
+        this->next_move_ready = true;
         this->next_move_ready_guard->trigger();
     }
 
     void Client::next_round_cb(const std::shared_ptr<std_msgs::msg::Empty> msg)
     {
         RCLCPP_INFO(this->get_logger(), "Next round started");
-        this->next_move_ready_wait_set->wait();
+        if(!next_move_ready) {
+            RCLCPP_DEBUG(this->get_logger(), "Next move is not ready waiting");
+            this->next_move_ready_wait_set->wait();
+        }
         auto req = std::make_shared<jps_maze_msgs::srv::MovePlayer::Request>();
         req->dir = this->next_dir;
         req->player_id = this->player_id;
         RCLCPP_INFO(this->get_logger(), "Sending player move request");
         req->header.stamp = this->now();
+        this->next_move_ready = false;
         this->move_player_clt->async_send_request(req, [this](std::shared_future<jps_maze_msgs::srv::MovePlayer::Response::SharedPtr> fut) {
             auto res = fut.get();
             RCLCPP_INFO(this->get_logger(), "Got response for player move");

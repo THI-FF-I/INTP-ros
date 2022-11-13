@@ -32,6 +32,7 @@ namespace jps_maze_server {
 
         // Callbackgroups
         std::shared_ptr<rclcpp::CallbackGroup> timer_cb_group;
+        //std::shared_ptr<rclcpp::CallbackGroup> pub_cb_group;
 
         // Timer
         std::shared_ptr<rclcpp::TimerBase> timer;

@@ -39,6 +39,8 @@ namespace jps_maze_server {
         RCLCPP_INFO(this->get_logger(), "Set up timer");
 
         // Register Publisher
+
+        //this->pub_cb_group
         this->team_a_status_pub = this->create_publisher<jps_maze_msgs::msg::Status>(this->get_effective_namespace() + "/team_A" + status_topic, 10);
         this->team_b_status_pub = this->create_publisher<jps_maze_msgs::msg::Status>(this->get_effective_namespace() + "/team_B" + status_topic, 10);
         this->next_round_pub = this->create_publisher<std_msgs::msg::Empty>(next_round_topic, 10);
@@ -152,7 +154,9 @@ namespace jps_maze_server {
         this->timer->cancel();
         RCLCPP_INFO(this->get_logger(), "Timer expired starting next round");
         this->game.next_round();
+        RCLCPP_INFO(this->get_logger(), "Publishing next round");
         this->next_round_pub->publish(std_msgs::msg::Empty());
+        RCLCPP_INFO(this->get_logger(), "End of timer");
     }
 }
 

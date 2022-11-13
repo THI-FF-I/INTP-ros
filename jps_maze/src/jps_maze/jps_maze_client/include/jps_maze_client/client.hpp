@@ -48,9 +48,12 @@ namespace jps_maze_client {
         std::shared_ptr<rclcpp::GuardCondition> got_player_guard;
         std::shared_ptr<rclcpp::WaitSet> got_player_wait_set;
 
+        volatile bool already_got_player;
+
         std::shared_ptr<rclcpp::GuardCondition> next_move_ready_guard;
         std::shared_ptr<rclcpp::WaitSet> next_move_ready_wait_set;
 
+        volatile bool next_move_ready;
 
         // Callbacks
         void status_cb(const std::shared_ptr<jps_maze_msgs::msg::Status> msg);
