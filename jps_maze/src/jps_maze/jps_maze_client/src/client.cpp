@@ -116,9 +116,13 @@ namespace jps_maze_client
         size_t cnt = 0;
         bool success = false;
 
+        RCLCPP_DEBUG(this->get_logger(), "[Client::calculate_next_move] x: %d y: %d  cur_dir: %d", x, y, cur_dir);
+
         while (cur_pos == next_pos && cnt < 4)
         {
             cnt++;
+
+            RCLCPP_DEBUG(this->get_logger(), "[Client::calculate_next_move] Trying direction: %d", next_dir_res);
 
             switch (next_dir_res)
             {
