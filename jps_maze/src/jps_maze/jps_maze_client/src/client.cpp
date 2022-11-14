@@ -133,19 +133,19 @@ namespace jps_maze_client
 
             switch (next_dir_res)
             {
-            case jps_maze_game::PLAYER_DIR_UP:
+            case jps_maze_game::PLAYER_DIR_LEFT:
                 if (next_pos[0] > 0)
                     next_pos[0] -= 1;
                 break;
-            case jps_maze_game::PLAYER_DIR_DOWN:
+            case jps_maze_game::PLAYER_DIR_RIGHT:
                 if (next_pos[0] < height - 1)
                     next_pos[0] += 1;
                 break;
-            case jps_maze_game::PLAYER_DIR_LEFT:
+            case jps_maze_game::PLAYER_DIR_UP:
                 if (next_pos[1] > 0)
                     next_pos[1] -= 1;
                 break;
-            case jps_maze_game::PLAYER_DIR_RIGHT:
+            case jps_maze_game::PLAYER_DIR_DOWN:
                 if (next_pos[1] < width - 1)
                     next_pos[1] += 1;
                 break;
@@ -153,6 +153,8 @@ namespace jps_maze_client
 
             if (next_pos[0] >= width || next_pos[1] >= height)
                 throw std::runtime_error("[Client::calculate_next_move] Position out of bound"); // This shouldn't happen
+
+            RCLCPP_DEBUG(this->get_logger(), "[Client::calculate_next_move] Checking: x: %d y: %d - %d", next_pos[0], next_pos[1], frame_buffer[next_pos[1]][next_pos[0]]);
 
             if (frame_buffer[next_pos[1]][next_pos[0]] != jps_maze_msgs::msg::Block::WALL && cur_pos != next_pos)
             {

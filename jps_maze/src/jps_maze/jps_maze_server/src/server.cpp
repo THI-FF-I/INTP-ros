@@ -155,7 +155,7 @@ namespace jps_maze_server {
         {
             RCLCPP_INFO(this->get_logger(), "Could not create player: \"%s\"", err.what());
             res->success = false;
-            std::this_thread::sleep_for(1s);
+            std::this_thread::sleep_for(5s);
             RCLCPP_INFO(this->get_logger(), "Returning player object with id: %lu at pos x: %d, y: %d", res->player.id, res->player.pos.x, res->player.pos.y);
             res->header.stamp = this->now();
             return;
@@ -176,7 +176,7 @@ namespace jps_maze_server {
             this->create_player_srv.reset();
             this->send_status();
         }
-        std::this_thread::sleep_for(1s);
+        std::this_thread::sleep_for(5s);
         RCLCPP_INFO(this->get_logger(), "Returning player object with id: %lu at pos x: %d, y: %d", res->player.id, res->player.pos.x, res->player.pos.y);
         res->header.stamp = this->now();
     }
