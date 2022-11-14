@@ -96,13 +96,12 @@ namespace jps_maze_game
         }
     }
 
-    void Board::print_board() const
+    void Board::print_board(std::vector<std::vector<game_block_t>> board) const
     {
         std::ofstream file("board.output");
 
         int width2 = width;
         int height2 = height;
-        file << "Board: " << width2 << "x" << height2 << "\n";
 
         for (int i = 0; i < height; i++)
         {
@@ -134,6 +133,44 @@ namespace jps_maze_game
             file << "\n";
         }
 
+        file << "Board: " << width2 << "x" << height2 << "\n";
+
+        file.close();
+    }
+
+    void Board::print_board(std::vector<std::vector<game_block_type_t>> board) const
+    {
+        std::ofstream file("board.output");
+
+        int width2 = width;
+        int height2 = height;
+
+        for (int i = 0; i < height; i++)
+        {
+            for (int n = 0; n < width; n++)
+            {
+                std::string res = "";
+
+                switch (board.at(i).at(n))
+                {
+                case GAME_BLOCK_EMPTY:
+                    res = " ";
+                    break;
+                case GAME_BLOCK_WALL:
+                    res = "*";
+                    break;
+                default:
+                    res = "o";
+                }
+
+                file << res;
+            }
+
+            file << "\n";
+        }
+
+        file << "Board: " << width2 << "x" << height2 << "\n";
+
         file.close();
     }
 
@@ -142,12 +179,16 @@ namespace jps_maze_game
         if (coord_x >= width || coord_y >= height)
             return GAME_BLOCK_OUT_OF_BOARD;
 
-        return board.at(coord_x).at(coord_y).game_block_type;
+        RCLCPP_WARN(this->logger, "[Board::get_block_state] x: %d y: %d - %d", coord_x, coord_y, board.at(coord_y).at(coord_x).game_block_type);
+
+        return board.at(coord_y).at(coord_x).game_block_type;
     }
 
     void Board::map_area(const coord_t coord_x, const coord_t coord_y, team_t team)
     {
         const uint8_t size = 3; // maps a 3x3 square at the player's position
+
+        RCLCPP_DEBUG(this->logger, "[Board::map_area] x: %d y: %d for team: %c", coord_x, coord_y, (team == PLAYER_TEAM_A) ? 'A' : 'B');
 
         for (int h = coord_y - (size - 1) / 2; h <= coord_y + (size - 1) / 2; h++)
         {
@@ -214,6 +255,7 @@ namespace jps_maze_game
         case GAME_BLOCK_EMPTY:
             player.set_x(new_x);
             player.set_y(new_y);
+            map_area(new_x, new_y, player.get_team());
             return true;
 
         case GAME_BLOCK_WALL:
@@ -224,12 +266,15 @@ namespace jps_maze_game
             uint16_t port_id = rand() % portals.size();
             player.set_x(portals.at(port_id).get_x());
             player.set_y(portals.at(port_id).get_y());
+            map_area(new_x, new_y, player.get_team());
+            map_area(player.get_x(), player.get_y(), player.get_team());
         }
             return true;
 
         case GAME_BLOCK_FLAG_A:
             player.set_x(new_x);
             player.set_y(new_y);
+            map_area(new_x, new_y, player.get_team());
             if (player.get_team() == PLAYER_TEAM_A)
             {
                 flag_a = GAME_FLAG_STATE_BY_PLAYER;
@@ -241,6 +286,7 @@ namespace jps_maze_game
         case GAME_BLOCK_FLAG_B:
             player.set_x(new_x);
             player.set_y(new_y);
+            map_area(new_x, new_y, player.get_team());
             if (player.get_team() == PLAYER_TEAM_B)
             {
                 flag_b = GAME_FLAG_STATE_BY_PLAYER;
@@ -252,11 +298,13 @@ namespace jps_maze_game
         case GAME_BLOCK_BASE_A:
             player.set_x(new_x);
             player.set_y(new_y);
+            map_area(new_x, new_y, player.get_team());
             return true;
 
         case GAME_BLOCK_BASE_B:
             player.set_x(new_x);
             player.set_y(new_y);
+            map_area(new_x, new_y, player.get_team());
             return true;
 
         default:
@@ -302,6 +350,8 @@ namespace jps_maze_game
 
             res.push_back(tmp);
         }
+
+        if(team == PLAYER_TEAM_A) print_board(res);
 
         return res;
     }
