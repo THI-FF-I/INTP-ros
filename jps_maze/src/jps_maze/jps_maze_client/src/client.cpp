@@ -196,19 +196,21 @@ namespace jps_maze_client
         }
         RCLCPP_INFO(this->get_logger(), "Got new status message");
         RCLCPP_DEBUG(this->get_logger(), "Received number of players: %lu", msg->players.size());
-        size_t i = 0;
         RCLCPP_INFO(this->get_logger(), "Copying board into framebuffer");
+        ize_t x= 0, y = 0;
         for (const auto &row : msg->rows)
         {
-            size_t j = 0;
+            x= 0;
             for (const auto &block : row.blocks)
             {
-                this->frame_buffer[i][j] = block.block_type;
+                this->frame_buffer[y][x] = block.block_type;
+                x++;
             }
+            y++;
         }
         for (const auto &player : msg->players)
         {
-            frame_buffer[player.pos.y][player.pos.y] = player.color & (static_cast<jps_maze_msgs::msg::Block::_block_type_type>(1) << (std::numeric_limits<jps_maze_msgs::msg::Block::_block_type_type>::digits - 1));
+            frame_buffer[player.pos.y][player.pos.x] = player.color & (static_cast<jps_maze_msgs::msg::Block::_block_type_type>(1) << (std::numeric_limits<jps_maze_msgs::msg::Block::_block_type_type>::digits - 1));
 
             if (player.id == player_id)
             {
