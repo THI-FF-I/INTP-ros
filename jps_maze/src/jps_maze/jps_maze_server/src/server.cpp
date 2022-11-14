@@ -33,7 +33,7 @@ namespace jps_maze_server {
         RCLCPP_INFO(this->get_logger(), "Got all required parameters");
 
         this->timer_cb_group = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
-        this->timer = this->create_wall_timer(1s, std::bind(&Server::timer_cb, this), this->timer_cb_group);
+        this->timer = this->create_wall_timer(250ms, std::bind(&Server::timer_cb, this), this->timer_cb_group);
         this->timer->cancel();
 
         RCLCPP_INFO(this->get_logger(), "Set up timer");
