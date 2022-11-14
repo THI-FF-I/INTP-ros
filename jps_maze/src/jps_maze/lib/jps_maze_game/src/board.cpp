@@ -351,8 +351,6 @@ namespace jps_maze_game
             res.push_back(tmp);
         }
 
-        if(team == PLAYER_TEAM_A) print_board(res);
-
         return res;
     }
 
