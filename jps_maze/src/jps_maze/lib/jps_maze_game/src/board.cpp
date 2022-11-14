@@ -174,6 +174,66 @@ namespace jps_maze_game
         file.close();
     }
 
+    void Board::print_board_to_command_line(std::map<jps_maze_msgs::msg::Player::_id_type, Player> players) const
+    {
+        RCLCPP_INFO(this->logger, "Width: %d Height: %d", width, height);
+
+        for (int i = 0; i < height; i++)
+        {
+            std::string res = "";
+            res.reserve(width);
+
+            for (int n = 0; n < width; n++)
+            {
+                std::string tmp = "";
+
+                for (const auto &m : players)
+                {
+                    if(m.second.get_x() == n && m.second.get_y() == i)
+                    {
+                        if(m.second.get_team() == PLAYER_TEAM_A)
+                        {
+                            if(m.second.get_has_flag() == true) tmp = "A";
+                            else tmp = "a";
+                        }
+                        else
+                        {
+                            if(m.second.get_has_flag() == true) tmp = "B";
+                            else tmp = "b";
+                        }
+                        
+                        break;
+                    }
+                }
+
+                if(tmp == "")
+                {
+                    switch (board.at(i).at(n).game_block_type)
+                    {
+                    case GAME_BLOCK_EMPTY:
+                        if (board.at(i).at(n).mapped_team_a == true || board.at(i).at(n).mapped_team_b == true)
+                            tmp = "-";
+                        else
+                            tmp = " ";
+                        break;
+                    case GAME_BLOCK_WALL:
+                        if (board.at(i).at(n).mapped_team_a == true || board.at(i).at(n).mapped_team_b == true)
+                            tmp = "X";
+                        else
+                            tmp = "*";
+                        break;
+                    default:
+                        tmp = "o";
+                    }
+                }
+
+                res += tmp;
+            }
+
+            RCLCPP_INFO(this->logger, "[%2d]%s", i, res.c_str());
+        }
+    }
+
     game_block_type_t Board::get_block_state(const coord_t coord_x, const coord_t coord_y) const
     {
         if (coord_x >= width || coord_y >= height)

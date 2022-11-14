@@ -6,6 +6,8 @@
 #define INTP_ROS_CLIENT_NODE_HPP
 
 #include <stdexcept>
+#include <random>
+#include <time.h>
 
 #include "rclcpp/rclcpp.hpp"
 

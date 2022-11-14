@@ -73,6 +73,8 @@ namespace jps_maze_client
         RCLCPP_INFO(this->get_logger(), "Requested player");
 
         RCLCPP_INFO(this->get_logger(), "Init of Node done");
+
+        srand(time(0));
     }
 
     void Client::request_player()
@@ -125,9 +127,16 @@ namespace jps_maze_client
 
         RCLCPP_DEBUG(this->get_logger(), "[Client::calculate_next_move] x: %d y: %d  cur_dir: %d", x, y, cur_dir);
 
-        while (cur_pos[0] == next_pos[0] && cur_pos[1] == next_pos[1] && cnt < 4)
+        while (cur_pos[0] == next_pos[0] && cur_pos[1] == next_pos[1] && cnt < 5)
         {
             cnt++;
+
+            if(cnt == 2)
+            {
+                auto tmp = next_dir_res;
+
+                while(tmp == next_dir_res) next_dir_res = (jps_maze_game::direction_t) (rand() % 3);
+            }
 
             RCLCPP_DEBUG(this->get_logger(), "[Client::calculate_next_move] Trying direction: %d", next_dir_res);
 
@@ -156,7 +165,7 @@ namespace jps_maze_client
 
             RCLCPP_DEBUG(this->get_logger(), "[Client::calculate_next_move] Checking: x: %d y: %d - %d", next_pos[0], next_pos[1], frame_buffer[next_pos[1]][next_pos[0]]);
 
-            if (frame_buffer[next_pos[1]][next_pos[0]] != jps_maze_msgs::msg::Block::WALL && cur_pos != next_pos)
+            if (frame_buffer[next_pos[1]][next_pos[0]] != jps_maze_msgs::msg::Block::WALL && !(cur_pos[0] == next_pos[0] && cur_pos[1] == next_pos[1]))
             {
                 RCLCPP_DEBUG(this->get_logger(), "[Client::calculate_next_move] found a valid direction");
                 success = true;
@@ -164,7 +173,8 @@ namespace jps_maze_client
             }
             else
             {
-                next_dir_res = (jps_maze_game::direction_t)((next_dir_res + 1) % 4);
+                if(team == jps_maze_game::PLAYER_TEAM_A) next_dir_res = (jps_maze_game::direction_t)((next_dir_res + 1) % 4);
+                else next_dir_res = next_dir_res - 1 >= 0 ? (jps_maze_game::direction_t)((next_dir_res - 1)) : (jps_maze_game::direction_t)3;
                 next_pos[0] = this->x;
                 next_pos[1] = this->y;
             }
@@ -173,6 +183,7 @@ namespace jps_maze_client
         if (success)
         {
             next_dir = next_dir_res;
+            cur_dir = next_dir_res;
             RCLCPP_INFO(this->get_logger(), "Next direction: %d", next_dir);
         }
         else
