@@ -29,6 +29,7 @@ def parse_arguments():
     parser.add_argument('--host_name', type=str, dest='host_name', required=False, default='localhost', help='Specify the hostname to connect to for visualisation')
     parser.add_argument('-tp', '--target_port', type=int, dest='target_port', required=False, default=random.randrange(49152, 65535), help='Specify the port the nodejs server awaits data from ros')
     parser.add_argument('-bp', '--browser_port', type=int, dest='browser_port', required=False, default=random.randrange(49152, 65535), help='Specify the port the nodejs server opens for browsers')
+    parser.add_argument('--curses', dest='use_curses', arction='store_true', required=False, default=False, help='Use curses instead of the nodejs visualizer')
     parser.print_usage()
     args = parser.parse_args(input('Enter options:\n').split())
     if not 0 < args.target_port < 65535:
