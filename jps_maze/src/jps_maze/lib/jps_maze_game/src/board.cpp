@@ -47,25 +47,25 @@ namespace jps_maze_game
                     case '2':
                         tmp.game_block_type = GAME_BLOCK_PORTAL;
                         {
-                            Portal port_tmp(i / 2, h);
+                            Portal port_tmp(i / 2, h - 1);
                             portals.push_back(port_tmp);
                         }
                         break;
                     case '3':
                         tmp.game_block_type = GAME_BLOCK_FLAG_A;
-                        pos_flag_a = {i / 2, h};
+                        pos_flag_a = {i / 2, h - 1};
                         break;
                     case '4':
                         tmp.game_block_type = GAME_BLOCK_FLAG_B;
-                        pos_flag_b = {i / 2, h};
+                        pos_flag_b = {i / 2, h - 1};
                         break;
                     case '5':
                         tmp.game_block_type = GAME_BLOCK_BASE_A;
-                        base_a.push_back({i / 2, h});
+                        base_a.push_back({i / 2, h - 1});
                         break;
                     case '6':
                         tmp.game_block_type = GAME_BLOCK_BASE_B;
-                        base_b.push_back({i / 2, h});
+                        base_b.push_back({i / 2, h - 1});
                         break;
                     default:
                         tmp.game_block_type = GAME_BLOCK_EMPTY;
@@ -324,6 +324,7 @@ namespace jps_maze_game
         case GAME_BLOCK_PORTAL:
         {
             uint16_t port_id = rand() % portals.size();
+            RCLCPP_INFO(logger, "[Board::player_move] teleport to: %d at x: %d, y: %d", port_id, portals.at(port_id).get_x(), portals.at(port_id).get_y());
             player.set_x(portals.at(port_id).get_x());
             player.set_y(portals.at(port_id).get_y());
             map_area(new_x, new_y, player.get_team());
