@@ -105,6 +105,7 @@ namespace jps_maze_server {
         RCLCPP_DEBUG(this->get_logger(), "Sending status for Team A");
         status.header.stamp = this->now();
         this->team_a_status_pub->publish(status);
+        status.rows.clear();
         board = this->game.get_team_board(jps_maze_game::PLAYER_TEAM_B);
         for(const auto &row : board) {
             jps_maze_msgs::msg::Row::_blocks_type cur_row;
@@ -117,6 +118,7 @@ namespace jps_maze_server {
         }
         RCLCPP_DEBUG(this->get_logger(), "Team B");
         RCLCPP_DEBUG(this->get_logger(), "In board: at y=62, x= 13: %d", board.at(62).at(13));
+        RCLCPP_DEBUG(this->get_logger(), "Board: width: %ld heigth: %ld", board.size(), board.at(0).size());
         RCLCPP_DEBUG(this->get_logger(), "Status width: %zu, height: %zu", status.rows.size(), status.rows.at(0).blocks.size());
         RCLCPP_DEBUG(this->get_logger(), "In message: at y=62, x=13: %d", status.rows.at(62).blocks.at(13).block_type);
         for(const auto &player : this->game.get_players_of_team(jps_maze_game::PLAYER_TEAM_B)) {
@@ -134,7 +136,7 @@ namespace jps_maze_server {
         RCLCPP_DEBUG(this->get_logger(), "Sending status for Team B");
         status.header.stamp = this->now();
         this->team_b_status_pub->publish(status);
-        RCLCPP_DEBUG(this->get_logger(), "Updateing Framebuffer");
+        RCLCPP_DEBUG(this->get_logger(), "Updating Framebuffer");
         update_framebuffer();
 
         RCLCPP_INFO(this->get_logger(), "Issuing redrawing");
