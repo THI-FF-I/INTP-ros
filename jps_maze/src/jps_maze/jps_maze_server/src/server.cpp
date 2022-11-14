@@ -82,6 +82,7 @@ namespace jps_maze_server {
             for(const auto &block : row) {
                 cur_row.emplace_back(jps_maze_msgs::msg::Block().set__block_type(block));
             }
+            RCLCPP_DEBUG(this->get_logger(), "Added row with size %zu", cur_row.size());
         }
         RCLCPP_DEBUG(this->get_logger(), "Team A");
         RCLCPP_DEBUG(this->get_logger(), "Board: width: %ld heigth: %ld", board.size(), board.at(0).size());
