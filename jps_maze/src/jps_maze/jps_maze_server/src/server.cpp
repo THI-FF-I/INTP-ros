@@ -110,10 +110,11 @@ namespace jps_maze_server {
             for(const auto &block : row) {
                 cur_row.emplace_back(jps_maze_msgs::msg::Block().set__block_type(block));
             }
+            status.rows.emplace_back(jps_maze_msgs::msg::Row().set__blocks(cur_row));
         }
         RCLCPP_DEBUG(this->get_logger(), "Team B");
-        RCLCPP_DEBUG(this->get_logger(), "Board: width: %ld heigth: %ld", board.size(), board.at(0).size());
-        RCLCPP_DEBUG(this->get_logger(), "In board: at x = 13, y = 62: %d", board.at(62).at(13));
+        RCLCPP_DEBUG(this->get_logger(), "In board: at y=62, x= 13: %d", board.at(62).at(13));
+        RCLCPP_DEBUG(this->get_logger(), "Status width: %zu, height: %zu", status.rows.size(), status.rows.at(0).blocks.size());
         RCLCPP_DEBUG(this->get_logger(), "In message: at y=62, x=13: %d", status.rows.at(62).blocks.at(13).block_type);
         for(const auto &player : this->game.get_players_of_team(jps_maze_game::PLAYER_TEAM_B)) {
             RCLCPP_DEBUG(this->get_logger(), "Adding Player \"%s\":%lu to Team A status", player.get_player_name().c_str(), player.get_player_id());
@@ -130,6 +131,12 @@ namespace jps_maze_server {
         RCLCPP_DEBUG(this->get_logger(), "Sending status for Team B");
         status.header.stamp = this->now();
         this->team_b_status_pub->publish(status);
+        RCLCPP_DEBUG(this->get_logger(), "Updateing Framebuffer");
+        update_framebuffer();
+
+        RCLCPP_INFO(this->get_logger(), "Issuing redrawing");
+        this->visualizer.re_draw();
+
         RCLCPP_DEBUG(this->get_logger(), "Resetting timer");
         this->timer->reset();
     }
