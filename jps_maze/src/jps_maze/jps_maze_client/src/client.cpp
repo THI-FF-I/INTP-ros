@@ -199,7 +199,7 @@ namespace jps_maze_client
         RCLCPP_INFO(this->get_logger(), "Got new status message");
         RCLCPP_DEBUG(this->get_logger(), "Received number of players: %lu", msg->players.size());
         RCLCPP_INFO(this->get_logger(), "Copying board into framebuffer");
-        ize_t x= 0, y = 0;
+        size_t x= 0, y = 0;
         for (const auto &row : msg->rows)
         {
             x= 0;
