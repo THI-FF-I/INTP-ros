@@ -135,7 +135,7 @@ def generate_launch_description():
                         '--hide-menubar',
                         '--geometry=66x66 '
                         '-t',
-                        'jps_maze',
+                        node_name,
                         '--zoom=0.75',
                         '--',
                         './jps_maze_curses',

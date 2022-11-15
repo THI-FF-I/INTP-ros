@@ -106,6 +106,7 @@ namespace jps_maze_server {
         status.header.stamp = this->now();
         this->team_a_status_pub->publish(status);
         status.rows.clear();
+        status.players.clear();
         board = this->game.get_team_board(jps_maze_game::PLAYER_TEAM_B);
         for(const auto &row : board) {
             jps_maze_msgs::msg::Row::_blocks_type cur_row;
