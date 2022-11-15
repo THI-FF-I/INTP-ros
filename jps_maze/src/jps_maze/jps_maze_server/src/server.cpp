@@ -143,6 +143,16 @@ namespace jps_maze_server {
         RCLCPP_INFO(this->get_logger(), "Issuing redrawing");
         this->visualizer.re_draw();
 
+        if(this->game.get_game_state() == jps_maze_game::GAME_STATE_WIN_TEAM_A) {
+            RCLCPP_INFO(this->get_logger(), "Team A won");
+            status.game_over = true;
+            status.winning_team.team = jps_maze_msgs::msg::Team::TEAM_A;
+        } else if(this->game.get_game_state() == jps_maze_game::GAME_STATE_WIN_TEAM_B) {
+            RCLCPP_INFO(this->get_logger(), "Team B won");
+            status.game_over = true;
+            status.winning_team.team = jps_maze_msgs::msg::Team::TEAM_B;
+        }
+
         RCLCPP_DEBUG(this->get_logger(), "Resetting timer");
         this->timer->reset();
     }
@@ -159,11 +169,11 @@ namespace jps_maze_server {
         }
 
         for(const auto &player : this->game.get_players()) {
-            this->frame_buffer[player.second.get_y()][player.second.get_x()] = player.second.get_color() | (~((~static_cast<jps_maze_msgs::msg::Block::_block_type_type>(0)) >> 1)); // Set MSB
+            this->frame_buffer[player.second.get_y()][player.second.get_x()] = player.second.get_color() | (static_cast<jps_maze_msgs::msg::Block::_block_type_type>(1) << std::numeric_limits<jps_maze_msgs::msg::Block::_block_type_type>::digits - 1); // Set MSB
             if(player.second.get_team() == jps_maze_msgs::msg::Team::TEAM_A) {
-                this->frame_buffer[player.second.get_y()][player.second.get_x()] |= ((~((~static_cast<jps_maze_msgs::msg::Block::_block_type_type>(0)) >> 1))>>1); // Set 2nd MSB
+                this->frame_buffer[player.second.get_y()][player.second.get_x()] |= (static_cast<jps_maze_msgs::msg::Block::_block_type_type>(1) << std::numeric_limits<jps_maze_msgs::msg::Block::_block_type_type>::digits - 2); // Set 2nd MSB
             } else {
-                this->frame_buffer[player.second.get_y()][player.second.get_x()] &=  ~((~((~static_cast<jps_maze_msgs::msg::Block::_block_type_type>(0)) >> 1))>>1); // Reset 2nd MSB
+                this->frame_buffer[player.second.get_y()][player.second.get_x()] &=  ~(static_cast<jps_maze_msgs::msg::Block::_block_type_type>(1) << std::numeric_limits<jps_maze_msgs::msg::Block::_block_type_type>::digits - 2); // Reset 2nd MSB
             }
         }
     }
@@ -222,6 +232,10 @@ namespace jps_maze_server {
     void Server::timer_cb() {
         this->timer->cancel();
         RCLCPP_INFO(this->get_logger(), "Timer expired starting next round");
+        if(this->game.get_game_state() == jps_maze_game::GAME_STATE_WIN_TEAM_A || this->game.get_game_state() == jps_maze_game::GAME_STATE_WIN_TEAM_A) {
+            RCLCPP_INFO(this->get_logger(), "Ending game, because a team won");
+            std::exit(EXIT_SUCCESS);
+        }
         this->game.next_round();
         RCLCPP_INFO(this->get_logger(), "Publishing next round");
         this->next_round_pub->publish(std_msgs::msg::Empty());

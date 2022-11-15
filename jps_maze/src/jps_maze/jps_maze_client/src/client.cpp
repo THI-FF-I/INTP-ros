@@ -224,7 +224,7 @@ namespace jps_maze_client
         }
         for (const auto &player : msg->players)
         {
-            frame_buffer[player.pos.y][player.pos.x] = player.color | (~((~static_cast<jps_maze_msgs::msg::Block::_block_type_type>(0)) >> 1)); // Set MSB
+            frame_buffer[player.pos.y][player.pos.x] = player.color | (static_cast<jps_maze_msgs::msg::Block::_block_type_type>(1) << std::numeric_limits<jps_maze_msgs::msg::Block::_block_type_type>::digits - 1); // Set MSB
 
             if (player.id == player_id)
             {
@@ -234,13 +234,21 @@ namespace jps_maze_client
             }
 
             if(player.team.team == jps_maze_msgs::msg::Team::TEAM_A) {
-                this->frame_buffer[player.pos.y][player.pos.x] |= ((~((~static_cast<jps_maze_msgs::msg::Block::_block_type_type>(0)) >> 1))>>1); // Set 2nd MSB
+                this->frame_buffer[player.pos.y][player.pos.x] |= (static_cast<jps_maze_msgs::msg::Block::_block_type_type>(1) << std::numeric_limits<jps_maze_msgs::msg::Block::_block_type_type>::digits - 2); // Set 2nd MSB
             } else {
-                this->frame_buffer[player.pos.y][player.pos.x] &=  ~((~((~static_cast<jps_maze_msgs::msg::Block::_block_type_type>(0)) >> 1))>>1); // Reset 2nd MSB
+                this->frame_buffer[player.pos.y][player.pos.x] &= ~(static_cast<jps_maze_msgs::msg::Block::_block_type_type>(1) << std::numeric_limits<jps_maze_msgs::msg::Block::_block_type_type>::digits - 2); // Reset 2nd MSB
             }
         }
         RCLCPP_INFO(this->get_logger(), "Triggering re_draw");
         this->visualizer.re_draw();
+        if(msg->game_over) {
+            if(msg->winning_team.team == this->team) {
+                RCLCPP_INFO(this->get_logger(), "We won!");
+            } else {
+                RCLCPP_INFO(this->get_logger(), "We lost!");
+            }
+            std::exit(EXIT_SUCCESS);
+        }
         RCLCPP_INFO(this->get_logger(), "Calculating next move");
         this->calculate_next_move();
         RCLCPP_DEBUG(this->get_logger(), "Signaling, that the next round is ready");
