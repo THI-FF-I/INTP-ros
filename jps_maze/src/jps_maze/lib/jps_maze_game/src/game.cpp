@@ -192,6 +192,7 @@ namespace jps_maze_game
             m.second.set_turn(true);
         }
 
+        round_cnt++;
         game_state = GAME_STATE_RUNNING;
     }
 
