@@ -29,6 +29,7 @@ namespace jps_maze_curses {
         FLAG_B = 4,
         BASE_A = 5,
         BASE_B = 6,
+        NOT_MAPPED = 7,
 
         PLAYER = 20,
     };

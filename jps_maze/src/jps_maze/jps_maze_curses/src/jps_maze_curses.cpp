@@ -133,6 +133,7 @@ namespace jps_maze_curses {
         init_pair(FLAG_B, COLOR_RED, COLOR_BLACK);
         init_pair(BASE_A, COLOR_BLACK, COLOR_BLUE);
         init_pair(BASE_B, COLOR_BLACK, COLOR_RED);
+        init_pair(NOT_MAPPED, COLOR_WHITE, COLOR_WHITE);
 
         mvprintw(10,10, "Hello from curses");
 
@@ -212,6 +213,10 @@ namespace jps_maze_curses {
                         mvaddch(this->cur_row + 1, x + 1, '#');
                         attroff(COLOR_PAIR(BASE_B));
                         break;
+                    case NOT_MAPPED:
+                        attron(COLOR_PAIR(NOT_MAPPED));
+                        mvaddch(this->cur_row + 1, x + 1, ' ');
+                        attroff(COLOR_PAIR(NOT_MAPPED));
                     default:
                         throw std::runtime_error("Invalid block");
                 }
