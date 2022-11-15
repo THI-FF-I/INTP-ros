@@ -3,7 +3,7 @@ from functools import partial
 import logging
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import RegisterEventHandler, LogInfo, OpaqueFunction
+from launch.actions import RegisterEventHandler, LogInfo, OpaqueFunction, ExecuteProcess
 from launch.event_handlers import OnProcessStart, OnProcessExit
 from launch_ros.actions import Node
 import launch_ros.parameter_descriptions
@@ -29,7 +29,7 @@ def parse_arguments():
     parser.add_argument('--host_name', type=str, dest='host_name', required=False, default='localhost', help='Specify the hostname to connect to for visualisation')
     parser.add_argument('-tp', '--target_port', type=int, dest='target_port', required=False, default=random.randrange(49152, 65535), help='Specify the port the nodejs server awaits data from ros')
     parser.add_argument('-bp', '--browser_port', type=int, dest='browser_port', required=False, default=random.randrange(49152, 65535), help='Specify the port the nodejs server opens for browsers')
-    parser.add_argument('--curses', dest='use_curses', arction='store_true', required=False, default=False, help='Use curses instead of the nodejs visualizer')
+    parser.add_argument('--curses', dest='use_curses', action='store_true', required=False, default=False, help='Use curses instead of the nodejs visualizer')
     parser.print_usage()
     args = parser.parse_args(input('Enter options:\n').split())
     if not 0 < args.target_port < 65535:
@@ -37,16 +37,16 @@ def parse_arguments():
     if not args.start_server:
         if args.team:
             if args.name:
-                return args.node_ns, args.start_server, True if args.team.upper() == 'A' else  False, args.name, args.board_no, args.debug, args.player_per_team, args.host_name, args.target_port, args.browser_port
+                return args.node_ns, args.start_server, True if args.team.upper() == 'A' else  False, args.name, args.board_no, args.debug, args.player_per_team, args.host_name, args.target_port, args.browser_port, args.use_curses
             else:
                 parser.error('Missing player name')
         else:
             parser.error('Missing team selection')
     else:
-        return args.node_ns, args.start_server, True, 'server', args.board_no, args.debug, args.player_per_team, args.host_name, args.target_port, args.browser_port
+        return args.node_ns, args.start_server, True, 'server', args.board_no, args.debug, args.player_per_team, args.host_name, args.target_port, args.browser_port, args.use_curses
 
 def generate_launch_description():
-    node_ns, start_server, team_A, player_name, board_no, debug, player_per_team, host_name, target_port, browser_port = parse_arguments()
+    node_ns, start_server, team_A, player_name, board_no, debug, player_per_team, host_name, target_port, browser_port, use_curses = parse_arguments()
     logger.info('Parsed arguments')
     package = 'jps_maze'
     if start_server:
@@ -121,16 +121,52 @@ def generate_launch_description():
             ]
         )
     )
+    logger.info('Creating curses_starter description')
+    curses_starter =  RegisterEventHandler(
+        OnProcessStart(
+            target_action=node,
+            on_start = [
+                LogInfo(
+                    msg=['Starting curses app']
+                ),
+                ExecuteProcess(
+                    cmd=[
+                        'gnome-terminal',
+                        '--hide-menubar',
+                        '--geometry=66x66 '
+                        '-t',
+                        'jps_maze',
+                        '--zoom=0.75',
+                        '--',
+                        './jps_maze_curses',
+                        str(target_port),
+                    ],
+                    shell=True,
+                    cwd=get_package_share_directory(package_name=package),
+                    log_cmd=True,
+                ),
+            ],
+        )
+    )
     logger.info('Creating Launch description')
     if host_name == 'localhost' or host_name == '127.0.0.1':
-        logger.info('Nodejs should run on localhost, so starting automatically')
-        launch_description = LaunchDescription(
-            [
-                node,
-                start_handler,
-                shutdown_handler,
-            ]
-        )
+        if use_curses:
+            logger.info('Using curses app instead of nodejs')
+            launch_description = LaunchDescription(
+                [
+                    node,
+                    curses_starter,
+                ]
+            )
+        else:
+            logger.info('Nodejs should run on localhost, so starting automatically')
+            launch_description = LaunchDescription(
+                [
+                    node,
+                    start_handler,
+                    shutdown_handler,
+                ]
+            )
     else:
         logger.info('Nodejs should run on different device')
         launch_description = LaunchDescription(

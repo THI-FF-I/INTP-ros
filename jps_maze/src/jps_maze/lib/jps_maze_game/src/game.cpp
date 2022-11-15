@@ -202,7 +202,7 @@ namespace jps_maze_game
 
     std::vector<std::vector<game_block_type_t>> Game::get_board() const
     {
-        board.print_board_to_command_line(players);
+        //board.print_board_to_command_line(players);
 
         return board.get_board();
     }
