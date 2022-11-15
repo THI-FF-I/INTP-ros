@@ -88,7 +88,7 @@ namespace jps_maze_game
             board = new_board;
             width = w;
             height = h;
-            
+
             return true;
         }
         else
@@ -191,24 +191,28 @@ namespace jps_maze_game
 
                 for (const auto &m : players)
                 {
-                    if(m.second.get_x() == n && m.second.get_y() == i)
+                    if (m.second.get_x() == n && m.second.get_y() == i)
                     {
-                        if(m.second.get_team() == PLAYER_TEAM_A)
+                        if (m.second.get_team() == PLAYER_TEAM_A)
                         {
-                            if(m.second.get_has_flag() == true) tmp = "A";
-                            else tmp = "a";
+                            if (m.second.get_has_flag() == true)
+                                tmp = "A";
+                            else
+                                tmp = "a";
                         }
                         else
                         {
-                            if(m.second.get_has_flag() == true) tmp = "B";
-                            else tmp = "b";
+                            if (m.second.get_has_flag() == true)
+                                tmp = "B";
+                            else
+                                tmp = "b";
                         }
-                        
+
                         break;
                     }
                 }
 
-                if(tmp == "")
+                if (tmp == "")
                 {
                     switch (board.at(i).at(n).game_block_type)
                     {
@@ -370,6 +374,9 @@ namespace jps_maze_game
             map_area(new_x, new_y, player.get_team());
             return true;
 
+        case GAME_BLOCK_NOT_MAPPED:
+            return false;
+
         default:
             throw std::runtime_error("[Board::player_move] Unknown block type");
         }
@@ -391,7 +398,7 @@ namespace jps_maze_game
                 {
                     if (board.at(h).at(w).mapped_team_a == false)
                     {
-                        tmp.push_back(GAME_BLOCK_EMPTY);
+                        tmp.push_back(GAME_BLOCK_NOT_MAPPED);
                     }
                     else
                     {
@@ -402,7 +409,7 @@ namespace jps_maze_game
                 {
                     if (board.at(h).at(w).mapped_team_b == false)
                     {
-                        tmp.push_back(GAME_BLOCK_EMPTY);
+                        tmp.push_back(GAME_BLOCK_NOT_MAPPED);
                     }
                     else
                     {
