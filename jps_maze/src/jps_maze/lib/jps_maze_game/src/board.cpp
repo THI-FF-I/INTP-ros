@@ -161,6 +161,9 @@ namespace jps_maze_game
                 case GAME_BLOCK_WALL:
                     res = "*";
                     break;
+                case GAME_BLOCK_NOT_MAPPED:
+                    res = "-";
+                    break;
                 default:
                     res = "o";
                 }
