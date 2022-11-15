@@ -156,7 +156,7 @@ namespace jps_maze_curses {
         for(size_t x = 0; x < this->width; ++x) {
             const block_t cur_block = this->row_buf[x];
             //Check if current block is an player
-            if((cur_block & (static_cast<block_t>(1) << (std::numeric_limits<block_t>::digits - 1))) != 0) {
+            if(cur_block & (~((~static_cast<block_t>(0)) >> 1))) {
                 init_pair(cur_player_index, COLOR_GREEN, COLOR_CYAN);
                 /*short player_b = cur_block & ((1 << 10) - 1); // lowest 10 bits
                 short player_g = (cur_block & ((1 << 20) - 1)) >> 10; // The next 10 bits
