@@ -172,7 +172,7 @@ namespace jps_maze_curses {
                     init_pair(cur_player_index, cur_player_index, COLOR_RED); // Team B
                 }
                 attron(COLOR_PAIR(cur_player_index));
-                mvaddch(this->cur_row + 1, x + 1, '+');
+                mvaddch(this->cur_row + 1, x + 1, 'P');
                 attroff(COLOR_PAIR(cur_player_index));
                 cur_player_index++;
             } else {
