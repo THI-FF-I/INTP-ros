@@ -169,11 +169,11 @@ namespace jps_maze_server {
         }
 
         for(const auto &player : this->game.get_players()) {
-            this->frame_buffer[player.second.get_y()][player.second.get_x()] = player.second.get_color() | (static_cast<jps_maze_msgs::msg::Block::_block_type_type>(1) << (std::numeric_limits<jps_maze_msgs::msg::Block::_block_type_type>::digits - 1)); // Set MSB
+            this->frame_buffer[player.second.get_y()][player.second.get_x()] = player.second.get_color() | (static_cast<jps_maze_visualizer::block_t>(1) << (std::numeric_limits<jps_maze_visualizer::block_t>::digits - 1)); // Set MSB
             if(player.second.get_team() == jps_maze_msgs::msg::Team::TEAM_A) {
-                this->frame_buffer[player.second.get_y()][player.second.get_x()] |= (static_cast<jps_maze_msgs::msg::Block::_block_type_type>(1) << (std::numeric_limits<jps_maze_msgs::msg::Block::_block_type_type>::digits - 2)); // Set 2nd MSB
+                this->frame_buffer[player.second.get_y()][player.second.get_x()] |= (static_cast<jps_maze_visualizer::block_t>(1) << (std::numeric_limits<jps_maze_visualizer::block_t>::digits - 2)); // Set 2nd MSB
             } else {
-                this->frame_buffer[player.second.get_y()][player.second.get_x()] &=  ~(static_cast<jps_maze_msgs::msg::Block::_block_type_type>(1) << (std::numeric_limits<jps_maze_msgs::msg::Block::_block_type_type>::digits - 2)); // Reset 2nd MSB
+                this->frame_buffer[player.second.get_y()][player.second.get_x()] &=  ~(static_cast<jps_maze_visualizer::block_t>(1) << (std::numeric_limits<jps_maze_visualizer::block_t>::digits - 2)); // Reset 2nd MSB
             }
         }
     }
