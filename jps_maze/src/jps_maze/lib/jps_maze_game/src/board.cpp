@@ -69,6 +69,7 @@ namespace jps_maze_game
                         break;
                     default:
                         tmp.game_block_type = GAME_BLOCK_EMPTY;
+                        RCLCPP_INFO(this->logger, "[Board::load_board_from_file] Unknown block type: %c at x: %ld, y: %d", line[i], i, h - 1);
                         break;
                     }
 
@@ -87,6 +88,7 @@ namespace jps_maze_game
             board = new_board;
             width = w;
             height = h;
+            
             return true;
         }
         else
