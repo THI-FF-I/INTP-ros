@@ -7,3 +7,4 @@ int8 FLAG_A = 3
 int8 FLAG_B = 4
 int8 BASE_A = 5
 int8 BASE_B = 6
+int8 NOT_MAPPED = 7

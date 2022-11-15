@@ -42,6 +42,7 @@ namespace jps_maze_game
         GAME_BLOCK_FLAG_B = jps_maze_msgs::msg::Block::FLAG_B,
         GAME_BLOCK_BASE_A = jps_maze_msgs::msg::Block::BASE_A,
         GAME_BLOCK_BASE_B = jps_maze_msgs::msg::Block::BASE_B,
+        GAME_BLOCK_NOT_MAPPED = jps_maze_msgs::msg::Block::NOT_MAPPED,
     } game_block_type_t;
 
     typedef struct game_block
