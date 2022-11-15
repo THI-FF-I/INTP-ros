@@ -18,8 +18,6 @@
 
 namespace jps_maze_game
 {
-    // TODO Implement loss of flag
-
     class Game
     {
     private:
