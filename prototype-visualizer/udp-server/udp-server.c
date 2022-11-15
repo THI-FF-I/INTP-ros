@@ -1,44 +1,56 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <unistd.h>
+#include <time.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
 
 #include <netinet/in.h>
 
-#define ARENA_SIZE 64
+#define ARENA_HEIGHT 123
+#define ARENA_WIDTH 142
 
-int main()
+int arena_row[ARENA_WIDTH];
+
+// create a udp socket
+int network_socket;
+
+// address for socket
+struct sockaddr_in server_address;
+
+int widthheight[] = {ARENA_WIDTH, ARENA_HEIGHT};
+
+void sendRandomArena()
 {
-    //initialize and fill dummy arena
-    int arena[ARENA_SIZE][ARENA_SIZE];
+    
+    sendto(network_socket, widthheight, sizeof(widthheight), 0, (const struct sockaddr *) &server_address, sizeof(server_address));
 
-    int k = 0;
-
-    for(int i = 0; i < ARENA_SIZE; i++)
+    for(int i = 0; i < ARENA_HEIGHT; i++)
     {
 
-        for(int n = 0; n < ARENA_SIZE; n++)
+        for(int n = 0; n < ARENA_WIDTH; n++)
         {
-
-            arena[i][n] = k;
-            k++;
-            if(k>4)k=0;
+            arena_row[n] = rand() % 9;
 
         }
 
+        sendto(network_socket, arena_row, sizeof(arena_row), 0, (const struct sockaddr *) &server_address, sizeof(server_address));
+
     }
 
-    // create a udp socket
-    int network_socket;
-    network_socket = socket(AF_INET, SOCK_DGRAM, 0);
+    return;
+}
 
-    // address for socket
-    struct sockaddr_in server_address;
+int main()
+{
+    
+    srand(time(NULL));
+    network_socket = socket(AF_INET, SOCK_DGRAM, 0);
     server_address.sin_family = AF_INET; 
     server_address.sin_port = htons(42069);
-    server_address.sin_addr.s_addr = INADDR_ANY;
+    inet_aton ("127.0.0.1", &server_address.sin_addr);
 
     // bind address to socket
     //TODO: make some error handling, but screw that, I am a consultant 
@@ -47,8 +59,9 @@ int main()
     //smash it
     while(true)
     {
-        sendto(network_socket, arena, sizeof(arena), 0, (const struct sockaddr *) &server_address, sizeof(server_address));
+        sendRandomArena();
         printf("Sended!\n");
+        sleep(1);
     }
 
     return 0;
