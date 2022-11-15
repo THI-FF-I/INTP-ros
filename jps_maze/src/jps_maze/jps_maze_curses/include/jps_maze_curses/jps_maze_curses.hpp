@@ -50,6 +50,7 @@ namespace jps_maze_curses {
         const char *port;
         block_t width;
         block_t height;
+        size_t cur_player_index = PLAYER;
         block_t *row_buf;
         int network_socket;
         struct sockaddr server_address;

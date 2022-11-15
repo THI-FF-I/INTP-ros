@@ -4,6 +4,8 @@
 
 #include "jps_maze_client/client.hpp"
 
+#define UNUSED __attribute__((unused))
+
 using namespace std::placeholders;
 
 namespace jps_maze_client
@@ -199,7 +201,7 @@ namespace jps_maze_client
             RCLCPP_DEBUG(this->get_logger(), "Received first status");
             if(!already_got_player) {
                 RCLCPP_DEBUG(this->get_logger(), "Waiting for create_player response");
-                this->got_player_wait_set->wait();
+                UNUSED this->got_player_wait_set->wait();
             }
             RCLCPP_INFO(this->get_logger(), "Removing guard_conditions");
             this->got_player_wait_set->remove_guard_condition(this->got_player_guard);
@@ -224,7 +226,7 @@ namespace jps_maze_client
         }
         for (const auto &player : msg->players)
         {
-            frame_buffer[player.pos.y][player.pos.x] = player.color | (static_cast<jps_maze_msgs::msg::Block::_block_type_type>(1) << std::numeric_limits<jps_maze_msgs::msg::Block::_block_type_type>::digits - 1); // Set MSB
+            frame_buffer[player.pos.y][player.pos.x] = player.color | (static_cast<jps_maze_msgs::msg::Block::_block_type_type>(1) << (std::numeric_limits<jps_maze_msgs::msg::Block::_block_type_type>::digits - 1)); // Set MSB
 
             if (player.id == player_id)
             {
@@ -234,9 +236,9 @@ namespace jps_maze_client
             }
 
             if(player.team.team == jps_maze_msgs::msg::Team::TEAM_A) {
-                this->frame_buffer[player.pos.y][player.pos.x] |= (static_cast<jps_maze_msgs::msg::Block::_block_type_type>(1) << std::numeric_limits<jps_maze_msgs::msg::Block::_block_type_type>::digits - 2); // Set 2nd MSB
+                this->frame_buffer[player.pos.y][player.pos.x] |= (static_cast<jps_maze_msgs::msg::Block::_block_type_type>(1) << (std::numeric_limits<jps_maze_msgs::msg::Block::_block_type_type>::digits - 2)); // Set 2nd MSB
             } else {
-                this->frame_buffer[player.pos.y][player.pos.x] &= ~(static_cast<jps_maze_msgs::msg::Block::_block_type_type>(1) << std::numeric_limits<jps_maze_msgs::msg::Block::_block_type_type>::digits - 2); // Reset 2nd MSB
+                this->frame_buffer[player.pos.y][player.pos.x] &= ~(static_cast<jps_maze_msgs::msg::Block::_block_type_type>(1) << (std::numeric_limits<jps_maze_msgs::msg::Block::_block_type_type>::digits - 2)); // Reset 2nd MSB
             }
         }
         RCLCPP_INFO(this->get_logger(), "Triggering re_draw");
@@ -256,12 +258,12 @@ namespace jps_maze_client
         this->next_move_ready_guard->trigger();
     }
 
-    void Client::next_round_cb(const std::shared_ptr<std_msgs::msg::Empty> msg)
+    void Client::next_round_cb(UNUSED const std::shared_ptr<std_msgs::msg::Empty> msg)
     {
         RCLCPP_INFO(this->get_logger(), "Next round started");
         if(!next_move_ready) {
             RCLCPP_DEBUG(this->get_logger(), "Next move is not ready waiting");
-            this->next_move_ready_wait_set->wait();
+            UNUSED this->next_move_ready_wait_set->wait();
         }
         auto req = std::make_shared<jps_maze_msgs::srv::MovePlayer::Request>();
         req->dir = this->next_dir;

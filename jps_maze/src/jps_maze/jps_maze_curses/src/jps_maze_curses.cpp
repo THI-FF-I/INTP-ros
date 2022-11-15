@@ -5,7 +5,7 @@
 #include "jps_maze_curses/jps_maze_curses.hpp"
 
 namespace jps_maze_curses {
-    CursesWindow::CursesWindow(const char* port) : port(port), width(64), height(64), row_buf(nullptr), cur_row(0){
+    CursesWindow::CursesWindow(const char* port) : port(port), cur_player_index(PLAYER), row_buf(nullptr), cur_row(0){
 
         this->setup_socket();
 
@@ -153,11 +153,10 @@ namespace jps_maze_curses {
     }
 
     void CursesWindow::print_row() {
-        size_t cur_player_index = PLAYER;
         for(size_t x = 0; x < this->width; ++x) {
             const block_t cur_block = this->row_buf[x];
             //Check if current block is an player
-            if((cur_block & (static_cast<block_t>(1) << std::numeric_limits<block_t>::digits - 1)) != 0) {
+            if((cur_block & (static_cast<block_t>(1) << (std::numeric_limits<block_t>::digits - 1))) != 0) {
                 //init_pair(cur_player_index, COLOR_GREEN, COLOR_CYAN);
                 short player_b = cur_block & ((1 << 10) - 1); // lowest 10 bits
                 short player_g = (cur_block & ((1 << 20) - 1)) >> 10; // The next 10 bits
@@ -167,15 +166,15 @@ namespace jps_maze_curses {
                 player_r %= 1000;
 
                 init_color(cur_player_index, player_r, player_g, player_b);
-                if((cur_block & (static_cast<block_t>(1) << std::numeric_limits<block_t>::digits - 2)) != 0) { // Check 2nd MSB
+                if((cur_block & (static_cast<block_t>(1) << (std::numeric_limits<block_t>::digits - 2))) != 0) { // Check 2nd MSB
                     init_pair(cur_player_index, cur_player_index, COLOR_BLUE); // Team A
                 } else {
                     init_pair(cur_player_index, cur_player_index, COLOR_RED); // Team B
                 }
-                attron(COLOR_PAIR(cur_player_index));
+                attron(COLOR_PAIR(this->cur_player_index));
                 mvaddch(this->cur_row + 1, x + 1, 'P');
-                attroff(COLOR_PAIR(cur_player_index));
-                cur_player_index++;
+                attroff(COLOR_PAIR(this->cur_player_index));
+                this->cur_player_index++;
             } else {
                 switch(cur_block) {
                     case EMPTY:
@@ -228,6 +227,7 @@ namespace jps_maze_curses {
 
     void CursesWindow::handle_update() {
         this->check_dim();
+        this->cur_player_index = PLAYER;
         for(cur_row = 0; cur_row < this->height; ++cur_row) {
             this->get_row();
             this->print_row();
