@@ -159,7 +159,12 @@ namespace jps_maze_server {
         }
 
         for(const auto &player : this->game.get_players()) {
-            this->frame_buffer[player.second.get_y()][player.second.get_x()] = player.second.get_color() | (~((~static_cast<jps_maze_msgs::msg::Block::_block_type_type>(0)) >> 1));
+            this->frame_buffer[player.second.get_y()][player.second.get_x()] = player.second.get_color() | (~((~static_cast<jps_maze_msgs::msg::Block::_block_type_type>(0)) >> 1)); // Set MSB
+            if(player.second.get_team() == jps_maze_msgs::msg::Team::TEAM_A) {
+                this->frame_buffer[player.second.get_y()][player.second.get_x()] |= ((~((~static_cast<jps_maze_msgs::msg::Block::_block_type_type>(0)) >> 1))>>1); // Set 2nd MSB
+            } else {
+                this->frame_buffer[player.second.get_y()][player.second.get_x()] &=  ~((~((~static_cast<jps_maze_msgs::msg::Block::_block_type_type>(0)) >> 1))>>1); // Reset 2nd MSB
+            }
         }
     }
 

@@ -224,13 +224,19 @@ namespace jps_maze_client
         }
         for (const auto &player : msg->players)
         {
-            frame_buffer[player.pos.y][player.pos.x] = player.color | (~((~static_cast<jps_maze_msgs::msg::Block::_block_type_type>(0)) >> 1));
+            frame_buffer[player.pos.y][player.pos.x] = player.color | (~((~static_cast<jps_maze_msgs::msg::Block::_block_type_type>(0)) >> 1)); // Set MSB
 
             if (player.id == player_id)
             {
                 this->x = player.pos.x;
                 this->y = player.pos.y;
                 RCLCPP_DEBUG(this->get_logger(), "Got a new position from server: x: %d y: %d", this->x, this->y);
+            }
+
+            if(player.team.team == jps_maze_msgs::msg::Team::TEAM_A) {
+                this->frame_buffer[player.pos.y][player.pos.x] |= ((~((~static_cast<jps_maze_msgs::msg::Block::_block_type_type>(0)) >> 1))>>1); // Set 2nd MSB
+            } else {
+                this->frame_buffer[player.pos.y][player.pos.x] &=  ~((~((~static_cast<jps_maze_msgs::msg::Block::_block_type_type>(0)) >> 1))>>1); // Reset 2nd MSB
             }
         }
         RCLCPP_INFO(this->get_logger(), "Triggering re_draw");

@@ -156,7 +156,7 @@ namespace jps_maze_curses {
         for(size_t x = 0; x < this->width; ++x) {
             const block_t cur_block = this->row_buf[x];
             //Check if current block is an player
-            if(cur_block & (~((~static_cast<block_t>(0)) >> 1))) {
+            if((cur_block & (~((~static_cast<block_t>(0)) >> 1))) != 0) {
                 //init_pair(cur_player_index, COLOR_GREEN, COLOR_CYAN);
                 short player_b = cur_block & ((1 << 10) - 1); // lowest 10 bits
                 short player_g = (cur_block & ((1 << 20) - 1)) >> 10; // The next 10 bits
@@ -166,7 +166,11 @@ namespace jps_maze_curses {
                 player_r %= 1000;
 
                 init_color(cur_player_index, player_r, player_g, player_b);
-                init_pair(cur_player_index, cur_player_index, COLOR_MAGENTA);
+                if((cur_block & ((~((~static_cast<block_t>(0)) >> 1))>>1)) != 0) { // Check 2nd MSB
+                    init_pair(cur_player_index, cur_player_index, COLOR_BLUE); // Team A
+                } else {
+                    init_pair(cur_player_index, cur_player_index, COLOR_RED); // Team B
+                }
                 attron(COLOR_PAIR(cur_player_index));
                 mvaddch(this->cur_row + 1, x + 1, '+');
                 attroff(COLOR_PAIR(cur_player_index));
