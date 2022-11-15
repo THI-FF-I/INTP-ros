@@ -217,6 +217,7 @@ namespace jps_maze_curses {
                         attron(COLOR_PAIR(NOT_MAPPED));
                         mvaddch(this->cur_row + 1, x + 1, ' ');
                         attroff(COLOR_PAIR(NOT_MAPPED));
+                        break;
                     default:
                         throw std::runtime_error("Invalid block");
                 }
