@@ -110,7 +110,7 @@ namespace jps_maze_curses {
         printf("Setting up curses\n");
         initscr(); // Initialize the curses screen
 
-        resizeterm(this->height, this->width);
+        resizeterm(this->height + 2, this->width + 2);
 
         if(LINES < static_cast<long>(this->height + 2)) {
             throw std::runtime_error("Screen is not tall enough");
