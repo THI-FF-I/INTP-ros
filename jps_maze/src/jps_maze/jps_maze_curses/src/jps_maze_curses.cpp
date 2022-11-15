@@ -218,7 +218,10 @@ namespace jps_maze_curses {
                         attroff(COLOR_PAIR(NOT_MAPPED));
                         break;
                     default:
+                        mvprintw(15, 5, "Invalid Block: %d", cur_block);
+                        refresh();
                         throw std::runtime_error("Invalid block");
+                        break;
                 }
 
             }
