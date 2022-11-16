@@ -193,7 +193,8 @@ namespace jps_maze_game
         }
 
         round_cnt++;
-        game_state = GAME_STATE_RUNNING;
+
+        if(game_state != GAME_STATE_WIN_TEAM_A && game_state != GAME_STATE_WIN_TEAM_B) game_state = GAME_STATE_RUNNING;
     }
 
     std::vector<std::vector<game_block_type_t>> Game::get_team_board(const team_t team) const
