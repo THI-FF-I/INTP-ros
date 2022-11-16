@@ -307,6 +307,7 @@ namespace jps_maze_curses
                 attron(COLOR_PAIR(WIN_TEXT));
                 mvprintw((this->height + 2) / 2, (this->width + 2 - strlen(text)) / 2, "%s", text);
                 attroff(COLOR_PAIR(WIN_TEXT));
+                refresh()
             }
             else
             {
@@ -314,6 +315,7 @@ namespace jps_maze_curses
                 attron(COLOR_PAIR(WIN_TEXT));
                 mvprintw((this->height + 2) / 2, (this->width + 2 - strlen(text)) / 2, "%s", text);
                 attroff(COLOR_PAIR(WIN_TEXT));
+                refresh();
             }
         }
         else if (this->team_A)
@@ -324,6 +326,7 @@ namespace jps_maze_curses
                 attron(COLOR_PAIR(WIN_TEXT));
                 mvprintw((this->height + 2) / 2, (this->width + 2 - strlen(text)) / 2, "%s", text);
                 attroff(COLOR_PAIR(WIN_TEXT));
+                refresh();
             }
             else
             {
@@ -331,6 +334,7 @@ namespace jps_maze_curses
                 attron(COLOR_PAIR(LOOSE_TEXT));
                 mvprintw((this->height + 2) / 2, (this->width + 2 - strlen(text)) / 2, "%s", text);
                 attroff(COLOR_PAIR(LOOSE_TEXT));
+                refresh();
             }
         }
         else
@@ -341,6 +345,7 @@ namespace jps_maze_curses
                 attron(COLOR_PAIR(WIN_TEXT));
                 mvprintw((this->height + 2) / 2, (this->width + 2 - strlen(text)) / 2, "%s", text);
                 attroff(COLOR_PAIR(WIN_TEXT));
+                refresh();
             }
             else
             {
@@ -348,6 +353,7 @@ namespace jps_maze_curses
                 attron(COLOR_PAIR(LOOSE_TEXT));
                 mvprintw((this->height + 2) / 2, (this->width + 2 - strlen(text)) / 2, "%s", text);
                 attroff(COLOR_PAIR(LOOSE_TEXT));
+                refresh();
             }
         }
 
