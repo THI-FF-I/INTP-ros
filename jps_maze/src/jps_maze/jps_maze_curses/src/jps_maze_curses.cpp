@@ -301,14 +301,14 @@ namespace jps_maze_curses
             {
                 const char *text = "TEAM A WON!";
                 attron(COLOR_PAIR(WIN_TEXT));
-                mvprintw((this->height + 2) / 2, (this->width + 2 - strlen(text)) / 2, text);
+                mvprintw((this->height + 2) / 2, (this->width + 2 - strlen(text)) / 2, "%s", text);
                 attroff(COLOR_PAIR(WIN_TEXT));
             }
             else
             {
                 const char *text = "TEAM B WON!";
                 attron(COLOR_PAIR(WIN_TEXT));
-                mvprintw((this->height + 2) / 2, (this->width + 2 - strlen(text)) / 2, text);
+                mvprintw((this->height + 2) / 2, (this->width + 2 - strlen(text)) / 2, "%s", text);
                 attroff(COLOR_PAIR(WIN_TEXT));
             }
         }
@@ -318,14 +318,14 @@ namespace jps_maze_curses
             {
                 const char *text = "SUCCESS TEAM A WON!";
                 attron(COLOR_PAIR(WIN_TEXT));
-                mvprintw((this->height + 2) / 2, (this->width + 2 - strlen(text)) / 2, text);
+                mvprintw((this->height + 2) / 2, (this->width + 2 - strlen(text)) / 2, "%s", text);
                 attroff(COLOR_PAIR(WIN_TEXT));
             }
             else
             {
                 const char *text = "FAIL TEAM A LOST!";
                 attron(COLOR_PAIR(LOOSE_TEXT));
-                mvprintw((this->height + 2) / 2, (this->width + 2 - strlen(text)) / 2, text);
+                mvprintw((this->height + 2) / 2, (this->width + 2 - strlen(text)) / 2, "%s", text);
                 attroff(COLOR_PAIR(LOOSE_TEXT));
             }
         }
