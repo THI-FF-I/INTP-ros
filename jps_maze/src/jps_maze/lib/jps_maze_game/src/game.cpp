@@ -106,6 +106,9 @@ namespace jps_maze_game
     {
         RCLCPP_DEBUG(logger, "Game::move_player: player_id: %lu, dir: %d", player_id, direction);
 
+        // if (game_state == GAME_STATE_WIN_TEAM_A || game_state == GAME_STATE_WIN_TEAM_B)
+        //     return false;
+
         try
         {
             if (players.at(player_id).get_turn() == false)
@@ -171,12 +174,12 @@ namespace jps_maze_game
                 if (m.second.get_team() == PLAYER_TEAM_A && board.get_block_state(m.second.get_x(), m.second.get_y()) == GAME_BLOCK_BASE_A)
                 {
                     game_state = GAME_STATE_WIN_TEAM_A;
-                    //throw std::runtime_error("TEAM A WON THE GAME!");
+                    break;
                 }
                 else if (m.second.get_team() == PLAYER_TEAM_B && board.get_block_state(m.second.get_x(), m.second.get_y()) == GAME_BLOCK_BASE_B)
                 {
                     game_state = GAME_STATE_WIN_TEAM_B;
-                    //throw std::runtime_error("TEAM B WON THE GAME!");
+                    break;
                 }
             }
         }
@@ -194,7 +197,8 @@ namespace jps_maze_game
 
         round_cnt++;
 
-        if(game_state != GAME_STATE_WIN_TEAM_A && game_state != GAME_STATE_WIN_TEAM_B) game_state = GAME_STATE_RUNNING;
+        if (game_state != GAME_STATE_WIN_TEAM_A && game_state != GAME_STATE_WIN_TEAM_B)
+            game_state = GAME_STATE_RUNNING;
     }
 
     std::vector<std::vector<game_block_type_t>> Game::get_team_board(const team_t team) const
@@ -204,8 +208,6 @@ namespace jps_maze_game
 
     std::vector<std::vector<game_block_type_t>> Game::get_board() const
     {
-        //board.print_board_to_command_line(players);
-
         return board.get_board();
     }
 }

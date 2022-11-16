@@ -23,13 +23,13 @@ def parse_arguments():
     parser.add_argument('-t', '--team', type=str, choices=['A', 'a', 'B', 'b'], dest='team', required=False, help='If client mode is chosen, select the team to play on')
     parser.add_argument('-n', '--name', type=str, dest='name', required=False, help='If client mode is chosen, select the player name')
     parser.add_argument('--ns', '--node_ns', type=str, dest='node_ns', required=False, default='jps_maze', help='Set the namespace to use')
-    parser.add_argument('-b', '--board_no', type=int, choices=range(0,2), dest='board_no', required=False, default=0, help='Select the index for the board to use')
+    parser.add_argument('-b', '--board_no', type=int, choices=range(0,4), dest='board_no', required=False, default=0, help='Select the index for the board to use')
     parser.add_argument('-d', '--debug', dest='debug', action='store_true', required=False, default=False, help='Set the log-level to debug for more verbose logging')
     parser.add_argument('--ppt', '--player_per_team', type=int, dest='player_per_team', required=False, default=2, help='Specify the amount of players per team')
     parser.add_argument('--host_name', type=str, dest='host_name', required=False, default='localhost', help='Specify the hostname to connect to for visualisation')
     parser.add_argument('-tp', '--target_port', type=int, dest='target_port', required=False, default=random.randrange(49152, 65535), help='Specify the port the nodejs server awaits data from ros')
     parser.add_argument('-bp', '--browser_port', type=int, dest='browser_port', required=False, default=random.randrange(49152, 65535), help='Specify the port the nodejs server opens for browsers')
-    parser.add_argument('--curses', dest='use_curses', action='store_true', required=False, default=False, help='Use curses instead of the nodejs visualizer')
+    parser.add_argument('--nodejs', dest='use_curses', action='store_false', required=False, default=True, help='Use nodejs instead of the curses visualizer')
     parser.print_usage()
     args = parser.parse_args(input('Enter options:\n').split())
     if not 0 < args.target_port < 65535:
@@ -140,6 +140,7 @@ def generate_launch_description():
                         '--',
                         './jps_maze_curses',
                         str(target_port),
+                        ('S' if start_server else ('A' if team_A else 'B')),
                     ],
                     shell=True,
                     cwd=get_package_share_directory(package_name=package),

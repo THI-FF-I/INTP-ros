@@ -288,11 +288,27 @@ namespace jps_maze_client
             {
                 this->frame_buffer[player.pos.y][player.pos.x] &= ~(static_cast<jps_maze_visualizer::block_t>(1) << (std::numeric_limits<jps_maze_visualizer::block_t>::digits - 2)); // Reset 2nd MSB
             }
+            if (player.has_flag)
+            {
+                this->frame_buffer[player.pos.y][player.pos.x] |= (static_cast<jps_maze_visualizer::block_t>(1) << (std::numeric_limits<jps_maze_visualizer::block_t>::digits - 3)); // Set 3rd MSB
+            }
+            else
+            {
+                this->frame_buffer[player.pos.y][player.pos.x] &= ~(static_cast<jps_maze_visualizer::block_t>(1) << (std::numeric_limits<jps_maze_visualizer::block_t>::digits - 3)); // Reset 3rd MSB
+            }
         }
         RCLCPP_INFO(this->get_logger(), "Triggering re_draw");
         this->visualizer.re_draw();
         if (msg->game_over)
         {
+            if (msg->winning_team.team == jps_maze_msgs::msg::Team::TEAM_A)
+            {
+                this->visualizer.send_result(true);
+            }
+            else
+            {
+                this->visualizer.send_result(false);
+            }
             if (msg->winning_team.team == this->team)
             {
                 RCLCPP_INFO(this->get_logger(), "We won!");

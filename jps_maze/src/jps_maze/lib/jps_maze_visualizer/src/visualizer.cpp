@@ -84,4 +84,17 @@ namespace jps_maze_visualizer {
         sendto(this->network_socket, dim, sizeof(dim), 0, (const struct sockaddr *) &server_address,
                sizeof(server_address));
     }
+
+    void Visualizer::send_result(const bool team_A) {
+        block_t dim[2] = {this->width, this->height};
+        if(team_A) {
+            RCLCPP_INFO(this->logger, "Team A won, sending modified width");
+            dim[0]++;
+        } else {
+            RCLCPP_INFO(this->logger, "Team A won, sending modified height");
+            dim[1]++;
+        }
+        sendto(this->network_socket, dim, sizeof(dim), 0, (const struct sockaddr *) &server_address,
+               sizeof(server_address));
+    }
 }

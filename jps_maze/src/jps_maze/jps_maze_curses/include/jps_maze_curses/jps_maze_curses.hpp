@@ -7,6 +7,7 @@
 
 #include <cstdlib>
 #include <cstdint>
+#include <cstring>
 #include <stdexcept>
 #include <limits>
 
@@ -31,12 +32,15 @@ namespace jps_maze_curses {
         BASE_B = 6,
         NOT_MAPPED = 7,
 
+        WIN_TEXT = 10,
+        LOOSE_TEXT = 11,
+
         PLAYER = 20,
     };
 
     class CursesWindow {
     public:
-        CursesWindow(const char *port);
+        CursesWindow(const char *port, const bool is_server, const bool team_A);
         ~CursesWindow();
         void handle_update();
     private:
@@ -50,6 +54,8 @@ namespace jps_maze_curses {
         const char *port;
         block_t width;
         block_t height;
+        const bool is_server;
+        const bool team_A;
         size_t cur_player_index = PLAYER;
         block_t *row_buf;
         int network_socket;
@@ -59,6 +65,7 @@ namespace jps_maze_curses {
         //Curses stuff
         void init_curses_app();
         void print_row();
+        void print_result(const bool team_A);
     };
 }
 

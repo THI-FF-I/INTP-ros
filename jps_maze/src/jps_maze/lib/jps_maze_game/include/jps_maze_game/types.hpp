@@ -27,7 +27,6 @@ namespace jps_maze_game
         GAME_STATE_WIN_TEAM_B,
     } game_state_t;
 
-
     // BOARD
     using coord_t = jps_maze_msgs::msg::Position::_x_type;
     static_assert(sizeof(jps_maze_msgs::msg::Position::_x_type) == sizeof(jps_maze_msgs::msg::Position::_y_type), "Position types for x and y differ!");
@@ -56,7 +55,6 @@ namespace jps_maze_game
         }
     } game_block_t;
 
-
     // PLAYER
     using player_id_t = jps_maze_msgs::msg::Player::_id_type;
     using color_t = jps_maze_msgs::msg::Player::_color_type;
@@ -76,4 +74,4 @@ namespace jps_maze_game
     } direction_t;
 }
 
-#endif //INTP_ROS_TYPES_HPP
+#endif // INTP_ROS_TYPES_HPP
