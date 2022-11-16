@@ -92,7 +92,7 @@ namespace jps_maze_curses
         }
         else if (size != sizeof(dim))
         {
-            throw std::runtime_error("Received the wrong number of bytes");
+            throw std::runtime_error("Received the wrong number of bytes for a row");
         }
         this->width = dim[0];
         this->height = dim[1];
@@ -106,10 +106,12 @@ namespace jps_maze_curses
         if (last_width != this->width && last_height == this->height)
         {
             this->print_result(true);
+            while(true);
         }
         else if (last_width == this->width && last_height != this->height)
         {
             this->print_result(false);
+            while(true);
         }
         else if (last_width != this->width && last_height != this->height)
         {
@@ -126,7 +128,7 @@ namespace jps_maze_curses
         }
         else if (size != static_cast<long long>(sizeof(block_t) * this->width))
         {
-            throw std::runtime_error("Received the wrong number of bytes");
+            throw std::runtime_error("Received the wrong number of bytes for dim");
         }
     }
 
