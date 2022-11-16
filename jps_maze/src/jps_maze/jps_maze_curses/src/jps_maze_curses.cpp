@@ -141,10 +141,15 @@ namespace jps_maze_curses
     void CursesWindow::init_curses_app()
     {
         std::setvbuf(stdout, NULL, _IONBF, 0);
+
+        char cmd[30] = {0};
+        snprintf(cmd, 30, "eval `resize -s %u %u`", this->height + 2, this->width + 2);
+        printf("Executing: \"%s\"", cmd);
+        system(cmd);
         printf("Setting up curses\n");
         initscr(); // Initialize the curses screen
 
-        resizeterm(this->height + 2, this->width + 2);
+        resizeterm(this->height + 2, this->width);
 
         if (LINES < static_cast<long>(this->height + 2))
         {
