@@ -8,7 +8,13 @@ namespace jps_maze_curses
 {
     CursesWindow::CursesWindow(const char *port, const bool is_server, const bool team_A) : port(port), is_server(is_server), team_A(team_A), cur_player_index(PLAYER), row_buf(nullptr), cur_row(0)
     {
-
+        if(is_server) {
+            printf("Starting as visualizer for a server");
+        } else if (team_A) {
+            printf("Starting as visualizer for a team A member");
+        } else {
+            printf("Starting as visualizer for a team B member");
+        }
         this->setup_socket();
 
         this->get_dim();
@@ -286,6 +292,9 @@ namespace jps_maze_curses
 
     void CursesWindow::print_result(const bool team_A)
     {
+        attron(COLOR_PAIR(PORTAL));
+        mvprintw(0,0, "GAME END!");
+        attroff(COLOR_PAIR(PORTAL));
         if (this->is_server)
         {
             if (team_A)
