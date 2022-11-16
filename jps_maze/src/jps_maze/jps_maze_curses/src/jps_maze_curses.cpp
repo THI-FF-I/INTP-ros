@@ -8,12 +8,12 @@ namespace jps_maze_curses
 {
     CursesWindow::CursesWindow(const char *port, const bool is_server, const bool team_A) : port(port), is_server(is_server), team_A(team_A), cur_player_index(PLAYER), row_buf(nullptr), cur_row(0)
     {
-        if(is_server) {
-            printf("Starting as visualizer for a server");
-        } else if (team_A) {
-            printf("Starting as visualizer for a team A member");
+        if(this->is_server) {
+            printf("Starting as visualizer for a server\n");
+        } else if (this->team_A) {
+            printf("Starting as visualizer for a team A member\n");
         } else {
-            printf("Starting as visualizer for a team B member");
+            printf("Starting as visualizer for a team B member\n");
         }
         this->setup_socket();
 
@@ -307,6 +307,7 @@ namespace jps_maze_curses
                 attron(COLOR_PAIR(WIN_TEXT));
                 mvprintw((this->height + 2) / 2, (this->width + 2 - strlen(text)) / 2, "%s", text);
                 attroff(COLOR_PAIR(WIN_TEXT));
+                refresh()
             }
             else
             {
@@ -314,6 +315,7 @@ namespace jps_maze_curses
                 attron(COLOR_PAIR(WIN_TEXT));
                 mvprintw((this->height + 2) / 2, (this->width + 2 - strlen(text)) / 2, "%s", text);
                 attroff(COLOR_PAIR(WIN_TEXT));
+                refresh();
             }
         }
         else if (this->team_A)
@@ -324,6 +326,7 @@ namespace jps_maze_curses
                 attron(COLOR_PAIR(WIN_TEXT));
                 mvprintw((this->height + 2) / 2, (this->width + 2 - strlen(text)) / 2, "%s", text);
                 attroff(COLOR_PAIR(WIN_TEXT));
+                refresh();
             }
             else
             {
@@ -331,6 +334,7 @@ namespace jps_maze_curses
                 attron(COLOR_PAIR(LOOSE_TEXT));
                 mvprintw((this->height + 2) / 2, (this->width + 2 - strlen(text)) / 2, "%s", text);
                 attroff(COLOR_PAIR(LOOSE_TEXT));
+                refresh();
             }
         }
         else
@@ -341,6 +345,7 @@ namespace jps_maze_curses
                 attron(COLOR_PAIR(WIN_TEXT));
                 mvprintw((this->height + 2) / 2, (this->width + 2 - strlen(text)) / 2, "%s", text);
                 attroff(COLOR_PAIR(WIN_TEXT));
+                refresh();
             }
             else
             {
@@ -348,6 +353,7 @@ namespace jps_maze_curses
                 attron(COLOR_PAIR(LOOSE_TEXT));
                 mvprintw((this->height + 2) / 2, (this->width + 2 - strlen(text)) / 2, "%s", text);
                 attroff(COLOR_PAIR(LOOSE_TEXT));
+                refresh();
             }
         }
 
