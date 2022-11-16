@@ -174,10 +174,12 @@ namespace jps_maze_game
                 if (m.second.get_team() == PLAYER_TEAM_A && board.get_block_state(m.second.get_x(), m.second.get_y()) == GAME_BLOCK_BASE_A)
                 {
                     game_state = GAME_STATE_WIN_TEAM_A;
+                    break;
                 }
                 else if (m.second.get_team() == PLAYER_TEAM_B && board.get_block_state(m.second.get_x(), m.second.get_y()) == GAME_BLOCK_BASE_B)
                 {
                     game_state = GAME_STATE_WIN_TEAM_B;
+                    break;
                 }
             }
         }
