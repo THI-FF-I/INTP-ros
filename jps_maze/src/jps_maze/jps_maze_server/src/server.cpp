@@ -33,7 +33,7 @@ namespace jps_maze_server {
         RCLCPP_INFO(this->get_logger(), "Got all required parameters");
 
         this->timer_cb_group = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
-        this->timer = this->create_wall_timer(1s, std::bind(&Server::timer_cb, this), this->timer_cb_group);
+        this->timer = this->create_wall_timer(250ms, std::bind(&Server::timer_cb, this), this->timer_cb_group);
         this->timer->cancel();
 
         RCLCPP_INFO(this->get_logger(), "Set up timer");
@@ -82,9 +82,31 @@ namespace jps_maze_server {
             for(const auto &block : row) {
                 cur_row.emplace_back(jps_maze_msgs::msg::Block().set__block_type(block));
             }
+            status.rows.emplace_back(jps_maze_msgs::msg::Row().set__blocks(cur_row));
+            RCLCPP_DEBUG(this->get_logger(), "Added row with size %zu", cur_row.size());
         }
+        RCLCPP_DEBUG(this->get_logger(), "Team A");
+        RCLCPP_DEBUG(this->get_logger(), "Board: width: %ld heigth: %ld", board.size(), board.at(0).size());
+        RCLCPP_DEBUG(this->get_logger(), "In board: at y = 62, x = 13: %d", board.at(62).at(13));
+        RCLCPP_DEBUG(this->get_logger(), "Status Board: width: %ld heigth: %ld", status.rows.size(), status.rows.at(0).blocks.size());
+        RCLCPP_DEBUG(this->get_logger(), "In message: at y=62, x=13: %d", status.rows.at(62).blocks.at(13).block_type);
+        for(const auto &player : this->game.get_players_of_team(jps_maze_game::PLAYER_TEAM_A)) {
+            RCLCPP_DEBUG(this->get_logger(), "Adding Player \"%s\":%lu to Team A status", player.get_player_name().c_str(), player.get_player_id());
+            jps_maze_msgs::msg::Player cur;
+            cur.pos.x = player.get_x();
+            cur.pos.y = player.get_y();
+            cur.id = player.get_player_id();
+            cur.team.team = static_cast<jps_maze_msgs::msg::Team::_team_type>(player.get_team());
+            cur.color = player.get_color();
+            cur.name = player.get_player_name();
+            cur.has_flag = player.get_has_flag();
+            status.players.push_back(cur);
+        }
+        RCLCPP_DEBUG(this->get_logger(), "Sending status for Team A");
         status.header.stamp = this->now();
         this->team_a_status_pub->publish(status);
+        status.rows.clear();
+        status.players.clear();
         board = this->game.get_team_board(jps_maze_game::PLAYER_TEAM_B);
         for(const auto &row : board) {
             jps_maze_msgs::msg::Row::_blocks_type cur_row;
@@ -92,9 +114,46 @@ namespace jps_maze_server {
             for(const auto &block : row) {
                 cur_row.emplace_back(jps_maze_msgs::msg::Block().set__block_type(block));
             }
+            status.rows.emplace_back(jps_maze_msgs::msg::Row().set__blocks(cur_row));
+            RCLCPP_DEBUG(this->get_logger(), "Added row with size %zu", cur_row.size());
         }
+        RCLCPP_DEBUG(this->get_logger(), "Team B");
+        RCLCPP_DEBUG(this->get_logger(), "In board: at y=62, x= 13: %d", board.at(62).at(13));
+        RCLCPP_DEBUG(this->get_logger(), "Board: width: %ld heigth: %ld", board.size(), board.at(0).size());
+        RCLCPP_DEBUG(this->get_logger(), "Status width: %zu, height: %zu", status.rows.size(), status.rows.at(0).blocks.size());
+        RCLCPP_DEBUG(this->get_logger(), "In message: at y=62, x=13: %d", status.rows.at(62).blocks.at(13).block_type);
+        for(const auto &player : this->game.get_players_of_team(jps_maze_game::PLAYER_TEAM_B)) {
+            RCLCPP_DEBUG(this->get_logger(), "Adding Player \"%s\":%lu to Team A status", player.get_player_name().c_str(), player.get_player_id());
+            jps_maze_msgs::msg::Player cur;
+            cur.pos.x = player.get_x();
+            cur.pos.y = player.get_y();
+            cur.id = player.get_player_id();
+            cur.team.team = static_cast<jps_maze_msgs::msg::Team::_team_type>(player.get_team());
+            cur.color = player.get_color();
+            cur.name = player.get_player_name();
+            cur.has_flag = player.get_has_flag();
+            status.players.push_back(cur);
+        }
+        RCLCPP_DEBUG(this->get_logger(), "Sending status for Team B");
         status.header.stamp = this->now();
         this->team_b_status_pub->publish(status);
+        RCLCPP_DEBUG(this->get_logger(), "Updating Framebuffer");
+        update_framebuffer();
+
+        RCLCPP_INFO(this->get_logger(), "Issuing redrawing");
+        this->visualizer.re_draw();
+
+        if(this->game.get_game_state() == jps_maze_game::GAME_STATE_WIN_TEAM_A) {
+            RCLCPP_INFO(this->get_logger(), "Team A won");
+            status.game_over = true;
+            status.winning_team.team = jps_maze_msgs::msg::Team::TEAM_A;
+        } else if(this->game.get_game_state() == jps_maze_game::GAME_STATE_WIN_TEAM_B) {
+            RCLCPP_INFO(this->get_logger(), "Team B won");
+            status.game_over = true;
+            status.winning_team.team = jps_maze_msgs::msg::Team::TEAM_B;
+        }
+
+        RCLCPP_DEBUG(this->get_logger(), "Resetting timer");
         this->timer->reset();
     }
 
@@ -110,7 +169,12 @@ namespace jps_maze_server {
         }
 
         for(const auto &player : this->game.get_players()) {
-            this->frame_buffer[player.second.get_y()][player.second.get_x()] = player.second.get_color() & (static_cast<jps_maze_msgs::msg::Block::_block_type_type>(1) << (std::numeric_limits<jps_maze_msgs::msg::Block::_block_type_type>::digits - 1));
+            this->frame_buffer[player.second.get_y()][player.second.get_x()] = player.second.get_color() | (static_cast<jps_maze_visualizer::block_t>(1) << (std::numeric_limits<jps_maze_visualizer::block_t>::digits - 1)); // Set MSB
+            if(player.second.get_team() == jps_maze_msgs::msg::Team::TEAM_A) {
+                this->frame_buffer[player.second.get_y()][player.second.get_x()] |= (static_cast<jps_maze_visualizer::block_t>(1) << (std::numeric_limits<jps_maze_visualizer::block_t>::digits - 2)); // Set 2nd MSB
+            } else {
+                this->frame_buffer[player.second.get_y()][player.second.get_x()] &=  ~(static_cast<jps_maze_visualizer::block_t>(1) << (std::numeric_limits<jps_maze_visualizer::block_t>::digits - 2)); // Reset 2nd MSB
+            }
         }
     }
 
@@ -126,7 +190,12 @@ namespace jps_maze_server {
         }
         catch(std::runtime_error &err)
         {
-            // TODO Handle error
+            RCLCPP_INFO(this->get_logger(), "Could not create player: \"%s\"", err.what());
+            res->success = false;
+            std::this_thread::sleep_for(5s);
+            RCLCPP_INFO(this->get_logger(), "Returning player object with id: %lu at pos x: %d, y: %d", res->player.id, res->player.pos.x, res->player.pos.y);
+            res->header.stamp = this->now();
+            return;
         }
         res->player.id = player.get_player_id();
         res->player.team.team = static_cast<jps_maze_msgs::msg::Team::_team_type>(player.get_team());
@@ -137,13 +206,14 @@ namespace jps_maze_server {
         res->player.has_flag = player.get_has_flag();
         res->width = this->game.get_width();
         res->height = this->game.get_height();
+        res->success = true;
 
         if(this->game.ready()) {
             RCLCPP_INFO(this->get_logger(), "Game is ready unregister create_player service and sending first status");
             this->create_player_srv.reset();
             this->send_status();
         }
-        std::this_thread::sleep_for(1s);
+        std::this_thread::sleep_for(5s);
         RCLCPP_INFO(this->get_logger(), "Returning player object with id: %lu at pos x: %d, y: %d", res->player.id, res->player.pos.x, res->player.pos.y);
         res->header.stamp = this->now();
     }
@@ -162,6 +232,10 @@ namespace jps_maze_server {
     void Server::timer_cb() {
         this->timer->cancel();
         RCLCPP_INFO(this->get_logger(), "Timer expired starting next round");
+        if(this->game.get_game_state() == jps_maze_game::GAME_STATE_WIN_TEAM_A || this->game.get_game_state() == jps_maze_game::GAME_STATE_WIN_TEAM_A) {
+            RCLCPP_INFO(this->get_logger(), "Ending game, because a team won");
+            std::exit(EXIT_SUCCESS);
+        }
         this->game.next_round();
         RCLCPP_INFO(this->get_logger(), "Publishing next round");
         this->next_round_pub->publish(std_msgs::msg::Empty());

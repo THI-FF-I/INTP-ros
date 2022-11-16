@@ -47,28 +47,29 @@ namespace jps_maze_game
                     case '2':
                         tmp.game_block_type = GAME_BLOCK_PORTAL;
                         {
-                            Portal port_tmp(i / 2, h);
+                            Portal port_tmp(i / 2, h - 1);
                             portals.push_back(port_tmp);
                         }
                         break;
                     case '3':
                         tmp.game_block_type = GAME_BLOCK_FLAG_A;
-                        pos_flag_a = {i / 2, h};
+                        pos_flag_a = {i / 2, h - 1};
                         break;
                     case '4':
                         tmp.game_block_type = GAME_BLOCK_FLAG_B;
-                        pos_flag_b = {i / 2, h};
+                        pos_flag_b = {i / 2, h - 1};
                         break;
                     case '5':
                         tmp.game_block_type = GAME_BLOCK_BASE_A;
-                        base_a.push_back({i / 2, h});
+                        base_a.push_back({i / 2, h - 1});
                         break;
                     case '6':
                         tmp.game_block_type = GAME_BLOCK_BASE_B;
-                        base_b.push_back({i / 2, h});
+                        base_b.push_back({i / 2, h - 1});
                         break;
                     default:
                         tmp.game_block_type = GAME_BLOCK_EMPTY;
+                        RCLCPP_INFO(this->logger, "[Board::load_board_from_file] Unknown block type: %c at x: %ld, y: %d", line[i], i, h - 1);
                         break;
                     }
 
@@ -87,6 +88,7 @@ namespace jps_maze_game
             board = new_board;
             width = w;
             height = h;
+
             return true;
         }
         else
@@ -96,13 +98,12 @@ namespace jps_maze_game
         }
     }
 
-    void Board::print_board() const
+    void Board::print_board(std::vector<std::vector<game_block_t>> board) const
     {
         std::ofstream file("board.output");
 
         int width2 = width;
         int height2 = height;
-        file << "Board: " << width2 << "x" << height2 << "\n";
 
         for (int i = 0; i < height; i++)
         {
@@ -134,7 +135,112 @@ namespace jps_maze_game
             file << "\n";
         }
 
+        file << "Board: " << width2 << "x" << height2 << "\n";
+
         file.close();
+    }
+
+    void Board::print_board(std::vector<std::vector<game_block_type_t>> board) const
+    {
+        std::ofstream file("board.output");
+
+        int width2 = width;
+        int height2 = height;
+
+        for (int i = 0; i < height; i++)
+        {
+            for (int n = 0; n < width; n++)
+            {
+                std::string res = "";
+
+                switch (board.at(i).at(n))
+                {
+                case GAME_BLOCK_EMPTY:
+                    res = " ";
+                    break;
+                case GAME_BLOCK_WALL:
+                    res = "*";
+                    break;
+                case GAME_BLOCK_NOT_MAPPED:
+                    res = "-";
+                    break;
+                default:
+                    res = "o";
+                }
+
+                file << res;
+            }
+
+            file << "\n";
+        }
+
+        file << "Board: " << width2 << "x" << height2 << "\n";
+
+        file.close();
+    }
+
+    void Board::print_board_to_command_line(std::map<jps_maze_msgs::msg::Player::_id_type, Player> players) const
+    {
+        RCLCPP_INFO(this->logger, "Width: %d Height: %d", width, height);
+
+        for (int i = 0; i < height; i++)
+        {
+            std::string res = "";
+            res.reserve(width);
+
+            for (int n = 0; n < width; n++)
+            {
+                std::string tmp = "";
+
+                for (const auto &m : players)
+                {
+                    if (m.second.get_x() == n && m.second.get_y() == i)
+                    {
+                        if (m.second.get_team() == PLAYER_TEAM_A)
+                        {
+                            if (m.second.get_has_flag() == true)
+                                tmp = "A";
+                            else
+                                tmp = "a";
+                        }
+                        else
+                        {
+                            if (m.second.get_has_flag() == true)
+                                tmp = "B";
+                            else
+                                tmp = "b";
+                        }
+
+                        break;
+                    }
+                }
+
+                if (tmp == "")
+                {
+                    switch (board.at(i).at(n).game_block_type)
+                    {
+                    case GAME_BLOCK_EMPTY:
+                        if (board.at(i).at(n).mapped_team_a == true || board.at(i).at(n).mapped_team_b == true)
+                            tmp = "-";
+                        else
+                            tmp = " ";
+                        break;
+                    case GAME_BLOCK_WALL:
+                        if (board.at(i).at(n).mapped_team_a == true || board.at(i).at(n).mapped_team_b == true)
+                            tmp = "X";
+                        else
+                            tmp = "*";
+                        break;
+                    default:
+                        tmp = "o";
+                    }
+                }
+
+                res += tmp;
+            }
+
+            RCLCPP_INFO(this->logger, "[%2d]%s", i, res.c_str());
+        }
     }
 
     game_block_type_t Board::get_block_state(const coord_t coord_x, const coord_t coord_y) const
@@ -142,12 +248,16 @@ namespace jps_maze_game
         if (coord_x >= width || coord_y >= height)
             return GAME_BLOCK_OUT_OF_BOARD;
 
-        return board.at(coord_x).at(coord_y).game_block_type;
+        RCLCPP_WARN(this->logger, "[Board::get_block_state] x: %d y: %d - %d", coord_x, coord_y, board.at(coord_y).at(coord_x).game_block_type);
+
+        return board.at(coord_y).at(coord_x).game_block_type;
     }
 
     void Board::map_area(const coord_t coord_x, const coord_t coord_y, team_t team)
     {
         const uint8_t size = 3; // maps a 3x3 square at the player's position
+
+        RCLCPP_DEBUG(this->logger, "[Board::map_area] x: %d y: %d for team: %c", coord_x, coord_y, (team == PLAYER_TEAM_A) ? 'A' : 'B');
 
         for (int h = coord_y - (size - 1) / 2; h <= coord_y + (size - 1) / 2; h++)
         {
@@ -176,26 +286,26 @@ namespace jps_maze_game
 
         switch (dir)
         {
-        case PLAYER_DIR_UP:
+        case PLAYER_DIR_LEFT:
             if (new_x <= 0)
                 return false;
             new_x -= 1;
             new_y = new_y;
             break;
 
-        case PLAYER_DIR_DOWN:
+        case PLAYER_DIR_RIGHT:
             new_x += 1;
             new_y = new_y;
             break;
 
-        case PLAYER_DIR_LEFT:
+        case PLAYER_DIR_UP:
             if (new_y <= 0)
                 return false;
             new_x = new_x;
             new_y -= 1;
             break;
 
-        case PLAYER_DIR_RIGHT:
+        case PLAYER_DIR_DOWN:
             new_x = new_x;
             new_y += 1;
             break;
@@ -214,6 +324,7 @@ namespace jps_maze_game
         case GAME_BLOCK_EMPTY:
             player.set_x(new_x);
             player.set_y(new_y);
+            map_area(new_x, new_y, player.get_team());
             return true;
 
         case GAME_BLOCK_WALL:
@@ -222,14 +333,18 @@ namespace jps_maze_game
         case GAME_BLOCK_PORTAL:
         {
             uint16_t port_id = rand() % portals.size();
+            RCLCPP_INFO(logger, "[Board::player_move] teleport to: %d at x: %d, y: %d", port_id, portals.at(port_id).get_x(), portals.at(port_id).get_y());
             player.set_x(portals.at(port_id).get_x());
             player.set_y(portals.at(port_id).get_y());
+            map_area(new_x, new_y, player.get_team());
+            map_area(player.get_x(), player.get_y(), player.get_team());
         }
             return true;
 
         case GAME_BLOCK_FLAG_A:
             player.set_x(new_x);
             player.set_y(new_y);
+            map_area(new_x, new_y, player.get_team());
             if (player.get_team() == PLAYER_TEAM_A)
             {
                 flag_a = GAME_FLAG_STATE_BY_PLAYER;
@@ -241,6 +356,7 @@ namespace jps_maze_game
         case GAME_BLOCK_FLAG_B:
             player.set_x(new_x);
             player.set_y(new_y);
+            map_area(new_x, new_y, player.get_team());
             if (player.get_team() == PLAYER_TEAM_B)
             {
                 flag_b = GAME_FLAG_STATE_BY_PLAYER;
@@ -252,12 +368,17 @@ namespace jps_maze_game
         case GAME_BLOCK_BASE_A:
             player.set_x(new_x);
             player.set_y(new_y);
+            map_area(new_x, new_y, player.get_team());
             return true;
 
         case GAME_BLOCK_BASE_B:
             player.set_x(new_x);
             player.set_y(new_y);
+            map_area(new_x, new_y, player.get_team());
             return true;
+
+        case GAME_BLOCK_NOT_MAPPED:
+            return false;
 
         default:
             throw std::runtime_error("[Board::player_move] Unknown block type");
@@ -280,7 +401,7 @@ namespace jps_maze_game
                 {
                     if (board.at(h).at(w).mapped_team_a == false)
                     {
-                        tmp.push_back(GAME_BLOCK_EMPTY);
+                        tmp.push_back(GAME_BLOCK_NOT_MAPPED);
                     }
                     else
                     {
@@ -291,7 +412,7 @@ namespace jps_maze_game
                 {
                     if (board.at(h).at(w).mapped_team_b == false)
                     {
-                        tmp.push_back(GAME_BLOCK_EMPTY);
+                        tmp.push_back(GAME_BLOCK_NOT_MAPPED);
                     }
                     else
                     {
