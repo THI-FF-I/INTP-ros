@@ -208,6 +208,14 @@ namespace jps_maze_server
             {
                 this->frame_buffer[player.second.get_y()][player.second.get_x()] &= ~(static_cast<jps_maze_visualizer::block_t>(1) << (std::numeric_limits<jps_maze_visualizer::block_t>::digits - 2)); // Reset 2nd MSB
             }
+            if (player.second.get_has_flag())
+            {
+                this->frame_buffer[player.second.get_y()][player.second.get_x()] |= (static_cast<jps_maze_visualizer::block_t>(1) << (std::numeric_limits<jps_maze_visualizer::block_t>::digits - 3)); // Set 3rd MSB
+            }
+            else
+            {
+                this->frame_buffer[player.second.get_y()][player.second.get_x()] &= ~(static_cast<jps_maze_visualizer::block_t>(1) << (std::numeric_limits<jps_maze_visualizer::block_t>::digits - 3)); // Reset 3rd MSB
+            }
         }
     }
 

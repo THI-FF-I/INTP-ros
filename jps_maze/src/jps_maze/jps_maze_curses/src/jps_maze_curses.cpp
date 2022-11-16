@@ -220,7 +220,11 @@ namespace jps_maze_curses
                     init_pair(cur_player_index, cur_player_index, COLOR_RED); // Team B
                 }
                 attron(COLOR_PAIR(this->cur_player_index));
-                mvaddch(this->cur_row + 1, x + 1, 'P');
+                if((cur_block & (static_cast<block_t>(1) << (std::numeric_limits<block_t>::digits - 3))) != 0) {
+                    mvaddch(this->cur_row + 1, x + 1, 'F');
+                } else {
+                    mvaddch(this->cur_row + 1, x + 1, 'P');
+                }
                 attroff(COLOR_PAIR(this->cur_player_index));
                 this->cur_player_index++;
             }
