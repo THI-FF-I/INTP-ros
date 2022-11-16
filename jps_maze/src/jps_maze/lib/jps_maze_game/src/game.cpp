@@ -106,6 +106,9 @@ namespace jps_maze_game
     {
         RCLCPP_DEBUG(logger, "Game::move_player: player_id: %lu, dir: %d", player_id, direction);
 
+        if (game_state == GAME_STATE_WIN_TEAM_A || game_state == GAME_STATE_WIN_TEAM_B)
+            return false;
+
         try
         {
             if (players.at(player_id).get_turn() == false)
