@@ -74,6 +74,10 @@ namespace jps_maze_client
 
         RCLCPP_INFO(this->get_logger(), "Requested player");
 
+        std::random_device rd;
+        dir_gen = std::mt19937(rd());
+        next_rotation = std::uniform_int_distribution<> (0, 1);
+
         RCLCPP_INFO(this->get_logger(), "Init of Node done");
 
         srand(time(0));
@@ -137,7 +141,16 @@ namespace jps_maze_client
             {
                 auto tmp = next_dir_res;
 
-                while(tmp == next_dir_res) next_dir_res = (jps_maze_game::direction_t) (rand() % 3);
+                int random = next_rotation(dir_gen);
+
+                if(next_dir_res == jps_maze_game::PLAYER_DIR_UP || next_dir_res == jps_maze_game::PLAYER_DIR_DOWN)
+                {
+                    next_dir_res = (random == 0) ? jps_maze_game::PLAYER_DIR_LEFT : jps_maze_game::PLAYER_DIR_RIGHT;
+                }
+                else if(next_dir_res == jps_maze_game::PLAYER_DIR_LEFT || next_dir_res == jps_maze_game::PLAYER_DIR_RIGHT)
+                {
+                    next_dir_res = (random == 0) ? jps_maze_game::PLAYER_DIR_UP : jps_maze_game::PLAYER_DIR_DOWN;
+                }
             }
 
             RCLCPP_DEBUG(this->get_logger(), "[Client::calculate_next_move] Trying direction: %d", next_dir_res);

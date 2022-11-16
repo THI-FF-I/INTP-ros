@@ -74,6 +74,8 @@ namespace jps_maze_client {
         jps_maze_visualizer::block_t **frame_buffer;
         jps_maze_game::coord_t x = 0, y = 0;
         std::string create_player_topic;
+        std::mt19937 dir_gen;
+        std::uniform_int_distribution<> next_rotation;
     };
 }
 
