@@ -145,18 +145,18 @@ namespace jps_maze_client
 
                 if (next_dir_res == jps_maze_game::PLAYER_DIR_UP || next_dir_res == jps_maze_game::PLAYER_DIR_DOWN)
                 {
+                    RCLCPP_DEBUG(this->get_logger(), "[Client::calculate_next_move] [CNT==2] Randomizing after UP or Down to %s", (random == 0) ? "LEFT" : "RIGHT");
                     next_dir_res = (random == 0) ? jps_maze_game::PLAYER_DIR_LEFT : jps_maze_game::PLAYER_DIR_RIGHT;
                 }
                 else if (next_dir_res == jps_maze_game::PLAYER_DIR_LEFT || next_dir_res == jps_maze_game::PLAYER_DIR_RIGHT)
                 {
+                    RCLCPP_DEBUG(this->get_logger(), "[Client::calculate_next_move] [CNT==2] Randomizing after LEFT or RIGHT to %s", (random == 0) ? "UP" : "DOWN");
                     next_dir_res = (random == 0) ? jps_maze_game::PLAYER_DIR_UP : jps_maze_game::PLAYER_DIR_DOWN;
                 }
             }
             else if (cnt == 3)
             {
-                auto tmp = next_dir_res;
-
-                int random = next_rotation(dir_gen);
+                RCLCPP_DEBUG(this->get_logger(), "[Client::calculate_next_move] [CNT==3] Before: %d", next_dir_res);
 
                 switch (next_dir_res)
                 {
@@ -173,6 +173,8 @@ namespace jps_maze_client
                     next_dir_res = jps_maze_game::PLAYER_DIR_LEFT;
                     break;
                 }
+
+                RCLCPP_DEBUG(this->get_logger(), "[Client::calculate_next_move] [CNT==3] After: %d", next_dir_res);
             }
 
             RCLCPP_DEBUG(this->get_logger(), "[Client::calculate_next_move] Trying direction: %d", next_dir_res);
@@ -210,10 +212,14 @@ namespace jps_maze_client
             }
             else
             {
-                if (team == jps_maze_game::PLAYER_TEAM_A)
-                    next_dir_res = (jps_maze_game::direction_t)((next_dir_res + 1) % 4);
-                else
-                    next_dir_res = next_dir_res - 1 >= 0 ? (jps_maze_game::direction_t)((next_dir_res - 1)) : (jps_maze_game::direction_t)3;
+                if (cnt >= 3)
+                {
+                    if (team == jps_maze_game::PLAYER_TEAM_A)
+                        next_dir_res = (jps_maze_game::direction_t)((next_dir_res + 1) % 4);
+                    else
+                        next_dir_res = next_dir_res - 1 >= 0 ? (jps_maze_game::direction_t)((next_dir_res - 1)) : (jps_maze_game::direction_t)3;
+                }
+
                 next_pos[0] = this->x;
                 next_pos[1] = this->y;
             }
