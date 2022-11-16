@@ -11,7 +11,7 @@ using namespace std::placeholders;
 namespace jps_maze_client
 {
     Client::Client(rclcpp::NodeOptions node_options)
-        : rclcpp::Node("client_node", node_options), already_got_player(false),  next_move_ready(false), visualizer(this->get_logger())
+        : rclcpp::Node("client_node", node_options), already_got_player(false), next_move_ready(false), visualizer(this->get_logger())
     {
         // Declare Parameters
         this->declare_parameter<std::string>("create_player_topic");
@@ -74,6 +74,10 @@ namespace jps_maze_client
 
         RCLCPP_INFO(this->get_logger(), "Requested player");
 
+        std::random_device rd;
+        dir_gen = std::mt19937(rd());
+        next_rotation = std::uniform_int_distribution<>(0, 1);
+
         RCLCPP_INFO(this->get_logger(), "Init of Node done");
 
         srand(time(0));
@@ -87,7 +91,8 @@ namespace jps_maze_client
         req->team.team = this->team;
         RCLCPP_DEBUG(this->get_logger(), "Sending player request");
         req->header.stamp = this->now();
-        this->create_player_clt->async_send_request(req, [this](std::shared_future<jps_maze_msgs::srv::CreatePlayer::Response::SharedPtr> fut) {
+        this->create_player_clt->async_send_request(req, [this](std::shared_future<jps_maze_msgs::srv::CreatePlayer::Response::SharedPtr> fut)
+                                                    {
             std::shared_ptr<jps_maze_msgs::srv::CreatePlayer::Response> res = fut.get();
             if(!res->success) {
                 RCLCPP_FATAL(this->get_logger(), "Player request failed");
@@ -112,8 +117,7 @@ namespace jps_maze_client
             this->visualizer = jps_maze_visualizer::Visualizer(host_name, target_port, this->width, this->height, &this->frame_buffer, this->get_logger().get_child("visualizer"));
             RCLCPP_DEBUG(this->get_logger(), "Signaling that player was received");
             this->already_got_player = true;
-            this->got_player_guard->trigger();
-        });
+            this->got_player_guard->trigger(); });
     }
 
     void Client::calculate_next_move()
@@ -129,15 +133,46 @@ namespace jps_maze_client
 
         RCLCPP_DEBUG(this->get_logger(), "[Client::calculate_next_move] x: %d y: %d  cur_dir: %d", x, y, cur_dir);
 
-        while (cur_pos[0] == next_pos[0] && cur_pos[1] == next_pos[1] && cnt < 5)
+        while (cur_pos[0] == next_pos[0] && cur_pos[1] == next_pos[1] && cnt < 6)
         {
             cnt++;
 
-            if(cnt == 2)
+            if (cnt == 2)
             {
                 auto tmp = next_dir_res;
 
-                while(tmp == next_dir_res) next_dir_res = (jps_maze_game::direction_t) (rand() % 3);
+                int random = next_rotation(dir_gen);
+
+                if (next_dir_res == jps_maze_game::PLAYER_DIR_UP || next_dir_res == jps_maze_game::PLAYER_DIR_DOWN)
+                {
+                    next_dir_res = (random == 0) ? jps_maze_game::PLAYER_DIR_LEFT : jps_maze_game::PLAYER_DIR_RIGHT;
+                }
+                else if (next_dir_res == jps_maze_game::PLAYER_DIR_LEFT || next_dir_res == jps_maze_game::PLAYER_DIR_RIGHT)
+                {
+                    next_dir_res = (random == 0) ? jps_maze_game::PLAYER_DIR_UP : jps_maze_game::PLAYER_DIR_DOWN;
+                }
+            }
+            else if (cnt == 3)
+            {
+                auto tmp = next_dir_res;
+
+                int random = next_rotation(dir_gen);
+
+                switch (next_dir_res)
+                {
+                case jps_maze_game::PLAYER_DIR_UP:
+                    next_dir_res = jps_maze_game::PLAYER_DIR_DOWN;
+                    break;
+                case jps_maze_game::PLAYER_DIR_DOWN:
+                    next_dir_res = jps_maze_game::PLAYER_DIR_UP;
+                    break;
+                case jps_maze_game::PLAYER_DIR_LEFT:
+                    next_dir_res = jps_maze_game::PLAYER_DIR_RIGHT;
+                    break;
+                case jps_maze_game::PLAYER_DIR_RIGHT:
+                    next_dir_res = jps_maze_game::PLAYER_DIR_LEFT;
+                    break;
+                }
             }
 
             RCLCPP_DEBUG(this->get_logger(), "[Client::calculate_next_move] Trying direction: %d", next_dir_res);
@@ -175,8 +210,10 @@ namespace jps_maze_client
             }
             else
             {
-                if(team == jps_maze_game::PLAYER_TEAM_A) next_dir_res = (jps_maze_game::direction_t)((next_dir_res + 1) % 4);
-                else next_dir_res = next_dir_res - 1 >= 0 ? (jps_maze_game::direction_t)((next_dir_res - 1)) : (jps_maze_game::direction_t)3;
+                if (team == jps_maze_game::PLAYER_TEAM_A)
+                    next_dir_res = (jps_maze_game::direction_t)((next_dir_res + 1) % 4);
+                else
+                    next_dir_res = next_dir_res - 1 >= 0 ? (jps_maze_game::direction_t)((next_dir_res - 1)) : (jps_maze_game::direction_t)3;
                 next_pos[0] = this->x;
                 next_pos[1] = this->y;
             }
@@ -197,9 +234,11 @@ namespace jps_maze_client
     void Client::status_cb(const std::shared_ptr<jps_maze_msgs::msg::Status> msg)
     {
         static bool first_status = true;
-        if(first_status) {
+        if (first_status)
+        {
             RCLCPP_DEBUG(this->get_logger(), "Received first status");
-            if(!already_got_player) {
+            if (!already_got_player)
+            {
                 RCLCPP_DEBUG(this->get_logger(), "Waiting for create_player response");
                 UNUSED this->got_player_wait_set->wait();
             }
@@ -213,10 +252,10 @@ namespace jps_maze_client
         RCLCPP_DEBUG(this->get_logger(), "Number of rows: %zu, columns: %zu", msg->rows.size(), msg->rows.at(0).blocks.size());
         RCLCPP_DEBUG(this->get_logger(), "Received number of players: %lu", msg->players.size());
         RCLCPP_INFO(this->get_logger(), "Copying board into framebuffer");
-        size_t x= 0, y = 0;
+        size_t x = 0, y = 0;
         for (const auto &row : msg->rows)
         {
-            x= 0;
+            x = 0;
             for (const auto &block : row.blocks)
             {
                 this->frame_buffer[y][x] = block.block_type;
@@ -235,18 +274,25 @@ namespace jps_maze_client
                 RCLCPP_DEBUG(this->get_logger(), "Got a new position from server: x: %d y: %d", this->x, this->y);
             }
 
-            if(player.team.team == jps_maze_msgs::msg::Team::TEAM_A) {
+            if (player.team.team == jps_maze_msgs::msg::Team::TEAM_A)
+            {
                 this->frame_buffer[player.pos.y][player.pos.x] |= (static_cast<jps_maze_visualizer::block_t>(1) << (std::numeric_limits<jps_maze_visualizer::block_t>::digits - 2)); // Set 2nd MSB
-            } else {
+            }
+            else
+            {
                 this->frame_buffer[player.pos.y][player.pos.x] &= ~(static_cast<jps_maze_visualizer::block_t>(1) << (std::numeric_limits<jps_maze_visualizer::block_t>::digits - 2)); // Reset 2nd MSB
             }
         }
         RCLCPP_INFO(this->get_logger(), "Triggering re_draw");
         this->visualizer.re_draw();
-        if(msg->game_over) {
-            if(msg->winning_team.team == this->team) {
+        if (msg->game_over)
+        {
+            if (msg->winning_team.team == this->team)
+            {
                 RCLCPP_INFO(this->get_logger(), "We won!");
-            } else {
+            }
+            else
+            {
                 RCLCPP_INFO(this->get_logger(), "We lost!");
             }
             std::exit(EXIT_SUCCESS);
@@ -261,7 +307,8 @@ namespace jps_maze_client
     void Client::next_round_cb(UNUSED const std::shared_ptr<std_msgs::msg::Empty> msg)
     {
         RCLCPP_INFO(this->get_logger(), "Next round started");
-        if(!next_move_ready) {
+        if (!next_move_ready)
+        {
             RCLCPP_DEBUG(this->get_logger(), "Next move is not ready waiting");
             UNUSED this->next_move_ready_wait_set->wait();
         }
@@ -271,15 +318,15 @@ namespace jps_maze_client
         RCLCPP_INFO(this->get_logger(), "Sending player move request");
         req->header.stamp = this->now();
         this->next_move_ready = false;
-        this->move_player_clt->async_send_request(req, [this](std::shared_future<jps_maze_msgs::srv::MovePlayer::Response::SharedPtr> fut) {
+        this->move_player_clt->async_send_request(req, [this](std::shared_future<jps_maze_msgs::srv::MovePlayer::Response::SharedPtr> fut)
+                                                  {
             auto res = fut.get();
             RCLCPP_INFO(this->get_logger(), "Got response for player move");
             if (!res->success)
             {
                 RCLCPP_FATAL(this->get_logger(), "Move was rejected");
                 throw std::runtime_error("Move was rejected");
-            }
-        });
+            } });
     }
 }
 
