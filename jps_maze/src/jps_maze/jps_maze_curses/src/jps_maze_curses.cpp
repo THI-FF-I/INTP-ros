@@ -9,11 +9,11 @@ namespace jps_maze_curses
     CursesWindow::CursesWindow(const char *port, const bool is_server, const bool team_A) : port(port), is_server(is_server), team_A(team_A), cur_player_index(PLAYER), row_buf(nullptr), cur_row(0)
     {
         if(is_server) {
-            printf("Starting as visualizer for a server");
+            printf("Starting as visualizer for a server\n");
         } else if (team_A) {
-            printf("Starting as visualizer for a team A member");
+            printf("Starting as visualizer for a team A member\n");
         } else {
-            printf("Starting as visualizer for a team B member");
+            printf("Starting as visualizer for a team B member\n");
         }
         this->setup_socket();
 
