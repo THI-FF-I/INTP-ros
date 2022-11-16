@@ -248,7 +248,7 @@ namespace jps_maze_game
         if (coord_x >= width || coord_y >= height)
             return GAME_BLOCK_OUT_OF_BOARD;
 
-        RCLCPP_WARN(this->logger, "[Board::get_block_state] x: %d y: %d - %d", coord_x, coord_y, board.at(coord_y).at(coord_x).game_block_type);
+        RCLCPP_DEBUG(this->logger, "[Board::get_block_state] x: %d y: %d - %d", coord_x, coord_y, board.at(coord_y).at(coord_x).game_block_type);
 
         return board.at(coord_y).at(coord_x).game_block_type;
     }
