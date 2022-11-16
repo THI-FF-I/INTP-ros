@@ -140,6 +140,7 @@ def generate_launch_description():
                         '--',
                         './jps_maze_curses',
                         str(target_port),
+                        ('S' if start_server else ('A' if team_A else 'B')),
                     ],
                     shell=True,
                     cwd=get_package_share_directory(package_name=package),

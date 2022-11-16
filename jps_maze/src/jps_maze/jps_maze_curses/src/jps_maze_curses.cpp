@@ -5,7 +5,7 @@
 #include "jps_maze_curses/jps_maze_curses.hpp"
 
 namespace jps_maze_curses {
-    CursesWindow::CursesWindow(const char* port) : port(port), cur_player_index(PLAYER), row_buf(nullptr), cur_row(0){
+    CursesWindow::CursesWindow(const char* port, const bool is_server, const bool team_A) : port(port), is_server(is_server), team_A(team_A), cur_player_index(PLAYER), row_buf(nullptr), cur_row(0){
 
         this->setup_socket();
 
@@ -88,11 +88,12 @@ namespace jps_maze_curses {
         block_t last_width = this->width;
         block_t last_height = this->height;
         this->get_dim();
-        if(last_width != this->width) {
-            throw std::runtime_error("New width differs from old one");
-        }
-        if(last_height != this->height) {
-            throw std::runtime_error("New height differs from old one");
+        if(last_width != this->width && last_height == this->height) {
+            this->print_result(true);
+        } else if(last_width == this->width && last_height != this->height) {
+            this->print_result(false);
+        } else if(last_width != this->width && last_height != this->height) {
+            throw std::runtime_error("Got invalid dimensions");
         }
     }
 
@@ -136,6 +137,8 @@ namespace jps_maze_curses {
         init_pair(BASE_A, COLOR_BLACK, COLOR_BLUE);
         init_pair(BASE_B, COLOR_BLACK, COLOR_RED);
         init_pair(NOT_MAPPED, COLOR_WHITE, COLOR_WHITE);
+        init_pair(WIN_TEXT, COLOR_WHITE, COLOR_GREEN);
+        init_pair(LOOSE_TEXT, COLOR_WHITE, COLOR_RED);
 
         mvprintw(10,10, "Hello from curses");
 
@@ -239,13 +242,64 @@ namespace jps_maze_curses {
         }
         refresh();
     }
+
+    void CursesWindow::print_result(const bool team_A) {
+        if(this->is_server) {
+            if (team_A) {
+                const char *text = "TEAM A WON!";
+                attron(COLOR_PAIR(WIN_TEXT));
+                mvprintw((this->height + 2) / 2, (this->width + 2 - strlen(text)) / 2, text);
+                attroff(COLOR_PAIR(WIN_TEXT));
+            } else {
+                const char *text = "TEAM B WON!";
+                attron(COLOR_PAIR(WIN_TEXT));
+                mvprintw((this->height + 2) / 2, (this->width + 2 - strlen(text)) / 2, text);
+                attroff(COLOR_PAIR(WIN_TEXT));
+            }
+        } else if(this->team_A) {
+            if (team_A) {
+                const char *text = "SUCCESS TEAM A WON!";
+                attron(COLOR_PAIR(WIN_TEXT));
+                mvprintw((this->height + 2) / 2, (this->width + 2 - strlen(text)) / 2, text);
+                attroff(COLOR_PAIR(WIN_TEXT));
+            } else {
+                const char *text = "FAIL TEAM A LOST!";
+                attron(COLOR_PAIR(LOOSE_TEXT));
+                mvprintw((this->height + 2) / 2, (this->width + 2 - strlen(text)) / 2, text);
+                attroff(COLOR_PAIR(LOOSE_TEXT));
+            }
+        } else {
+            if(!team_A) {
+                const char *text = "SUCCESS TEAM B WON!";
+                attron(COLOR_PAIR(WIN_TEXT));
+                mvprintw((this->height + 2) / 2, (this->width + 2 - strlen(text)) / 2, text);
+                attroff(COLOR_PAIR(WIN_TEXT));
+            } else {
+                const char *text = "FAIL TEAM B LOST!";
+                attron(COLOR_PAIR(LOOSE_TEXT));
+                mvprintw((this->height + 2) / 2, (this->width + 2 - strlen(text)) / 2, text);
+                attroff(COLOR_PAIR(LOOSE_TEXT));
+            }
+        }
+    }
 }
 
 int main(int argc, char **argv) {
-    if(argc != 2) {
-        throw std::runtime_error("Please provide a port to listen on for incomming data");
+    if(argc != 3) {
+        throw std::runtime_error("Please provide a port to listen on for incoming data an the team [A,B,S]");
     }
-    jps_maze_curses::CursesWindow curses_window(argv[1]);
+    bool is_server = false;
+    bool team_A = true;
+    if(argv[2][0] == S) {
+        is_server = true;
+    } else if(argv[2][0] == 'A') {
+        team_A = true;
+    } else if(argv[2][0] == 'B') {
+        team_A = false;
+    } else {
+        throw std::runtime_error("Invalid team parameter");
+    }
+    jps_maze_curses::CursesWindow curses_window(argv[1], is_server, team_A);
     while(true) {
         curses_window.handle_update();
     }

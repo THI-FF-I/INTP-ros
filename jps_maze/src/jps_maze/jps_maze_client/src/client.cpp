@@ -287,6 +287,11 @@ namespace jps_maze_client
         this->visualizer.re_draw();
         if (msg->game_over)
         {
+            if(msg->winning_team == jps_maze_msgs::msg::Team::TEAM_A) {
+                this->visualizer.send_result(true);
+            } else {
+                this->visualizer.send_result(false);
+            }
             if (msg->winning_team.team == this->team)
             {
                 RCLCPP_INFO(this->get_logger(), "We won!");

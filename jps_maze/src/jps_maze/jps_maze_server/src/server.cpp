@@ -148,10 +148,12 @@ namespace jps_maze_server {
             RCLCPP_INFO(this->get_logger(), "Team A won");
             status.game_over = true;
             status.winning_team.team = jps_maze_msgs::msg::Team::TEAM_A;
+            this->visualizer.send_result(true);
         } else if(this->game.get_game_state() == jps_maze_game::GAME_STATE_WIN_TEAM_B) {
             RCLCPP_INFO(this->get_logger(), "Team B won");
             status.game_over = true;
             status.winning_team.team = jps_maze_msgs::msg::Team::TEAM_B;
+            this->visualizer.send_result(false);
         }
 
         RCLCPP_DEBUG(this->get_logger(), "Resetting timer");

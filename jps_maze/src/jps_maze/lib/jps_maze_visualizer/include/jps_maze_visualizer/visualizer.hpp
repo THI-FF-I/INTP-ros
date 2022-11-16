@@ -33,6 +33,7 @@ namespace jps_maze_visualizer {
         Visualizer& operator=(Visualizer&& rhs);
         ~Visualizer();
         void re_draw();
+        void send_result(const bool team_A);
     private:
         void send_dim();
         uint8_t width;
