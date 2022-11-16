@@ -143,6 +143,7 @@ namespace jps_maze_server {
         RCLCPP_INFO(this->get_logger(), "Issuing redrawing");
         this->visualizer.re_draw();
 
+        RCLCPP_DEBUG(this->get_logger(), "Got game state %d", this->game.get_game_state());
         if(this->game.get_game_state() == jps_maze_game::GAME_STATE_WIN_TEAM_A) {
             RCLCPP_INFO(this->get_logger(), "Team A won");
             status.game_over = true;
