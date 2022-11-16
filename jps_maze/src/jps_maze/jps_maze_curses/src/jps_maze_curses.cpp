@@ -290,7 +290,7 @@ int main(int argc, char **argv) {
     }
     bool is_server = false;
     bool team_A = true;
-    if(argv[2][0] == S) {
+    if(argv[2][0] == 'S') {
         is_server = true;
     } else if(argv[2][0] == 'A') {
         team_A = true;
