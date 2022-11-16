@@ -46,6 +46,8 @@ void sendRandomArena()
 int main()
 {
     
+    int i = 0;
+
     srand(time(NULL));
     network_socket = socket(AF_INET, SOCK_DGRAM, 0);
     server_address.sin_family = AF_INET; 
@@ -62,6 +64,8 @@ int main()
         sendRandomArena();
         printf("Sended!\n");
         sleep(1);
+        i++;
+        if(i > 2) return 0;
     }
 
     return 0;
