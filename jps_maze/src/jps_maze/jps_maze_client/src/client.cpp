@@ -293,9 +293,12 @@ namespace jps_maze_client
         this->visualizer.re_draw();
         if (msg->game_over)
         {
-            if(msg->winning_team.team == jps_maze_msgs::msg::Team::TEAM_A) {
+            if (msg->winning_team.team == jps_maze_msgs::msg::Team::TEAM_A)
+            {
                 this->visualizer.send_result(true);
-            } else {
+            }
+            else
+            {
                 this->visualizer.send_result(false);
             }
             if (msg->winning_team.team == this->team)
