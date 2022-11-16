@@ -292,7 +292,6 @@ namespace jps_maze_curses
 
     void CursesWindow::print_result(const bool team_A)
     {
-        //throw std::runtime_error("Game ended");
         attron(COLOR_PAIR(PORTAL));
         mvprintw(0,0, "GAME END!");
         attroff(COLOR_PAIR(PORTAL));
@@ -347,6 +346,8 @@ namespace jps_maze_curses
                 attroff(COLOR_PAIR(LOOSE_TEXT));
             }
         }
+
+        refresh();
     }
 }
 
