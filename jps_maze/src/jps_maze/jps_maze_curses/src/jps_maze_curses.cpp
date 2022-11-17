@@ -216,14 +216,35 @@ namespace jps_maze_curses
                 player_r %= 1000;
 
                 init_color(cur_player_index, player_r, player_g, player_b);
-                if ((cur_block & (static_cast<block_t>(1) << (std::numeric_limits<block_t>::digits - 2))) != 0)
-                {                                                              // Check 2nd MSB
-                    init_pair(cur_player_index, cur_player_index, COLOR_BLUE); // Team A
+
+                if(!this->is_server) {
+                    if ((cur_block & (static_cast<block_t>(1) << (std::numeric_limits<block_t>::digits - 4))) != 0) { // Check 4th MSB if this is the own player
+                        if ((cur_block & (static_cast<block_t>(1) << (std::numeric_limits<block_t>::digits - 2))) != 0) { // Check 2nd MSB
+                            init_pair(cur_player_index, COLOR_WHITE, COLOR_BLUE); // Team A
+                        } else {
+                            init_pair(cur_player_index, COLOR_WHITE, COLOR_RED); // Team B
+                        }
+                    } else {
+                        if ((cur_block & (static_cast<block_t>(1) << (std::numeric_limits<block_t>::digits - 2))) != 0)
+                        {                                                              // Check 2nd MSB
+                            init_pair(cur_player_index, cur_player_index, COLOR_BLUE); // Team A
+                        }
+                        else
+                        {
+                            init_pair(cur_player_index, cur_player_index, COLOR_RED); // Team B
+                        }
+                    }
+                } else {
+                    if ((cur_block & (static_cast<block_t>(1) << (std::numeric_limits<block_t>::digits - 2))) != 0)
+                    {                                                              // Check 2nd MSB
+                        init_pair(cur_player_index, cur_player_index, COLOR_BLUE); // Team A
+                    }
+                    else
+                    {
+                        init_pair(cur_player_index, cur_player_index, COLOR_RED); // Team B
+                    }
                 }
-                else
-                {
-                    init_pair(cur_player_index, cur_player_index, COLOR_RED); // Team B
-                }
+
                 attron(COLOR_PAIR(this->cur_player_index));
                 if((cur_block & (static_cast<block_t>(1) << (std::numeric_limits<block_t>::digits - 3))) != 0) {
                     mvaddch(this->cur_row + 1, x + 1, 'F');

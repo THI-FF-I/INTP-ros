@@ -278,6 +278,9 @@ namespace jps_maze_client
                 this->x = player.pos.x;
                 this->y = player.pos.y;
                 RCLCPP_DEBUG(this->get_logger(), "Got a new position from server: x: %d y: %d", this->x, this->y);
+                this->frame_buffer[player.pos.y][player.pos.x] |= (static_cast<jps_maze_visualizer::block_t>(1) << (std::numeric_limits<jps_maze_visualizer::block_t>::digits - 4)); // Set 4th MSB to mark own player
+            } else {
+                this->frame_buffer[player.pos.y][player.pos.x] &= ~(static_cast<jps_maze_visualizer::block_t>(1) << (std::numeric_limits<jps_maze_visualizer::block_t>::digits - 2)); // Reset 2nd MSB to mark different players
             }
 
             if (player.team.team == jps_maze_msgs::msg::Team::TEAM_A)
