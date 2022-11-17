@@ -12,3 +12,8 @@ ROS: https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debians.html<br>
 4. Start Player (repeat for every player): `ros2 launch jps_maze jps_maze_launch.py`
 5. Enter `-c -t [TEAM: 'A' or 'B'] -n [NAME OF PLAYER]`
 6. Game starts automatically if all players are connected
+
+# Credits
+- **Johan Bücker** - ROS & UDP communication, ncurses visualizer
+- **Philipp Grüber** - game engine
+- **Simon Demuth** - node.js visualizer (not working)
