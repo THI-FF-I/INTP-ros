@@ -1,9 +1,9 @@
 # How to install (Ubuntu 22.04)
 
-1. Clone Git
-2. Install ROS2 humble & curses:<br>
+1. Clone Git Repository: `git clone https://github.com/THI-FF-I/INTP-ros.git`
+2. Install ROS2 humble & ncurses:<br>
 ROS: https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debians.html<br>
-`sudo apt-get install libncurses5-dev libncursesw5-dev`
+ncurses: `sudo apt-get install libncurses5-dev libncursesw5-dev`
 3. CD into Git Repository: `cd INTP-ros`
 4. Build: `./jps_maze/abuild.sh`
 
