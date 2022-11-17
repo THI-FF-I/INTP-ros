@@ -220,9 +220,9 @@ namespace jps_maze_curses
                 if(!this->is_server) {
                     if ((cur_block & (static_cast<block_t>(1) << (std::numeric_limits<block_t>::digits - 4))) != 0) { // Check 4th MSB if this is the own player
                         if ((cur_block & (static_cast<block_t>(1) << (std::numeric_limits<block_t>::digits - 2))) != 0) { // Check 2nd MSB
-                            init_pair(cur_player_index, COLOR_WHITE, COLOR_BLUE); // Team A
+                            init_pair(cur_player_index, COLOR_BLUE, COLOR_WHITE); // Team A
                         } else {
-                            init_pair(cur_player_index, COLOR_WHITE, COLOR_RED); // Team B
+                            init_pair(cur_player_index, COLOR_RED, COLOR_WHITE); // Team B
                         }
                     } else {
                         if ((cur_block & (static_cast<block_t>(1) << (std::numeric_limits<block_t>::digits - 2))) != 0)
