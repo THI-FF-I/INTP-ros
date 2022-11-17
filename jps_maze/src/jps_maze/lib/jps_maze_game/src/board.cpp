@@ -67,6 +67,9 @@ namespace jps_maze_game
                         tmp.game_block_type = GAME_BLOCK_BASE_B;
                         base_b.push_back({i / 2, h - 1});
                         break;
+                    case ';':
+                        throw std::runtime_error("[Board::load_board_from_file] incorrect file syntax: found incorrect ';'");
+                        return false;
                     default:
                         tmp.game_block_type = GAME_BLOCK_EMPTY;
                         RCLCPP_INFO(this->logger, "[Board::load_board_from_file] Unknown block type: %c at x: %ld, y: %d", line[i], i, h - 1);
