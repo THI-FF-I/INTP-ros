@@ -18,4 +18,4 @@ ncurses: `sudo apt-get install libncurses5-dev libncursesw5-dev`
 # Credits
 - **Johan Bücker** - ROS & UDP communication, ncurses visualizer
 - **Philipp Grüber** - game engine
-- **Simon Demuth** - node.js visualizer (not working)
+- **Simon Demuth** - node.js visualizer *(not working)*
