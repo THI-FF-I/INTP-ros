@@ -1,0 +1,12 @@
+uint8 player
+State gamestate
+uint8 roundnumber
+Field x0y0
+Field x0y1
+Field x0y2
+Field x1y0
+Field x1y1
+Field x1y2
+Field x2y0
+Field x2y1
+Field x2y2

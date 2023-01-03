@@ -1,0 +1,5 @@
+uint8 player
+uint8 PLAYER_A = 1
+uint8 PLAYER_B = 2
+---
+bool ok

@@ -1,0 +1,5 @@
+uint8 player
+uint8 field_x
+uint8 field_y
+---
+bool ok
